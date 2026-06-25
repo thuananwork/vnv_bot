@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VNV-BOT V2 - Hệ Thống Điều Hành & Phân Phối</title>
+    <!-- Outfit Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Main Style Sheet -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Background Gradients -->
+    <div class="bg-glow bg-glow-1"></div>
+    <div class="bg-glow bg-glow-2"></div>
+
+    <!-- 1. MÀN HÌNH ĐĂNG NHẬP (LOGIN SCREEN) -->
+    <div id="login-container" class="glass-card login-card active">
+        <div class="login-header">
+            <div class="logo-icon"><i class="fa-solid fa-robot"></i></div>
+            <h2>VNV-BOT V2</h2>
+            <p>Hệ thống Giám sát & Quản lý Phân phối Tin tức</p>
+        </div>
+        <form id="login-form">
+            <div class="form-group">
+                <label for="username"><i class="fa-solid fa-user"></i> Tên đăng nhập</label>
+                <input type="text" id="username" placeholder="Nhập username..." required autocomplete="username">
+            </div>
+            <div class="form-group">
+                <label for="password"><i class="fa-solid fa-lock"></i> Mật khẩu</label>
+                <input type="password" id="password" placeholder="Nhập mật khẩu..." required autocomplete="current-password">
+            </div>
+            <div id="login-error" class="alert alert-danger hide"></div>
+            <button type="submit" class="btn btn-primary btn-block">Đăng Nhập <i class="fa-solid fa-arrow-right-to-bracket"></i></button>
+        </form>
+    </div>
+
+    <!-- 2. GIAO DIỆN CHÍNH (DASHBOARD CONTAINER) -->
+    <div id="app-container" class="hide">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar glass-card">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <i class="fa-solid fa-robot"></i>
+                    <span>VNV-BOT</span>
+                </div>
+                <div class="user-profile" id="user-profile-badge">
+                    <span class="user-name" id="profile-fullname">...</span>
+                    <span class="user-role badge" id="profile-role">...</span>
+                </div>
+            </div>
+            
+            <nav class="nav-menu">
+                <a href="#" class="nav-item active" data-target="panel-dashboard">
+                    <i class="fa-solid fa-chart-pie"></i> Tổng quan
+                </a>
+                <a href="#" class="nav-item" data-target="panel-submissions">
+                    <i class="fa-solid fa-circle-check"></i> Kết quả nộp bài
+                </a>
+                <a href="#" class="nav-item" data-target="panel-reports">
+                    <i class="fa-solid fa-file-invoice"></i> Báo cáo ngày
+                </a>
+                <!-- Chỉ hiển thị cho Admin -->
+                <a href="#" class="nav-item admin-only" data-target="panel-clusters">
+                    <i class="fa-solid fa-folder-tree"></i> Quản lý Cụm
+                </a>
+                <a href="#" class="nav-item admin-only" data-target="panel-regions">
+                    <i class="fa-solid fa-map-location-dot"></i> Quản lý Vùng
+                </a>
+                <a href="#" class="nav-item admin-only" data-target="panel-users">
+                    <i class="fa-solid fa-users-gear"></i> Tài khoản quản trị
+                </a>
+                <a href="#" class="nav-item admin-only" data-target="panel-audit">
+                    <i class="fa-solid fa-clock-rotate-left"></i> Nhật ký thao tác
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <button id="btn-logout" class="btn btn-danger-outline btn-block">
+                    <i class="fa-solid fa-power-off"></i> Đăng xuất
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            
+            <!-- PANEL: DASHBOARD (TỔNG QUAN) -->
+            <section id="panel-dashboard" class="content-panel active">
+                <div class="panel-header">
+                    <h1>Bảng Điều Khiển Tổng Quan</h1>
+                    <p>Giám sát thời gian thực số liệu nộp bài & phân chia địa phương</p>
+                </div>
+
+                <!-- Thống kê nhanh (Summary Cards) -->
+                <div class="metrics-grid">
+                    <div class="metric-card glass-card">
+                        <div class="card-icon blue"><i class="fa-solid fa-folder-tree"></i></div>
+                        <div class="card-data">
+                            <span class="value" id="stat-clusters">0</span>
+                            <span class="label">Tổng số Cụm</span>
+                        </div>
+                    </div>
+                    <div class="metric-card glass-card">
+                        <div class="card-icon green"><i class="fa-solid fa-map-location-dot"></i></div>
+                        <div class="card-data">
+                            <span class="value" id="stat-regions">0</span>
+                            <span class="label">Tổng số Vùng</span>
+                        </div>
+                    </div>
+                    <div class="metric-card glass-card">
+                        <div class="card-icon purple"><i class="fa-solid fa-users"></i></div>
+                        <div class="card-data">
+                            <span class="value" id="stat-members">0</span>
+                            <span class="label">Tổng số Sứ giả</span>
+                        </div>
+                    </div>
+                    <div class="metric-card glass-card">
+                        <div class="card-icon amber"><i class="fa-solid fa-clipboard-question"></i></div>
+                        <div class="card-data">
+                            <span class="value" id="stat-tasks">0</span>
+                            <span class="label">Nhiệm vụ phát hiện</span>
+                        </div>
+                    </div>
+                    <div class="metric-card glass-card">
+                        <div class="card-icon rose"><i class="fa-solid fa-circle-check"></i></div>
+                        <div class="card-data">
+                            <span class="value" id="stat-submissions">0</span>
+                            <span class="label">Bài nộp hôm nay</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Giao diện giám sát tin nhắn Zalo mô phỏng / Hướng dẫn -->
+                <div class="layout-grid">
+                    <div class="glass-card welcome-card">
+                        <h3><i class="fa-solid fa-sparkles text-gradient-primary"></i> VNV-Bot V2 Local Agent</h3>
+                        <p>Hệ thống tự động lắng nghe tin nhắn Zalo, tổng hợp báo cáo và liên kết Google Sheet. SQLite lưu trữ dữ liệu chính thức.</p>
+                        <hr class="divider">
+                        <div class="quick-status">
+                            <div class="status-item">
+                                <span class="indicator active"></span>
+                                <span>Database SQLite: <strong>Hoạt động</strong></span>
+                            </div>
+                            <div class="status-item">
+                                <span class="indicator active"></span>
+                                <span>Google Sheet API: <strong>Sẵn sàng (Local Mock)</strong></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- PANEL: KẾT QUẢ NỘP BÀI -->
+            <section id="panel-submissions" class="content-panel">
+                <div class="panel-header">
+                    <h1>Kết Quả Nộp Bài</h1>
+                    <p>Lịch sử gửi DONE / Ảnh của các Sứ giả</p>
+                </div>
+                <div class="glass-card table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Thời gian</th>
+                                <th>Sứ giả</th>
+                                <th>Tên Zalo</th>
+                                <th>Vùng</th>
+                                <th>Nhiệm vụ</th>
+                                <th>Thể loại</th>
+                                <th>Nội dung</th>
+                                <th>Trạng thái</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table-submissions-body">
+                            <!-- JS load rows -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- PANEL: BÁO CÁO NGÀY -->
+            <section id="panel-reports" class="content-panel">
+                <div class="panel-header">
+                    <h1>Báo Cáo Ngày</h1>
+                    <p>Quản lý xuất báo cáo trực tiếp sang các Google Sheet riêng của từng Vùng</p>
+                </div>
+                <div class="glass-card table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Ngày tạo</th>
+                                <th>Nhiệm vụ</th>
+                                <th>Phạm vi báo cáo</th>
+                                <th>Tổng số SG</th>
+                                <th>Hoàn thành</th>
+                                <th>Chưa hoàn thành</th>
+                                <th>Đồng bộ Sheets</th>
+                                <th>Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table-reports-body">
+                            <!-- JS load rows -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- PANEL: QUẢN LÝ CỤM (ADMIN ONLY) -->
+            <section id="panel-clusters" class="content-panel">
+                <div class="panel-header flex-header">
+                    <div>
+                        <h1>Quản Lý Cụm</h1>
+                        <p>Danh sách các Cụm phân phối và Trưởng Cụm</p>
+                    </div>
+                    <button class="btn btn-primary" onclick="showClusterModal()"><i class="fa-solid fa-plus"></i> Thêm Cụm mới</button>
+                </div>
+                <div class="glass-card table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Tên Cụm</th>
+                                <th>Trưởng Cụm</th>
+                                <th>Ngày khởi tạo</th>
+                                <th>Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table-clusters-body">
+                            <!-- JS load rows -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- PANEL: QUẢN LÝ VÙNG (ADMIN ONLY) -->
+            <section id="panel-regions" class="content-panel">
+                <div class="panel-header flex-header">
+                    <div>
+                        <h1>Quản Lý Vùng</h1>
+                        <p>Gán Vùng vào Cụm, gán Trưởng Vùng và tích hợp Google Sheet cho từng Region</p>
+                    </div>
+                    <button class="btn btn-primary" onclick="showRegionModal()"><i class="fa-solid fa-plus"></i> Thêm Vùng mới</button>
+                </div>
+                <div class="glass-card table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Tên Vùng</th>
+                                <th>Cụm</th>
+                                <th>Trưởng Vùng</th>
+                                <th>Zalo Group (ID / Name)</th>
+                                <th>Google Sheet liên kết</th>
+                                <th>Trạng thái</th>
+                                <th>Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table-regions-body">
+                            <!-- JS load rows -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- PANEL: TÀI KHOẢN (ADMIN ONLY) -->
+            <section id="panel-users" class="content-panel">
+                <div class="panel-header flex-header">
+                    <div>
+                        <h1>Tài Khoản Quản Trị</h1>
+                        <p>Quản lý tài khoản đăng nhập của Admin, Trưởng Cụm, Trưởng Vùng</p>
+                    </div>
+                    <button class="btn btn-primary" onclick="showUserModal()"><i class="fa-solid fa-plus"></i> Thêm Tài khoản</button>
+                </div>
+                <div class="glass-card table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Username</th>
+                                <th>Họ Tên</th>
+                                <th>Zalo ID</th>
+                                <th>Vai trò</th>
+                                <th>Trạng thái</th>
+                                <th>Đăng nhập cuối</th>
+                                <th>Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table-users-body">
+                            <!-- JS load rows -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- PANEL: AUDIT LOG (ADMIN ONLY) -->
+            <section id="panel-audit" class="content-panel">
+                <div class="panel-header">
+                    <h1>Nhật Ký Thao Tác</h1>
+                    <p>Lịch sử cấu hình và thao tác quản lý của Admin để giám sát hệ thống</p>
+                </div>
+                <div class="glass-card table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Thời gian</th>
+                                <th>Người thực hiện</th>
+                                <th>Hành động</th>
+                                <th>Tài nguyên tác động</th>
+                                <th>Chi tiết</th>
+                                <th>Địa chỉ IP</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table-audit-body">
+                            <!-- JS load rows -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- ==========================================
+    3. MODALS (FOR CRUD OPERATIONS)
+    ========================================== -->
+
+    <!-- Modal User -->
+    <div id="modal-user" class="modal-overlay">
+        <div class="modal-content glass-card">
+            <h3 id="modal-user-title">Thêm Tài Khoản</h3>
+            <form id="form-user">
+                <input type="hidden" id="edit-user-id">
+                <div class="form-group">
+                    <label for="input-username">Username</label>
+                    <input type="text" id="input-username" required>
+                </div>
+                <div class="form-group">
+                    <label for="input-password">Mật khẩu (Để trống nếu không muốn đổi)</label>
+                    <input type="password" id="input-password">
+                </div>
+                <div class="form-group">
+                    <label for="input-fullname">Họ và Tên</label>
+                    <input type="text" id="input-fullname" required>
+                </div>
+                <div class="form-group">
+                    <label for="input-user-zaloid">Zalo ID (Tùy chọn)</label>
+                    <input type="text" id="input-user-zaloid">
+                </div>
+                <div class="form-group">
+                    <label for="select-role">Vai trò</label>
+                    <select id="select-role" required>
+                        <option value="admin">Admin</option>
+                        <option value="cluster_leader">Trưởng Cụm (Cluster Leader)</option>
+                        <option value="region_leader">Trưởng Vùng (Region Leader)</option>
+                    </select>
+                </div>
+                <div class="form-group" id="group-is-active">
+                    <label for="select-is-active">Trạng thái</label>
+                    <select id="select-is-active">
+                        <option value="1">Kích hoạt</option>
+                        <option value="0">Khóa</option>
+                    </select>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary-outline" onclick="closeModal('modal-user')">Hủy</button>
+                    <button type="submit" class="btn btn-primary">Lưu lại</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Cluster -->
+    <div id="modal-cluster" class="modal-overlay">
+        <div class="modal-content glass-card">
+            <h3 id="modal-cluster-title">Thêm Cụm Mới</h3>
+            <form id="form-cluster">
+                <input type="hidden" id="edit-cluster-id">
+                <div class="form-group">
+                    <label for="input-cluster-name">Tên Cụm</label>
+                    <input type="text" id="input-cluster-name" placeholder="Ví dụ: Cụm 5" required>
+                </div>
+                <div class="form-group">
+                    <label for="select-cluster-manager">Gán Trưởng Cụm</label>
+                    <select id="select-cluster-manager">
+                        <option value="">-- Chưa gán --</option>
+                        <!-- Danh sách user có role cluster_leader sẽ được nạp vào đây -->
+                    </select>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary-outline" onclick="closeModal('modal-cluster')">Hủy</button>
+                    <button type="submit" class="btn btn-primary">Lưu lại</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Region -->
+    <div id="modal-region" class="modal-overlay">
+        <div class="modal-content glass-card">
+            <h3 id="modal-region-title">Thêm Vùng Mới</h3>
+            <form id="form-region">
+                <input type="hidden" id="edit-region-id">
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="input-region-name">Tên Vùng</label>
+                        <input type="text" id="input-region-name" placeholder="Ví dụ: Vùng 27" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="select-region-status">Trạng thái</label>
+                        <select id="select-region-status">
+                            <option value="active">Active</option>
+                            <option value="inactive">Inactive</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="select-region-cluster">Thuộc Cụm</label>
+                        <select id="select-region-cluster">
+                            <option value="">-- Chọn Cụm --</option>
+                            <!-- Nạp danh sách cụm -->
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="select-region-manager">Gán Trưởng Vùng</label>
+                        <select id="select-region-manager">
+                            <option value="">-- Chưa gán --</option>
+                            <!-- Nạp danh sách user role region_leader -->
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="input-zalo-id">Zalo Group ID</label>
+                        <input type="text" id="input-zalo-id" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="input-zalo-name">Tên Zalo Group</label>
+                        <input type="text" id="input-zalo-name" required>
+                    </div>
+                </div>
+
+                <div class="form-group-title">Cấu hình Google Sheet riêng của Vùng</div>
+                <div class="form-group">
+                    <label for="input-sheet-id">Google Sheet ID</label>
+                    <input type="text" id="input-sheet-id" placeholder="ID trên URL của trang tính Google">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="input-sheet-name">Tên Trang tính (Sheet Name)</label>
+                        <input type="text" id="input-sheet-name" placeholder="Ví dụ: Sheet1 hoặc Vùng 27">
+                    </div>
+                    <div class="form-group">
+                        <label for="input-sheet-url">URL liên kết</label>
+                        <input type="url" id="input-sheet-url" placeholder="https://docs.google.com/spreadsheets/d/...">
+                    </div>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary-outline" onclick="closeModal('modal-region')">Hủy</button>
+                    <button type="submit" class="btn btn-primary">Lưu lại</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Main JS Application -->
+    <script src="main.js"></script>
+</body>
+</html>
