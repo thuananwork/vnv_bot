@@ -1,0 +1,13 @@
+{
+  "name": "vnv-bot-poc",
+  "version": "1.0.0",
+  "description": "Zalo Web Connector Proof of Concept",
+  "main": "poc_zalo.js",
+  "scripts": {
+    "start": "node poc_zalo.js",
+    "debug": "node poc_zalo_debug.js"
+  },
+  "dependencies": {
+    "puppeteer-core": "^22.0.0"
+  }
+}
