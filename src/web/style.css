@@ -1726,33 +1726,37 @@ select:disabled {
     display: flex;
     justify-content: flex-start;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
     flex-wrap: nowrap;
     margin-bottom: 8px;
+    padding-right: 8px;
 }
 
 #panel-region-workspace .workspace-toolbar {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 5px;
     flex: 1;
     flex-wrap: nowrap;
     overflow-x: auto;
     scrollbar-width: none;
+    padding-right: 8px;
 }
 #panel-region-workspace .workspace-toolbar::-webkit-scrollbar {
     display: none;
 }
 
 #panel-region-workspace #rw-work-date {
-    width: 220px !important;
-    min-width: 220px !important;
+    width: 175px !important;
+    min-width: 175px !important;
 }
 
 #panel-region-workspace #btn-rw-run-report {
     margin-left: auto;
     flex-shrink: 0;
     white-space: nowrap;
+    padding: 0 11px !important;
+    margin-right: 4px;
 }
 
 .input-compact {
