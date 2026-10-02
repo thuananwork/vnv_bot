@@ -75,33 +75,13 @@ async function loadUsers() {
 }
 
 function toggleUserFields() {
-    const roleEl = document.getElementById('select-role');
-    if (!roleEl) return;
-    const role = roleEl.value;
-    const userId = document.getElementById('edit-user-id').value;
-    
     const groupUsername = document.getElementById('group-user-username');
     const groupPassword = document.getElementById('group-user-password');
     const groupEmail = document.getElementById('group-user-email');
     
-    const inputUsername = document.getElementById('input-username');
-    const inputEmail = document.getElementById('input-email');
-    
-    if (role === 'admin') {
-        if (groupUsername) groupUsername.classList.remove('hide');
-        if (groupPassword) groupPassword.classList.remove('hide');
-        if (groupEmail) groupEmail.classList.add('hide');
-        
-        if (inputUsername) inputUsername.required = !userId;
-        if (inputEmail) inputEmail.required = false;
-    } else {
-        if (groupUsername) groupUsername.classList.add('hide');
-        if (groupPassword) groupPassword.classList.add('hide');
-        if (groupEmail) groupEmail.classList.remove('hide');
-        
-        if (inputUsername) inputUsername.required = false;
-        if (inputEmail) inputEmail.required = true;
-    }
+    if (groupUsername) groupUsername.classList.remove('hide');
+    if (groupPassword) groupPassword.classList.remove('hide');
+    if (groupEmail) groupEmail.classList.remove('hide');
 }
 
 function showUserModal() {
@@ -119,7 +99,7 @@ function editUser(user) {
     document.getElementById('modal-user-title').innerText = 'Cập Nhật Tài Khoản';
     document.getElementById('edit-user-id').value = user.id;
     document.getElementById('input-username').value = user.username || '';
-    document.getElementById('input-username').disabled = true;
+    document.getElementById('input-username').disabled = false;
     document.getElementById('input-email').value = user.email || '';
     document.getElementById('input-email').disabled = false;
     document.getElementById('input-password').value = '';
@@ -213,18 +193,23 @@ function initUserForms() {
                 role: role
             };
 
-            if (role === 'admin') {
-                payload.username = document.getElementById('input-username').value;
-                const password = document.getElementById('input-password').value;
-                if (password && password.trim() !== '') {
-                    payload.password = password;
-                } else if (!userId) {
-                    payload.password = '123456';
-                }
-                const emailVal = document.getElementById('input-email').value;
-                if (emailVal) payload.email = emailVal;
-            } else {
-                payload.email = document.getElementById('input-email').value;
+            const usernameVal = document.getElementById('input-username').value;
+            const passwordVal = document.getElementById('input-password').value;
+            const emailVal = document.getElementById('input-email').value;
+
+            if (usernameVal && usernameVal.trim()) {
+                payload.username = usernameVal.trim();
+            }
+            if (passwordVal && passwordVal.trim()) {
+                payload.password = passwordVal.trim();
+            }
+            if (emailVal && emailVal.trim()) {
+                payload.email = emailVal.trim();
+            }
+
+            if (!userId && !payload.username && !payload.email) {
+                alert('Vui lòng nhập Tên đăng nhập + Mật khẩu hoặc Email Google.');
+                return;
             }
 
             const url = userId ? `/api/users/${userId}` : '/api/users';

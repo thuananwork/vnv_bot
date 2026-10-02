@@ -25,31 +25,32 @@ router.get('/', auth.requireAuth, auth.isClusterOrAdmin, async (req, res) => {
 router.post('/', auth.requireAuth, auth.isClusterOrAdmin, async (req, res) => {
     const { username, password, full_name, zalo_id, role, email } = req.body;
     
+    if (!['admin', 'cluster_leader', 'region_leader'].includes(role)) {
+        return res.status(400).json({ error: 'Vai trò người dùng không hợp lệ.' });
+    }
+    if (!full_name || full_name.trim() === '') {
+        return res.status(400).json({ error: 'Vui lòng nhập Họ và Tên.' });
+    }
+
     let authMethod = 'google';
     let normalizedEmail = null;
     let finalUsername = null;
     let finalPasswordHash = null;
 
-    if (role === 'admin') {
-        if (!username || !password || !full_name) {
-            return res.status(400).json({ error: 'Admin yêu cầu điền username, mật khẩu và họ tên.' });
-        }
+    if (email && email.trim() !== '') {
+        normalizedEmail = emailUtils.normalizeEmail(email);
+    }
+
+    if (username && username.trim() !== '' && password && password.trim() !== '') {
         authMethod = 'local';
         finalUsername = username.toLowerCase().trim();
-        finalPasswordHash = bcrypt.hashSync(password, 10);
-        if (email) {
-            normalizedEmail = emailUtils.normalizeEmail(email);
-        }
-    } else if (role === 'cluster_leader' || role === 'region_leader') {
-        if (!email || !full_name) {
-            return res.status(400).json({ error: 'Trưởng cụm/vùng yêu cầu điền địa chỉ email và họ tên.' });
-        }
+        finalPasswordHash = bcrypt.hashSync(password.trim(), 10);
+    } else if (normalizedEmail) {
         authMethod = 'google';
-        normalizedEmail = emailUtils.normalizeEmail(email);
         finalUsername = normalizedEmail;
         finalPasswordHash = bcrypt.hashSync(crypto.randomUUID(), 10);
     } else {
-        return res.status(400).json({ error: 'Vai trò người dùng không hợp lệ.' });
+        return res.status(400).json({ error: 'Vui lòng cung cấp Username + Mật khẩu (đăng nhập trực tiếp) hoặc Email Gmail (đăng nhập Google).' });
     }
 
     try {
@@ -133,8 +134,10 @@ router.put('/:id', auth.requireAuth, auth.isClusterOrAdmin, async (req, res) => 
                 sessionVersion += 1;
             }
 
+            let finalAuthMethod = user.auth_method;
             if (password && password.trim() !== '') {
-                finalPasswordHash = bcrypt.hashSync(password, 10);
+                finalPasswordHash = bcrypt.hashSync(password.trim(), 10);
+                finalAuthMethod = 'local';
             }
 
             if (full_name !== undefined && full_name !== user.full_name) {
@@ -155,6 +158,7 @@ router.put('/:id', auth.requireAuth, auth.isClusterOrAdmin, async (req, res) => 
                      last_google_sync = ?, 
                      session_version = ?, 
                      password_hash = ?,
+                     auth_method = ?,
                      name_source = ?,
                      updated_at = CURRENT_TIMESTAMP 
                  WHERE id = ?`,
@@ -169,6 +173,7 @@ router.put('/:id', auth.requireAuth, auth.isClusterOrAdmin, async (req, res) => 
                     lastGoogleSync, 
                     sessionVersion, 
                     finalPasswordHash,
+                    finalAuthMethod,
                     nameSource,
                     userId
                 ]
