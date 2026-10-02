@@ -65,10 +65,51 @@ router.get('/regions/:id', async (req, res) => {
     }
 });
 
-// 2. Cập nhật khung giờ làm việc riêng cho từng Vùng
-router.post('/regions/:id/settings', auth.requireAuth, auth.isClusterOrAdmin, async (req, res) => {
+// 1.2 Lấy danh sách các Tab có sẵn trên Google Sheet của Vùng
+router.get('/regions/:id/sheet-tabs', async (req, res) => {
     try {
         const regionId = req.params.id;
+        const region = await db.get('SELECT * FROM regions WHERE id = ?', [regionId]);
+        if (!region) return res.status(404).json({ success: false, error: 'Không tìm thấy Vùng' });
+
+        const currentTab = region.sheet_name || getExpectedMonthTab();
+        if (!region.sheet_id) {
+            return res.json({
+                success: true,
+                hasSheet: false,
+                tabs: [currentTab],
+                currentTab
+            });
+        }
+
+        const check = await GoogleSheetsClient.checkTabExists(region.sheet_id, currentTab);
+        let tabs = check.currentTabs || [];
+        if (tabs.length === 0) {
+            tabs = [currentTab];
+        }
+
+        res.json({
+            success: true,
+            hasSheet: true,
+            tabs,
+            currentTab
+        });
+    } catch (err) {
+        res.status(500).json({ success: false, error: err.message });
+    }
+});
+
+// 2. Cập nhật khung giờ làm việc và cấu hình Tab Sheet riêng cho từng Vùng
+router.post('/regions/:id/settings', auth.requireAuth, async (req, res) => {
+    try {
+        const regionId = req.params.id;
+        const user = req.session.user;
+
+        // Cho phép Admin, Cluster Leader và Trưởng / Phó Vùng quản lý vùng này
+        if (user && user.role === 'region_leader' && user.managed_region_id && String(user.managed_region_id) !== String(regionId)) {
+            return res.status(403).json({ error: 'Bạn chỉ có quyền sửa cài đặt cho vùng của mình.' });
+        }
+
         const { task_start_time, task_end_time, report_start_time, report_end_time, sheet_name } = req.body;
 
         await db.run(`
@@ -80,10 +121,14 @@ router.post('/regions/:id/settings', auth.requireAuth, auth.isClusterOrAdmin, as
                 sheet_name = COALESCE(?, sheet_name),
                 updated_at = CURRENT_TIMESTAMP
             WHERE id = ?
-        `, [task_start_time, task_end_time, report_start_time, report_end_time, sheet_name, regionId]);
+        `, [task_start_time, task_end_time, report_start_time, report_end_time, sheet_name ? sheet_name.trim() : null, regionId]);
+
+        if (sheet_name) {
+            GoogleSheetsClient.clearMetadataCache();
+        }
 
         const updated = await db.get('SELECT * FROM regions WHERE id = ?', [regionId]);
-        res.json({ success: true, message: 'Đã cập nhật khung giờ thành công', data: updated });
+        res.json({ success: true, message: 'Đã cập nhật cấu hình Vùng thành công', data: updated });
     } catch (err) {
         res.status(500).json({ success: false, error: err.message });
     }

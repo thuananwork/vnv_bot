@@ -327,9 +327,16 @@ router.post('/bulk-month-tab', auth.requireAuth, auth.isClusterOrAdmin, async (r
     }
 });
 
-// POST /api/regions/:id/sheet-link: Cập nhật nhanh liên kết Google Sheet cho Vùng (Admin)
-router.post('/:id/sheet-link', auth.requireAuth, auth.isClusterOrAdmin, async (req, res) => {
+// POST /api/regions/:id/sheet-link: Cập nhật nhanh liên kết Google Sheet cho Vùng (Admin / Trưởng Vùng)
+router.post('/:id/sheet-link', auth.requireAuth, async (req, res) => {
     const regionId = req.params.id;
+    const user = req.session.user;
+
+    // Cho phép Admin, Cluster Leader và Trưởng / Phó Vùng quản lý vùng này
+    if (user && user.role === 'region_leader' && user.managed_region_id && String(user.managed_region_id) !== String(regionId)) {
+        return res.status(403).json({ error: 'Bạn chỉ có quyền cập nhật liên kết sheet của vùng mình.' });
+    }
+
     const { sheet_url, sheet_id, sheet_name } = req.body;
     const cleanSheetId = extractSpreadsheetId(sheet_id, sheet_url);
 

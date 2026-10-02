@@ -208,9 +208,11 @@
                         </select>
                         <select id="rw-work-date" class="form-control input-compact" style="width: 220px !important; min-width: 220px !important;" title="Chọn ngày báo cáo (7 ngày gần nhất)">
                         </select>
-                        <div style="display: inline-flex; align-items: center; gap: 3px;">
-                            <input type="text" id="rw-sheet-tab" class="form-control input-compact" style="width: 58px !important; text-align: center;" value="T9/26" placeholder="Tab Sheet" title="Tên Tab Trang tính Google Sheets">
-                            <button id="btn-rw-save-settings" class="btn btn-secondary-outline btn-compact" style="padding: 0 7px;" title="Lưu cấu hình Tab Sheet"><i class="fa-solid fa-floppy-disk"></i></button>
+                        <div style="display: inline-flex; align-items: center; gap: 4px;" title="Chọn Tab Trang tính Google Sheet">
+                            <select id="rw-sheet-tab" class="form-control input-compact" style="min-width: 95px !important; width: auto !important; max-width: 125px; text-align: center; font-weight: 700; font-size: 13px; color: var(--color-primary); cursor: pointer; padding: 0 6px;" title="Chọn Tab Trang Tính Google Sheet">
+                                <option value="T10/26">T10/26</option>
+                            </select>
+                            <button id="btn-rw-save-settings" class="btn btn-secondary-outline btn-compact" style="padding: 0 8px; font-size: 13px;" title="Lưu cấu hình Tab Sheet"><i class="fa-solid fa-floppy-disk"></i></button>
                         </div>
                         <a id="link-rw-open-sheet" href="#" target="_blank" class="btn btn-secondary-outline btn-compact rw-open-sheet-btn" style="padding: 0 8px; text-decoration: none; display: none;" title="Mở trực tiếp Google Sheet của Vùng">
                             <i class="fa-solid fa-arrow-up-right-from-square"></i> Mở Sheet
@@ -1446,7 +1448,7 @@
     <script src="js/users.js?v=2.3.5"></script>
     <script src="js/members.js?v=2.3.5"></script>
     <script src="js/audit.js?v=2.3.5"></script>
-    <script src="js/region_workspace.js?v=2.3.5"></script>
+    <script src="js/region_workspace.js?v=2.3.6"></script>
     <script src="js/cluster_workspace.js?v=2.3.5"></script>
     <script src="js/settings.js?v=2.3.5"></script>
     <script src="js/dashboard.js?v=2.3.5"></script>

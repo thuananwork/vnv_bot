@@ -211,22 +211,7 @@ async function seedAdmin() {
     // Danh sách tài khoản mặc định
     const defaultAccounts = [
         { username: 'cum5', password: 'cum5', fullName: 'Nguyễn Thuận An', role: 'cluster_leader', clusterId: 5 },
-        { username: 'truongcum5', password: 'cum5@123', fullName: 'Nguyễn Thuận An', role: 'cluster_leader', clusterId: 5 },
-        { username: 'truongvung25', password: 'truongvung25', fullName: 'Nguyễn Ngọc Bảo Trâm', role: 'region_leader', regionId: 25 },
-        { username: 'truongvung26', password: 'truongvung26', fullName: 'Trần Hoàng Vũ', role: 'region_leader', regionId: 26 },
-        { username: 'truongvung27', password: 'truongvung27', fullName: 'Phạm Quang Đại', role: 'region_leader', regionId: 27 },
-        { username: 'truongvung28', password: 'truongvung28', fullName: 'Trưởng Vùng 28', role: 'region_leader', regionId: 28 },
-        { username: 'truongvung29', password: 'truongvung29', fullName: 'Vũ Thanh Hiền', role: 'region_leader', regionId: 29 },
-        { username: 'truongvung30', password: 'truongvung30', fullName: 'Lê Thị Thanh Phương', role: 'region_leader', regionId: 30 },
         { username: 'truongvung31', password: 'truongvung31', fullName: 'Nguyễn Thanh Tân', role: 'region_leader', regionId: 31 },
-        // 7 Phó Vùng trực thuộc Vùng 25 -> 31
-        { username: 'phovung25', password: 'phovung25', fullName: 'Nguyễn Trần Yến Nhi', role: 'region_leader', regionId: 25 },
-        { username: 'phovung26', password: 'phovung26', fullName: 'Mai Thị Hồng Lý', role: 'region_leader', regionId: 26 },
-        { username: 'phovung27', password: 'phovung27', fullName: 'Nguyễn Thị Thanh Trà', role: 'region_leader', regionId: 27 },
-        { username: 'phovung28', password: 'phovung28', fullName: 'Trương Nhật My', role: 'region_leader', regionId: 28 },
-        { username: 'phovung29', password: 'phovung29', fullName: 'Lê Kim Chi', role: 'region_leader', regionId: 29 },
-        { username: 'phovung30', password: 'phovung30', fullName: 'Nguyễn Thị Thanh Trúc', role: 'region_leader', regionId: 30 },
-        { username: 'phovung31', password: 'phovung31', fullName: 'Kiều Minh Trang', role: 'region_leader', regionId: 31 },
     ];
 
     for (const acc of defaultAccounts) {

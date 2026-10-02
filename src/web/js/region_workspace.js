@@ -138,10 +138,10 @@ async function loadRegionWorkspaceData() {
                 if (pageTitle) {
                     pageTitle.innerHTML = `<i class="fa-solid fa-map-location-dot" style="color: var(--color-primary);"></i> VÙNG ${regionId}`;
                 }
-                const sheetTabEl = document.getElementById('rw-sheet-tab');
                 const workDate = getRegionWorkDate();
                 const autoTab = getDynamicMonthTab(workDate);
-                if (sheetTabEl) sheetTabEl.value = region.current_month_tab || autoTab || region.sheet_name || 'T9/26';
+                const targetTab = region.sheet_name || region.current_month_tab || autoTab || 'T10/26';
+                await loadRegionSheetTabs(regionId, targetTab);
 
                 const openSheetButtons = document.querySelectorAll('#link-rw-open-sheet, #link-rw-open-sheet-header, .rw-open-sheet-btn');
                 const url = region.sheet_url || (region.sheet_id ? `https://docs.google.com/spreadsheets/d/${region.sheet_id}/edit` : null);
@@ -680,9 +680,57 @@ async function loadRegionReportPreview() {
     } catch (err) {}
 }
 
+async function loadRegionSheetTabs(regionId, currentSavedTab) {
+    const select = document.getElementById('rw-sheet-tab');
+    if (!select) return;
+
+    const workDate = getRegionWorkDate();
+    const autoTab = getDynamicMonthTab(workDate);
+    const activeTab = currentSavedTab || autoTab || 'T10/26';
+
+    try {
+        const res = await fetch(`/api/v2/regions/${regionId}/sheet-tabs`);
+        const data = await res.json();
+        const sheetTabs = (data.success && Array.isArray(data.tabs) && data.tabs.length > 0)
+            ? data.tabs
+            : [];
+
+        // Gom các tab gợi ý nếu chưa có
+        const candidateTabs = [activeTab, autoTab, 'T10/26', 'T11/26', 'T9/26'];
+        const allTabs = Array.from(new Set([...sheetTabs, ...candidateTabs].filter(Boolean)));
+
+        let html = '';
+        allTabs.forEach(t => {
+            html += `<option value="${escapeHtml(t)}">${escapeHtml(t)}</option>`;
+        });
+        html += `<option value="__custom__">➕ Nhập tab khác...</option>`;
+
+        select.innerHTML = html;
+        select.value = activeTab;
+    } catch (e) {
+        console.warn('Không thể tải danh sách tab sheet:', e);
+        select.innerHTML = `
+            <option value="${escapeHtml(activeTab)}">${escapeHtml(activeTab)}</option>
+            <option value="T10/26">T10/26</option>
+            <option value="T11/26">T11/26</option>
+            <option value="__custom__">➕ Nhập tab khác...</option>
+        `;
+        select.value = activeTab;
+    }
+}
+
 async function saveRegionSettings() {
     const regionId = getActiveRegionId();
-    const sheet_name = document.getElementById('rw-sheet-tab')?.value || 'T9/26';
+    const sheetTabEl = document.getElementById('rw-sheet-tab');
+    const sheet_name = sheetTabEl?.value || 'T10/26';
+    if (sheet_name === '__custom__') return;
+
+    const btn = document.getElementById('btn-rw-save-settings');
+    const originalText = btn ? btn.innerHTML : '';
+    if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+    }
 
     try {
         const res = await fetch(`/api/v2/regions/${regionId}/settings`, {
@@ -692,12 +740,24 @@ async function saveRegionSettings() {
         });
         const data = await res.json();
         if (data.success) {
-            alert(`Đã lưu thành công cấu hình Tab Sheet "${sheet_name}" cho Vùng ${regionId}!`);
+            if (window.currentRegionData) {
+                window.currentRegionData.sheet_name = sheet_name;
+            }
+            if (typeof window.showToast === 'function') {
+                window.showToast(`✅ Đã chuyển sang Tab Sheet: "${sheet_name}"`, 'success');
+            } else {
+                alert(`Đã lưu thành công cấu hình Tab Sheet "${sheet_name}" cho Vùng ${regionId}!`);
+            }
         } else {
-            alert('Lỗi khi lưu cấu hình: ' + data.error);
+            alert('Lỗi khi lưu cấu hình: ' + (data.error || 'Không thể lưu.'));
         }
     } catch (err) {
         alert('Lỗi kết nối: ' + err.message);
+    } finally {
+        if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = originalText;
+        }
     }
 }
 
@@ -962,6 +1022,7 @@ async function handleSyncMembersFromSheet() {
                 alert(msg);
             }
             await loadRegionMembers();
+            await loadRegionSheetTabs(regionId, document.getElementById('rw-sheet-tab')?.value);
             if (typeof window.loadMembers === 'function') {
                 await window.loadMembers();
             }
@@ -1015,8 +1076,30 @@ function initRegionWorkspace() {
 
     const rwSheetTab = document.getElementById('rw-sheet-tab');
     if (rwSheetTab) {
-        rwSheetTab.addEventListener('input', () => {
-            rwSheetTab.dataset.custom = 'true';
+        let previousTabVal = rwSheetTab.value;
+        rwSheetTab.addEventListener('focus', () => {
+            previousTabVal = rwSheetTab.value;
+        });
+        rwSheetTab.addEventListener('change', async () => {
+            const selected = rwSheetTab.value;
+            if (selected === '__custom__') {
+                const customTab = prompt('Nhập tên Tab Google Sheet mới (Ví dụ: T11/26):');
+                if (customTab && customTab.trim()) {
+                    const cleanCustom = customTab.trim();
+                    const newOpt = document.createElement('option');
+                    newOpt.value = cleanCustom;
+                    newOpt.textContent = cleanCustom;
+                    rwSheetTab.insertBefore(newOpt, rwSheetTab.lastElementChild);
+                    rwSheetTab.value = cleanCustom;
+                    previousTabVal = cleanCustom;
+                    await saveRegionSettings();
+                } else {
+                    rwSheetTab.value = previousTabVal;
+                }
+                return;
+            }
+            previousTabVal = selected;
+            await saveRegionSettings();
         });
     }
 

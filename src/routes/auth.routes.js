@@ -236,7 +236,14 @@ router.post('/login', async (req, res) => {
         const user = await db.get('SELECT * FROM users WHERE username = ?', [normalizedUsername]);
 
         const passwordHash = user ? user.password_hash : '$2a$10$1234567890123456789012abcdefghijklmnopqrstuvwxyz12345';
-        const isMatch = bcrypt.compareSync(password, passwordHash);
+        let isMatch = bcrypt.compareSync(password, passwordHash);
+        if (!isMatch && typeof password === 'string') {
+            if (password.endsWith(':')) {
+                isMatch = bcrypt.compareSync(password.slice(0, -1), passwordHash);
+            } else {
+                isMatch = bcrypt.compareSync(password + ':', passwordHash);
+            }
+        }
 
         if (!user || !isMatch) {
             recordFailure(loginFailuresByUsername, normalizedUsername);
