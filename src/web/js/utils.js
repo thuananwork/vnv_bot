@@ -47,6 +47,13 @@ function closeModal(modalId) {
 }
 window.closeModal = closeModal;
 
+// Đóng modal khi bấm vào vùng ngoài backdrop (.modal-overlay)
+document.addEventListener('click', (e) => {
+    if (e.target && e.target.classList && e.target.classList.contains('modal-overlay')) {
+        closeModal(e.target);
+    }
+});
+
 // Dialog modal helpers
 const nativeAlert = window.alert;
 const nativeConfirm = window.confirm;

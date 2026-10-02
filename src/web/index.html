@@ -539,6 +539,7 @@
                             <p style="margin: 4px 0 0; font-size: 12px; color: var(--text-muted);">
                                 Admin cấu hình liên kết Google Sheet tại đây sẽ lập tức áp dụng toàn hệ thống và hiển thị trực tiếp cho Trưởng Cụm & Trưởng Vùng.
                             </p>
+                        </div>
                         <div style="display: flex; align-items: center; gap: 8px;">
                             <button type="button" class="btn btn-sm btn-primary" onclick="openBulkMonthTabModal()" style="display: inline-flex; align-items: center; gap: 6px;">
                                 <i class="fa-solid fa-bolt"></i> Chuyển Tab Tháng Đồng Loạt
@@ -1385,35 +1386,35 @@
     </div>
 
     <!-- MODAL: ĐỔI TAB THÁNG ĐỒNG LOẠT -->
-    <div id="modal-bulk-month-tab" class="modal-backdrop" style="display: none;">
-        <div class="modal-card" style="max-width: 480px;">
-            <div class="modal-header">
-                <h3 style="margin: 0; font-size: 16px; font-weight: 700; display: flex; align-items: center; gap: 8px;">
+    <div id="modal-bulk-month-tab" class="modal-overlay">
+        <div class="modal-content glass-card" style="max-width: 500px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                <h3 style="margin: 0; font-size: 18px; font-weight: 700; display: flex; align-items: center; gap: 8px;">
                     <i class="fa-solid fa-calendar-days" style="color: var(--color-primary);"></i> Chuyển Đổi Tab Tháng Đồng Loạt
                 </h3>
-                <button type="button" class="modal-close-btn" onclick="closeModal('modal-bulk-month-tab')">
+                <button type="button" class="btn btn-secondary-outline btn-sm" onclick="closeModal('modal-bulk-month-tab')" style="border: none; font-size: 18px; cursor: pointer; padding: 4px 8px;">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
-            <div class="modal-body" style="padding: 16px 20px;">
-                <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 14px;">
+            <div>
+                <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 16px; line-height: 1.5;">
                     Áp dụng tên Tab tháng làm việc mới cho toàn bộ các Vùng và Cụm trong hệ thống (Ví dụ khi bước sang chu kỳ tháng mới).
                 </p>
-                <div class="form-group" style="margin-bottom: 14px;">
-                    <label style="display: block; font-size: 12.5px; font-weight: 600; margin-bottom: 6px;">Tên Tab Tháng Mới</label>
-                    <input type="text" id="input-bulk-month-tab" class="form-control" placeholder="Ví dụ: T10/26" style="font-weight: 700; color: var(--color-primary);" />
+                <div class="form-group" style="margin-bottom: 16px;">
+                    <label style="display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px;">Tên Tab Tháng Mới</label>
+                    <input type="text" id="input-bulk-month-tab" class="form-control" placeholder="Ví dụ: T10/26" style="font-weight: 700; font-size: 15px; color: var(--color-primary);" />
                     <div style="font-size: 11.5px; color: var(--text-muted); margin-top: 4px;">
                         Gợi ý: Định dạng chuẩn của hệ thống là <code>T[Tháng]/[Năm]</code> (như <code>T9/26</code>, <code>T10/26</code>).
                     </div>
                 </div>
-                <div style="margin-bottom: 12px; background: rgba(0,0,0,0.02); border: 1px solid var(--panel-border); border-radius: 6px; padding: 10px 12px;">
-                    <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; cursor: pointer;">
+                <div style="margin-bottom: 12px; background: rgba(0,0,0,0.03); border: 1px solid var(--panel-border); border-radius: 8px; padding: 12px;">
+                    <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; cursor: pointer; margin: 0;">
                         <input type="checkbox" id="check-bulk-apply-clusters" checked style="width: 16px; height: 16px;" />
                         <span>Áp dụng cho cả Cụm 5 và toàn bộ 7 Vùng</span>
                     </label>
                 </div>
-                <div style="margin-bottom: 12px; background: rgba(99, 102, 241, 0.05); border: 1px dashed var(--color-primary); border-radius: 6px; padding: 10px 12px;">
-                    <label style="display: flex; align-items: flex-start; gap: 8px; font-size: 13px; cursor: pointer;">
+                <div style="margin-bottom: 20px; background: rgba(99, 102, 241, 0.05); border: 1px dashed var(--color-primary); border-radius: 8px; padding: 12px;">
+                    <label style="display: flex; align-items: flex-start; gap: 8px; font-size: 13px; cursor: pointer; margin: 0;">
                         <input type="checkbox" id="check-bulk-auto-duplicate" style="width: 16px; height: 16px; margin-top: 2px;" />
                         <span>
                             <strong>Tự động nhân bản Tab mới trên Google Sheet</strong>
@@ -1424,7 +1425,7 @@
                     </label>
                 </div>
             </div>
-            <div class="modal-footer" style="padding: 12px 20px; display: flex; justify-content: flex-end; gap: 10px;">
+            <div class="modal-actions" style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 10px;">
                 <button type="button" class="btn btn-secondary-outline" onclick="closeModal('modal-bulk-month-tab')">Hủy</button>
                 <button type="button" id="btn-confirm-bulk-month-tab" class="btn btn-primary" onclick="submitBulkMonthTab()">
                     <i class="fa-solid fa-check"></i> Xác Nhận Chuyển Tab
@@ -1437,19 +1438,19 @@
     <div id="toast-container" style="position: fixed; bottom: 24px; right: 24px; z-index: 999999; display: flex; flex-direction: column; gap: 10px; pointer-events: none;"></div>
 
     <!-- Modular Application JS Scripts -->
-    <script src="js/utils.js?v=2.3.0"></script>
-    <script src="js/theme.js?v=2.3.0"></script>
-    <script src="js/auth.js?v=2.3.0"></script>
-    <script src="js/router.js?v=2.3.0"></script>
-    <script src="js/regions.js?v=2.3.0"></script>
-    <script src="js/users.js?v=2.3.0"></script>
-    <script src="js/members.js?v=2.3.0"></script>
-    <script src="js/audit.js?v=2.3.0"></script>
-    <script src="js/region_workspace.js?v=2.3.3"></script>
-    <script src="js/cluster_workspace.js?v=2.3.0"></script>
-    <script src="js/settings.js?v=2.3.4"></script>
-    <script src="js/dashboard.js?v=2.3.0"></script>
-    <script src="main.js?v=2.3.1"></script>
+    <script src="js/utils.js?v=2.3.5"></script>
+    <script src="js/theme.js?v=2.3.5"></script>
+    <script src="js/auth.js?v=2.3.5"></script>
+    <script src="js/router.js?v=2.3.5"></script>
+    <script src="js/regions.js?v=2.3.5"></script>
+    <script src="js/users.js?v=2.3.5"></script>
+    <script src="js/members.js?v=2.3.5"></script>
+    <script src="js/audit.js?v=2.3.5"></script>
+    <script src="js/region_workspace.js?v=2.3.5"></script>
+    <script src="js/cluster_workspace.js?v=2.3.5"></script>
+    <script src="js/settings.js?v=2.3.5"></script>
+    <script src="js/dashboard.js?v=2.3.5"></script>
+    <script src="main.js?v=2.3.5"></script>
     <!-- Live Reload / Hot Swap Script cho Development -->
     <script>
         (function() {
