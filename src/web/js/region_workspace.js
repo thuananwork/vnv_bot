@@ -680,6 +680,11 @@ async function loadRegionReportPreview() {
     } catch (err) {}
 }
 
+// ==========================================
+// QUẢN LÝ TAB TRANG TÍNH (SHEET CON)
+// ==========================================
+let cachedRegionSheetTabs = [];
+
 async function loadRegionSheetTabs(regionId, currentSavedTab) {
     const select = document.getElementById('rw-sheet-tab');
     if (!select) return;
@@ -695,42 +700,205 @@ async function loadRegionSheetTabs(regionId, currentSavedTab) {
             ? data.tabs
             : [];
 
-        // Gom các tab gợi ý nếu chưa có
-        const candidateTabs = [activeTab, autoTab, 'T10/26', 'T11/26', 'T9/26'];
-        const allTabs = Array.from(new Set([...sheetTabs, ...candidateTabs].filter(Boolean)));
+        cachedRegionSheetTabs = sheetTabs;
+
+        // Phân loại: Các Tab Tháng làm việc (T{tháng}/{năm}) và Các Tab khác
+        const monthTabs = sheetTabs.filter(t => t.match(/^T\d+\/\d+$/i));
+        const otherTabs = sheetTabs.filter(t => !t.match(/^T\d+\/\d+$/i));
+
+        // Đảm bảo activeTab và autoTab có trong danh sách hiển thị
+        const allMonthTabs = Array.from(new Set([activeTab, autoTab, ...monthTabs].filter(t => t && t.match(/^T\d+\/\d+$/i))));
 
         let html = '';
-        allTabs.forEach(t => {
-            html += `<option value="${escapeHtml(t)}">${escapeHtml(t)}</option>`;
-        });
-        html += `<option value="__custom__">➕ Nhập tab khác...</option>`;
+        if (allMonthTabs.length > 0) {
+            html += `<optgroup label="── Tab Tháng Làm Việc ──">`;
+            allMonthTabs.forEach(t => {
+                html += `<option value="${escapeHtml(t)}" ${t === activeTab ? 'selected' : ''}>${escapeHtml(t)}</option>`;
+            });
+            html += `</optgroup>`;
+        }
+
+        if (otherTabs.length > 0) {
+            html += `<optgroup label="── Tab khác trong Sheet ──">`;
+            otherTabs.forEach(t => {
+                html += `<option value="${escapeHtml(t)}" ${t === activeTab ? 'selected' : ''}>${escapeHtml(t)}</option>`;
+            });
+            html += `</optgroup>`;
+        }
+
+        if (!html) {
+            html = `<option value="${escapeHtml(activeTab)}" selected>${escapeHtml(activeTab)}</option>`;
+        }
 
         select.innerHTML = html;
         select.value = activeTab;
     } catch (e) {
         console.warn('Không thể tải danh sách tab sheet:', e);
         select.innerHTML = `
-            <option value="${escapeHtml(activeTab)}">${escapeHtml(activeTab)}</option>
-            <option value="T10/26">T10/26</option>
+            <option value="${escapeHtml(activeTab)}" selected>${escapeHtml(activeTab)}</option>
             <option value="T11/26">T11/26</option>
-            <option value="__custom__">➕ Nhập tab khác...</option>
+            <option value="T10/26">T10/26</option>
+            <option value="T9/26">T9/26</option>
         `;
         select.value = activeTab;
     }
 }
 
+// Mở Hộp Thoại Hệ Thống để Chọn Tab Sheet Con
+async function openSelectSheetTabModal() {
+    const regionId = getActiveRegionId();
+    const region = window.currentRegionData;
+    const currentTab = region?.sheet_name || document.getElementById('rw-sheet-tab')?.value || 'T10/26';
+
+    const regNameEl = document.getElementById('modal-tab-region-name');
+    const badgeEl = document.getElementById('modal-tab-current-badge');
+    const selectEl = document.getElementById('select-modal-sheet-tab');
+
+    if (regNameEl) regNameEl.innerText = region?.region_name || ('VÙNG ' + regionId);
+    if (badgeEl) badgeEl.innerText = `Tab hiện tại: ${currentTab}`;
+
+    if (selectEl) {
+        selectEl.innerHTML = '<option value="">Đang tải danh sách Tab từ Google Sheet...</option>';
+    }
+
+    openModal('modal-select-sheet-tab');
+    await reloadModalSheetTabs(currentTab);
+}
+
+// Tải / Làm mới danh sách Tab Sheet con từ Google Sheet
+async function reloadModalSheetTabs(forceSelectedTab = null) {
+    const regionId = getActiveRegionId();
+    const selectEl = document.getElementById('select-modal-sheet-tab');
+    const refreshIcon = document.getElementById('icon-refresh-tabs');
+    const currentTab = forceSelectedTab || window.currentRegionData?.sheet_name || document.getElementById('rw-sheet-tab')?.value || 'T10/26';
+
+    if (refreshIcon) refreshIcon.classList.add('fa-spin');
+
+    try {
+        const res = await fetch(`/api/v2/regions/${regionId}/sheet-tabs`);
+        const data = await res.json();
+        const tabs = (data.success && Array.isArray(data.tabs) && data.tabs.length > 0)
+            ? data.tabs
+            : [];
+
+        cachedRegionSheetTabs = tabs;
+
+        // Phân loại: Các Tab Tháng vs Các Tab Khác
+        const monthTabs = tabs.filter(t => t.match(/^T\d+\/\d+$/i));
+        const otherTabs = tabs.filter(t => !t.match(/^T\d+\/\d+$/i));
+
+        // Đảm bảo tab hiện tại có trong danh sách
+        if (currentTab && !tabs.includes(currentTab)) {
+            if (currentTab.match(/^T\d+\/\d+$/i)) {
+                monthTabs.unshift(currentTab);
+            } else {
+                otherTabs.unshift(currentTab);
+            }
+        }
+
+        let html = '';
+        if (monthTabs.length > 0) {
+            html += `<optgroup label="── Các Tab Tháng Làm Việc (Khuyên dùng) ──">`;
+            monthTabs.forEach(t => {
+                html += `<option value="${escapeHtml(t)}" ${t === currentTab ? 'selected' : ''}>${escapeHtml(t)}${t === currentTab ? ' (Đang dùng)' : ''}</option>`;
+            });
+            html += `</optgroup>`;
+        }
+
+        if (otherTabs.length > 0) {
+            html += `<optgroup label="── Tất cả các Sheet con khác trong Trang Tính ──">`;
+            otherTabs.forEach(t => {
+                html += `<option value="${escapeHtml(t)}" ${t === currentTab ? 'selected' : ''}>${escapeHtml(t)}${t === currentTab ? ' (Đang dùng)' : ''}</option>`;
+            });
+            html += `</optgroup>`;
+        }
+
+        if (!html) {
+            html = `<option value="${escapeHtml(currentTab)}" selected>${escapeHtml(currentTab)}</option>`;
+        }
+
+        if (selectEl) {
+            selectEl.innerHTML = html;
+            selectEl.value = currentTab;
+        }
+
+        // Đồng thời cập nhật luôn select trên thanh công cụ
+        const toolbarSelect = document.getElementById('rw-sheet-tab');
+        if (toolbarSelect && toolbarSelect.innerHTML !== html) {
+            toolbarSelect.innerHTML = html;
+            toolbarSelect.value = currentTab;
+        }
+    } catch (err) {
+        console.error('Lỗi nạp tab sheet con:', err);
+        if (selectEl) {
+            selectEl.innerHTML = `
+                <option value="${escapeHtml(currentTab)}" selected>${escapeHtml(currentTab)} (Hiện tại)</option>
+                <option value="T11/26">T11/26</option>
+                <option value="T10/26">T10/26</option>
+                <option value="T9/26">T9/26</option>
+            `;
+            selectEl.value = currentTab;
+        }
+    } finally {
+        if (refreshIcon) refreshIcon.classList.remove('fa-spin');
+    }
+}
+
+// Xác nhận đổi Tab Sheet con từ Modal
+async function confirmSelectSheetTab() {
+    const selectEl = document.getElementById('select-modal-sheet-tab');
+    const newTab = selectEl ? selectEl.value : '';
+    if (!newTab) {
+        alert('Vui lòng chọn một Tab Trang tính!');
+        return;
+    }
+
+    const regionId = getActiveRegionId();
+    const btn = document.getElementById('btn-confirm-select-tab');
+    const originalText = btn ? btn.innerHTML : '';
+    if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang lưu...';
+    }
+
+    try {
+        const res = await fetch(`/api/v2/regions/${regionId}/settings`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ sheet_name: newTab })
+        });
+        const data = await res.json();
+        if (data.success) {
+            if (window.currentRegionData) {
+                window.currentRegionData.sheet_name = newTab;
+            }
+            const tbSelect = document.getElementById('rw-sheet-tab');
+            if (tbSelect) tbSelect.value = newTab;
+
+            closeModal('modal-select-sheet-tab');
+            if (typeof window.showToast === 'function') {
+                window.showToast(`✅ Đã chuyển sang Tab Sheet: "${newTab}"`, 'success');
+            } else {
+                alert(`Đã chuyển thành công sang Tab Sheet con: "${newTab}"!`);
+            }
+        } else {
+            alert('Lỗi khi lưu tab: ' + (data.error || 'Thất bại'));
+        }
+    } catch (err) {
+        alert('Lỗi kết nối: ' + err.message);
+    } finally {
+        if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = originalText;
+        }
+    }
+}
+
+// Lưu khi đổi trực tiếp từ select trên Toolbar
 async function saveRegionSettings() {
     const regionId = getActiveRegionId();
     const sheetTabEl = document.getElementById('rw-sheet-tab');
     const sheet_name = sheetTabEl?.value || 'T10/26';
-    if (sheet_name === '__custom__') return;
-
-    const btn = document.getElementById('btn-rw-save-settings');
-    const originalText = btn ? btn.innerHTML : '';
-    if (btn) {
-        btn.disabled = true;
-        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
-    }
 
     try {
         const res = await fetch(`/api/v2/regions/${regionId}/settings`, {
@@ -753,11 +921,6 @@ async function saveRegionSettings() {
         }
     } catch (err) {
         alert('Lỗi kết nối: ' + err.message);
-    } finally {
-        if (btn) {
-            btn.disabled = false;
-            btn.innerHTML = originalText;
-        }
     }
 }
 
@@ -1056,7 +1219,7 @@ function initRegionWorkspace() {
                     const year2 = parts[0].slice(-2);
                     const autoTab = `T${month}/${year2}`;
                     const sheetTabEl = document.getElementById('rw-sheet-tab');
-                    if (sheetTabEl && (!sheetTabEl.dataset.custom || sheetTabEl.dataset.custom === 'false')) {
+                    if (!window.currentRegionData?.sheet_name && sheetTabEl) {
                         sheetTabEl.value = autoTab;
                     }
                 }
@@ -1076,29 +1239,7 @@ function initRegionWorkspace() {
 
     const rwSheetTab = document.getElementById('rw-sheet-tab');
     if (rwSheetTab) {
-        let previousTabVal = rwSheetTab.value;
-        rwSheetTab.addEventListener('focus', () => {
-            previousTabVal = rwSheetTab.value;
-        });
         rwSheetTab.addEventListener('change', async () => {
-            const selected = rwSheetTab.value;
-            if (selected === '__custom__') {
-                const customTab = prompt('Nhập tên Tab Google Sheet mới (Ví dụ: T11/26):');
-                if (customTab && customTab.trim()) {
-                    const cleanCustom = customTab.trim();
-                    const newOpt = document.createElement('option');
-                    newOpt.value = cleanCustom;
-                    newOpt.textContent = cleanCustom;
-                    rwSheetTab.insertBefore(newOpt, rwSheetTab.lastElementChild);
-                    rwSheetTab.value = cleanCustom;
-                    previousTabVal = cleanCustom;
-                    await saveRegionSettings();
-                } else {
-                    rwSheetTab.value = previousTabVal;
-                }
-                return;
-            }
-            previousTabVal = selected;
             await saveRegionSettings();
         });
     }
@@ -1315,3 +1456,6 @@ window.loadRegionReportPreview = loadRegionReportPreview;
 window.saveRegionSettings = saveRegionSettings;
 window.runRegionReport = runRegionReport;
 window.triggerOpenZaloLogin = triggerOpenZaloLogin;
+window.openSelectSheetTabModal = openSelectSheetTabModal;
+window.reloadModalSheetTabs = reloadModalSheetTabs;
+window.confirmSelectSheetTab = confirmSelectSheetTab;

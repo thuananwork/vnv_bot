@@ -209,10 +209,10 @@
                         <select id="rw-work-date" class="form-control input-compact" style="width: 220px !important; min-width: 220px !important;" title="Chọn ngày báo cáo (7 ngày gần nhất)">
                         </select>
                         <div style="display: inline-flex; align-items: center; gap: 4px;" title="Chọn Tab Trang tính Google Sheet">
-                            <select id="rw-sheet-tab" class="form-control input-compact" style="min-width: 95px !important; width: auto !important; max-width: 125px; text-align: center; font-weight: 700; font-size: 13px; color: var(--color-primary); cursor: pointer; padding: 0 6px;" title="Chọn Tab Trang Tính Google Sheet">
+                            <select id="rw-sheet-tab" class="form-control input-compact" style="min-width: 95px !important; width: auto !important; max-width: 125px; text-align: center; font-weight: 700; font-size: 13px; color: var(--color-primary); cursor: pointer; padding: 0 6px;" title="Chọn nhanh Tab Trang Tính Google Sheet">
                                 <option value="T10/26">T10/26</option>
                             </select>
-                            <button id="btn-rw-save-settings" class="btn btn-secondary-outline btn-compact" style="padding: 0 8px; font-size: 13px;" title="Lưu cấu hình Tab Sheet"><i class="fa-solid fa-floppy-disk"></i></button>
+                            <button type="button" id="btn-rw-open-tab-modal" class="btn btn-secondary-outline btn-compact" onclick="openSelectSheetTabModal()" style="padding: 0 8px; font-size: 13px;" title="Mở hộp thoại chọn Tab Sheet con"><i class="fa-solid fa-table-cells"></i></button>
                         </div>
                         <a id="link-rw-open-sheet" href="#" target="_blank" class="btn btn-secondary-outline btn-compact rw-open-sheet-btn" style="padding: 0 8px; text-decoration: none; display: none;" title="Mở trực tiếp Google Sheet của Vùng">
                             <i class="fa-solid fa-arrow-up-right-from-square"></i> Mở Sheet
@@ -1300,6 +1300,54 @@
         </div>
     </div>
 
+    <!-- Modal Chọn Tab Trang Tính Google Sheet (Trưởng Vùng / Cụm / Admin) -->
+    <div id="modal-select-sheet-tab" class="modal-overlay">
+        <div class="modal-content glass-card" style="max-width: 500px; text-align: left; padding: 24px 28px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; border-bottom: 1px solid var(--panel-border); padding-bottom: 12px;">
+                <h3 style="margin: 0; font-size: 1.15rem; display: flex; align-items: center; gap: 8px;">
+                    <i class="fa-solid fa-file-excel" style="color: #10b981;"></i> Chọn Tab Trang Tính (Sheet Con)
+                </h3>
+                <button type="button" class="btn-icon" onclick="closeModal('modal-select-sheet-tab')" style="background: none; border: none; font-size: 1.2rem; cursor: pointer; color: var(--text-muted);">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div style="background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: 8px; padding: 12px 14px; margin-bottom: 16px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                    <strong id="modal-tab-region-name" style="color: #065f46; font-size: 14px;">VÙNG 31</strong>
+                    <span id="modal-tab-current-badge" class="badge badge-info" style="font-size: 12px;">Tab hiện tại: T10/26</span>
+                </div>
+                <div style="font-size: 12px; color: #047857; line-height: 1.4;">
+                    Dữ liệu quét bài và điểm danh của Vùng sẽ được ghi trực tiếp vào Tab con được chọn dưới đây.
+                </div>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 16px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                    <label class="form-label" for="select-modal-sheet-tab" style="font-weight: 600; margin: 0;">
+                        Chọn Sheet con có sẵn trên Google Sheet <span style="color: red;">*</span>
+                    </label>
+                    <a href="javascript:void(0)" onclick="reloadModalSheetTabs()" style="font-size: 12px; color: var(--color-primary); text-decoration: none; display: inline-flex; align-items: center; gap: 4px;" title="Tải lại danh sách từ Google Sheet">
+                        <i class="fa-solid fa-arrows-rotate" id="icon-refresh-tabs"></i> Làm mới
+                    </a>
+                </div>
+                <select id="select-modal-sheet-tab" class="form-control" style="font-size: 14.5px; font-weight: 700; color: var(--color-primary); padding: 8px 12px; height: 42px;">
+                    <option value="">Đang tải danh sách Tab từ Google Sheet...</option>
+                </select>
+                <div style="font-size: 11.5px; color: var(--text-muted); margin-top: 5px;">
+                    Danh sách được nạp trực tiếp 100% từ Google Trang Tính của Vùng.
+                </div>
+            </div>
+
+            <div class="modal-actions" style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
+                <button type="button" class="btn btn-secondary-outline" onclick="closeModal('modal-select-sheet-tab')">Hủy</button>
+                <button type="button" class="btn btn-primary" id="btn-confirm-select-tab" onclick="confirmSelectSheetTab()">
+                    <i class="fa-solid fa-check"></i> Xác Nhận Đổi Tab
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Modal Thêm Màu Trạng Thái Tùy Chỉnh Theo Tài Khoản -->
     <div id="modal-custom-status" class="modal-overlay">
         <div class="modal-content glass-card" style="max-width: 440px; text-align: left; padding: 24px;">
@@ -1448,7 +1496,7 @@
     <script src="js/users.js?v=2.3.5"></script>
     <script src="js/members.js?v=2.3.5"></script>
     <script src="js/audit.js?v=2.3.5"></script>
-    <script src="js/region_workspace.js?v=2.3.6"></script>
+    <script src="js/region_workspace.js?v=2.3.7"></script>
     <script src="js/cluster_workspace.js?v=2.3.5"></script>
     <script src="js/settings.js?v=2.3.5"></script>
     <script src="js/dashboard.js?v=2.3.5"></script>

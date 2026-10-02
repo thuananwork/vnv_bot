@@ -92,7 +92,9 @@ router.get('/regions/:id/sheet-tabs', async (req, res) => {
             success: true,
             hasSheet: true,
             tabs,
-            currentTab
+            currentTab,
+            regionName: region.region_name,
+            sheetUrl: region.sheet_url || (region.sheet_id ? `https://docs.google.com/spreadsheets/d/${region.sheet_id}/edit` : null)
         });
     } catch (err) {
         res.status(500).json({ success: false, error: err.message });
