@@ -261,6 +261,21 @@ async function start() {
             console.log(`✔ Startup Checks: SQLite=${checkStatus.sqlite}, Queue=${checkStatus.queue}, ZaloWeb=${checkStatus.zalo}, Google=${checkStatus.google}, Worker=${checkStatus.worker}`);
             console.log(`✔ Safe Mode: ${process.env.SAFE_MODE === 'true' ? 'ON' : 'OFF'}`);
         }
+
+        // 7. Tự động mở trình duyệt web giao diện đăng nhập
+        if (process.env.NODE_ENV !== 'test' && !process.env.HEADLESS_MODE) {
+            const loginUrl = `http://localhost:${PORT}/#login`;
+            setTimeout(() => {
+                const { exec } = require('child_process');
+                if (process.platform === 'win32') {
+                    exec(`start "" "${loginUrl}"`);
+                } else if (process.platform === 'darwin') {
+                    exec(`open "${loginUrl}"`);
+                } else {
+                    exec(`xdg-open "${loginUrl}"`);
+                }
+            }, 800);
+        }
     } catch (err) {
         console.error('Không thể khởi động ứng dụng:', err);
         process.exit(1);

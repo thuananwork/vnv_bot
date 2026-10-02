@@ -125,6 +125,17 @@ namespace VNVBotLauncher
             Console.WriteLine("Mẹo: Đóng tab trình duyệt web thì Bot sẽ tự động tắt hoàn toàn (không chạy ngầm).");
             Console.ResetColor();
 
+            // Tự động mở trình duyệt web mặc định
+            ThreadPool.QueueUserWorkItem(_ => {
+                Thread.Sleep(2000);
+                try {
+                    Process.Start(new ProcessStartInfo {
+                        FileName = "http://localhost:3000/#login",
+                        UseShellExecute = true
+                    });
+                } catch { }
+            });
+
             if (nodeProcess != null)
             {
                 nodeProcess.WaitForExit();
