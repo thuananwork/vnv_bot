@@ -8,6 +8,7 @@
 
 const https = require('https');
 
+const GIST_API_URL = 'https://api.github.com/gists/69a2366dadcf5cebb980acd2509f8c72';
 const GIST_LICENSE_URL = 'https://gist.githubusercontent.com/thuananwork/69a2366dadcf5cebb980acd2509f8c72/raw/vnv_bot_license.json';
 
 // Trạng thái cache trong bộ nhớ (mặc định hợp lệ khi khởi động)
@@ -21,62 +22,73 @@ let mockStatus = null;
 
 const CACHE_TTL_MS = 30 * 1000; // Cache 30 giây để tránh spam request
 
+function fetchFromUrl(url, headers = {}) {
+    return new Promise((resolve, reject) => {
+        const req = https.get(url, { headers, timeout: 4000 }, (res) => {
+            let data = '';
+            res.on('data', chunk => data += chunk);
+            res.on('end', () => resolve({ statusCode: res.statusCode, body: data }));
+        });
+        req.on('timeout', () => { req.destroy(); reject(new Error('timeout')); });
+        req.on('error', (err) => reject(err));
+    });
+}
+
 /**
  * Tải và kiểm tra trạng thái giấy phép từ Gist
  * @param {boolean} force - Bắt buộc kiểm tra trực tiếp bỏ qua cache
  * @returns {Promise<{allowed: boolean, message: string}>}
  */
-function fetchRemoteLicense(force = false) {
+async function fetchRemoteLicense(force = false) {
     if (mockStatus !== null) {
-        return Promise.resolve(mockStatus);
+        return mockStatus;
     }
 
     const now = Date.now();
     if (!force && cachedStatus.checkedAt > 0 && (now - cachedStatus.checkedAt < CACHE_TTL_MS)) {
-        return Promise.resolve(cachedStatus);
+        return cachedStatus;
     }
 
-    return new Promise((resolve) => {
-        const url = `${GIST_LICENSE_URL}?_t=${now}`;
-        const req = https.get(url, { timeout: 4000 }, (res) => {
-            if (res.statusCode !== 200) {
-                // Nếu Gist trả lỗi HTTP nhưng trước đó đang active thì giữ nguyên
-                cachedStatus.checkedAt = now;
-                return resolve(cachedStatus);
-            }
+    try {
+        let jsonData = null;
 
-            let rawData = '';
-            res.on('data', chunk => rawData += chunk);
-            res.on('end', () => {
-                try {
-                    const data = JSON.parse(rawData);
-                    const isActive = data.active !== false; // chỉ khóa khi tường minh active === false
-                    const msg = data.message || (isActive ? 'Hệ thống đang hoạt động bình thường.' : 'Phiên bản VNV-Bot này đã bị Quản trị viên tạm dừng từ xa.');
-                    
-                    cachedStatus = {
-                        checkedAt: now,
-                        allowed: isActive,
-                        message: msg
-                    };
-                    resolve(cachedStatus);
-                } catch (pErr) {
-                    cachedStatus.checkedAt = now;
-                    resolve(cachedStatus);
+        // Ưu tiên 1: GitHub Gist API (Phản hồi tức thì, không bị trễ cache CDN của GitHub)
+        try {
+            const apiRes = await fetchFromUrl(GIST_API_URL, { 'User-Agent': 'VNV-Bot' });
+            if (apiRes.statusCode === 200) {
+                const gistObj = JSON.parse(apiRes.body);
+                if (gistObj.files && gistObj.files['vnv_bot_license.json']) {
+                    jsonData = JSON.parse(gistObj.files['vnv_bot_license.json'].content);
                 }
-            });
-        });
+            }
+        } catch (apiErr) {
+            // Fallback tiếp tục bên dưới
+        }
 
-        req.on('timeout', () => {
-            req.destroy();
-            cachedStatus.checkedAt = now;
-            resolve(cachedStatus);
-        });
+        // Ưu tiên 2 (Fallback): Raw Gist URL nếu API bị giới hạn rate limit
+        if (!jsonData) {
+            const rawRes = await fetchFromUrl(`${GIST_LICENSE_URL}?_t=${now}`);
+            if (rawRes.statusCode === 200) {
+                jsonData = JSON.parse(rawRes.body);
+            }
+        }
 
-        req.on('error', () => {
+        if (jsonData) {
+            const isActive = jsonData.active !== false; // Chỉ khóa khi tường minh active === false
+            const msg = jsonData.message || (isActive ? 'Hệ thống đang hoạt động bình thường.' : 'Phiên bản này đã bị tạm dừng bởi Admin. Vui lòng liên hệ Admin!');
+            cachedStatus = {
+                checkedAt: now,
+                allowed: isActive,
+                message: msg
+            };
+        } else {
             cachedStatus.checkedAt = now;
-            resolve(cachedStatus);
-        });
-    });
+        }
+    } catch (err) {
+        cachedStatus.checkedAt = now;
+    }
+
+    return cachedStatus;
 }
 
 /**

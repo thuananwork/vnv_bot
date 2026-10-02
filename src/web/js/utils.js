@@ -377,7 +377,7 @@ function showRemoteLockdownModal(message) {
         document.body.appendChild(overlay);
     }
 
-    const safeMsg = escapeHtml(message || 'Phiên bản VNV-Bot này đã bị Quản trị viên tạm dừng từ xa.');
+    const safeMsg = escapeHtml(message || 'Phiên bản này đã bị tạm dừng bởi Admin. Vui lòng liên hệ Admin!');
     overlay.innerHTML = `
         <div style="background: #1e293b; border: 1px solid #ef4444; border-radius: 16px; max-width: 520px; width: 100%; padding: 36px 28px; text-align: center; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);">
             <div style="width: 72px; height: 72px; border-radius: 50%; background: rgba(239, 68, 68, 0.15); color: #ef4444; display: flex; align-items: center; justify-content: center; font-size: 36px; margin: 0 auto 20px;">
@@ -388,7 +388,7 @@ function showRemoteLockdownModal(message) {
                 <strong>Thông báo từ Quản trị viên:</strong><br>
                 ${safeMsg}
             </div>
-            <p style="color: #94a3b8; font-size: 13px; margin: 0;">Vui lòng liên hệ Quản trị viên (Nguyễn Thuận An) để được cấp quyền mở lại hệ thống.</p>
+            <p style="color: #94a3b8; font-size: 13px; margin: 0;">Vui lòng liên hệ Admin để được cấp quyền mở lại hệ thống.</p>
         </div>
     `;
     overlay.style.display = 'flex';
