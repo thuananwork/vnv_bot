@@ -685,13 +685,18 @@ async function loadRegionReportPreview() {
 // ==========================================
 let cachedRegionSheetTabs = [];
 
-async function loadRegionSheetTabs(regionId, currentSavedTab) {
-    const select = document.getElementById('rw-sheet-tab');
-    if (!select) return;
+function updateToolbarSheetTabDisplay(activeTab) {
+    const input = document.getElementById('rw-sheet-tab');
+    if (input) input.value = activeTab;
+    const display = document.getElementById('rw-sheet-tab-display');
+    if (display) display.innerText = activeTab;
+}
 
+async function loadRegionSheetTabs(regionId, currentSavedTab) {
     const workDate = getRegionWorkDate();
     const autoTab = getDynamicMonthTab(workDate);
     const activeTab = currentSavedTab || autoTab || 'T10/26';
+    updateToolbarSheetTabDisplay(activeTab);
 
     try {
         const res = await fetch(`/api/v2/regions/${regionId}/sheet-tabs`);
@@ -872,8 +877,7 @@ async function confirmSelectSheetTab() {
             if (window.currentRegionData) {
                 window.currentRegionData.sheet_name = newTab;
             }
-            const tbSelect = document.getElementById('rw-sheet-tab');
-            if (tbSelect) tbSelect.value = newTab;
+            updateToolbarSheetTabDisplay(newTab);
 
             closeModal('modal-select-sheet-tab');
             if (typeof window.showToast === 'function') {

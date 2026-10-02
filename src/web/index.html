@@ -208,12 +208,12 @@
                         </select>
                         <select id="rw-work-date" class="form-control input-compact" style="width: 175px !important; min-width: 175px !important;" title="Chọn ngày báo cáo (7 ngày gần nhất)">
                         </select>
-                        <div style="display: inline-flex; align-items: center; gap: 3px;" title="Chọn Tab Trang tính Google Sheet">
-                            <select id="rw-sheet-tab" class="form-control input-compact" style="min-width: 86px !important; width: 86px !important; text-align: center; font-weight: 700; font-size: 13px; color: var(--color-primary); cursor: pointer; padding: 0 4px;" title="Chọn nhanh Tab Trang Tính Google Sheet">
-                                <option value="T10/26">T10/26</option>
-                            </select>
-                            <button type="button" id="btn-rw-open-tab-modal" class="btn btn-secondary-outline btn-compact" onclick="openSelectSheetTabModal()" style="padding: 0 7px; font-size: 12.5px;" title="Mở hộp thoại chọn Tab Sheet con"><i class="fa-solid fa-table-cells"></i></button>
-                        </div>
+                        <input type="hidden" id="rw-sheet-tab" value="T10/26">
+                        <button type="button" id="btn-rw-open-tab-modal" class="btn btn-secondary-outline btn-compact" onclick="openSelectSheetTabModal()" style="display: inline-flex; align-items: center; gap: 6px; padding: 0 10px; font-weight: 700; font-size: 13px; color: var(--color-primary); height: 34px;" title="Bấm để chọn Tab Trang tính (Sheet con)">
+                            <i class="fa-solid fa-file-excel" style="color: #10b981;"></i>
+                            <span id="rw-sheet-tab-display">T10/26</span>
+                            <i class="fa-solid fa-chevron-down" style="font-size: 10px; opacity: 0.6;"></i>
+                        </button>
                         <a id="link-rw-open-sheet" href="#" target="_blank" class="btn btn-secondary-outline btn-compact rw-open-sheet-btn" style="padding: 0 8px; text-decoration: none; display: none;" title="Mở trực tiếp Google Sheet của Vùng">
                             <i class="fa-solid fa-arrow-up-right-from-square"></i> Mở Sheet
                         </a>
@@ -1496,7 +1496,7 @@
     <script src="js/users.js?v=2.3.5"></script>
     <script src="js/members.js?v=2.3.5"></script>
     <script src="js/audit.js?v=2.3.5"></script>
-    <script src="js/region_workspace.js?v=2.3.7"></script>
+    <script src="js/region_workspace.js?v=2.3.8"></script>
     <script src="js/cluster_workspace.js?v=2.3.5"></script>
     <script src="js/settings.js?v=2.3.5"></script>
     <script src="js/dashboard.js?v=2.3.5"></script>
