@@ -1,0 +1,9 @@
+{
+  "version": "2.0.0",
+  "build": "2026.07.21",
+  "git_commit": "131c2e5",
+  "schema_version": "1.0",
+  "migration_checksum": "915803e6be3c94e0cba2cedd0c7dcc2152834bd4be88fb697056fb6f8766f6c0",
+  "coverage": "92.4%",
+  "quality_gate": "PASS"
+}

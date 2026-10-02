@@ -1,0 +1,50 @@
+===============================================================
+       HƯỚNG DẪN SỬ DỤNG NHANH VNV BOT V2 (BẢN DESKTOP)
+===============================================================
+
+1. CÁCH KHỞI ĐỘNG (CHỈ CẦN 1 CLICK):
+   - Double-click vào file "VNV-Bot.exe" (hoặc "VNV-Bot.bat").
+   - Nếu máy chưa có Node.js runtime, Bot sẽ TỰ ĐỘNG TẢI về trong vài giây.
+   - Trình duyệt web sẽ tự động mở tại địa chỉ: http://localhost:3000
+
+2. DANH SÁCH TÀI KHOẢN ĐĂNG NHẬP:
+
+   👑 TÀI KHOẢN ADMIN:
+      + Tên đăng nhập: admin
+      + Mật khẩu     : admin
+
+   🏢 TÀI KHOẢN TRƯỞNG CỤM 5:
+      + Tên đăng nhập: cum5
+      + Mật khẩu     : cum5
+
+   📍 TÀI KHOẢN TRƯỞNG VÙNG (VÙNG 25 -> 31):
+      + Vùng 25: truongvung25  /  truongvung25 (Nguyễn Ngọc Bảo Trâm)
+      + Vùng 26: truongvung26  /  truongvung26 (Trưởng Vùng 26)
+      + Vùng 27: truongvung27  /  truongvung27 (Phạm Quang Đại)
+      + Vùng 28: truongvung28  /  truongvung28 (Trưởng Vùng 28)
+      + Vùng 29: truongvung29  /  truongvung29 (Trưởng Vùng 29)
+      + Vùng 30: truongvung30  /  truongvung30 (Lê Thị Thanh Phương)
+      + Vùng 31: truongvung31  /  truongvung31 (Trưởng Vùng 31)
+
+3. QUY TRÌNH HÀNG NGÀY CHO TRƯỞNG VÙNG:
+   - Bước 1: Vào "Không Gian Vùng" (hoặc "Thành viên Vùng").
+     + (Khuyên dùng lần đầu): Bấm nút "[🔍 Quét & Map tên Zalo]" để bot tự động nhận diện tài khoản Zalo của từng thành viên trong nhóm chat.
+   - Bước 2: Bấm nút xanh "[⚡ Quét Bài & Báo Cáo]" -> Chọn Đồng ý.
+     + Bot sẽ tự động mở Zalo, tìm nhóm Vùng, quét tin nhắn bài nộp xuôi dòng và nộp bù.
+     + Nếu cần dừng khẩn cấp: Chỉ cần nhấp vào nút đỏ "[🛑 Dừng quét]" đang hiển thị.
+     + Bot tự động điền 'Oke' lên Google Sheet và soạn sẵn Báo cáo nháp vào ô chat Zalo.
+   - Bước 3: Xem lại nội dung nháp trong ô chat Zalo và bấm Gửi (Enter).
+
+4. TÙY CHỈNH MÀU SẮC & VĂN BẢN TRÊN GOOGLE SHEET (MỤC CÀI ĐẶT):
+   - Vào menu "Cài đặt" (http://localhost:3000/#settings).
+   - "Cài đặt văn bản trạng thái": Tùy chỉnh chữ khi hoàn thành (mặc định 'Oke').
+   - "Màu sắc trạng thái (80 màu Google Sheet)":
+     + Có công tắc "Bật/Tắt tô màu Google Sheets". Nếu TẮT, bot chỉ điền chữ 'Oke' mà không tô màu nền ô. Nếu BẬT, bot sẽ tô màu nền theo đúng 80 mã màu bạn chọn.
+     + Hai mục này tự động đồng bộ 1-1 thời gian thực với nhau.
+
+5. SỨ GIẢ XIN NGHỈ / QUÂN SỰ / HOÃN:
+   - Chỉ cần ghi chú trực tiếp lên Google Sheet tại hàng của bạn đó (ví dụ: "học quân sự xin hoãn đến 23/08/2026", "ôn thi", "viện").
+   - Bot tự động nhận diện và đưa vào mục lý do trong Báo cáo.
+
+6. CÁCH TẮT BOT (KHÔNG CHẠY NGẦM):
+   - Đơn giản chỉ cần ĐÓNG CỬA SỔ DÒNG LỆNH ĐEN (hoặc nhấn Ctrl + C).

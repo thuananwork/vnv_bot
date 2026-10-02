@@ -1,13 +1,34 @@
 {
-  "name": "vnv-bot-poc",
-  "version": "1.0.0",
-  "description": "Zalo Web Connector Proof of Concept",
-  "main": "poc_zalo.js",
+  "name": "vnv-bot-v2",
+  "version": "2.0.0",
+  "description": "VNV Bot V2 - Hệ thống tự động hóa quản lý bài nộp qua Zalo Web & Google Sheets",
+  "main": "src/index.js",
   "scripts": {
-    "start": "node poc_zalo.js",
-    "debug": "node poc_zalo_debug.js"
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js",
+    "test": "node src/tests/actions_v2_e2e.test.js",
+    "test:v2": "node src/tests/system_design_v2.test.js",
+    "test:browser": "node src/tests/browser_full_features.test.js",
+    "login:zalo": "node scripts/open_zalo_login.js",
+    "test:all": "node src/tests/quality_gate.js",
+    "build": "node scripts/build_desktop.js"
   },
   "dependencies": {
-    "puppeteer-core": "^22.0.0"
+    "bcryptjs": "^2.4.3",
+    "connect-sqlite3": "^0.9.13",
+    "cookie-parser": "^1.4.6",
+    "cron-parser": "^5.6.1",
+    "express": "^4.21.0",
+    "express-session": "^1.18.0",
+    "google-auth-library": "^9.14.0",
+    "googleapis": "^173.0.0",
+    "helmet": "^7.1.0",
+    "node-cron": "^4.5.0",
+    "puppeteer-core": "^22.0.0",
+    "sqlite3": "^6.0.1"
+  },
+  "overrides": {
+    "tar": "^7.5.20",
+    "@tootallnate/once": "^2.0.1"
   }
 }

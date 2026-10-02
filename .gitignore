@@ -1,0 +1,14 @@
+node_modules
+dist/
+config/.env
+config/credentials.json
+logs/
+backups/
+zalo_session/
+data/*.db
+data/*.db-journal
+data/*.db-wal
+data/*.db-shm
+bin/
+*.exe
+*.zip

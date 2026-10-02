@@ -4,12 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VNV-BOT V2 - Hệ Thống Điều Hành & Phân Phối</title>
-    <!-- Outfit Google Font -->
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Google Fonts (Be Vietnam Pro & Inter cho tiếng Việt chuẩn 100%) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Main Style Sheet -->
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=2.3.4">
 </head>
 <body>
     <!-- Background Gradients -->
@@ -18,19 +20,30 @@
 
     <!-- 1. MÀN HÌNH ĐĂNG NHẬP (LOGIN SCREEN) -->
     <div id="login-container" class="glass-card login-card active">
+        <!-- Theme Toggle on Login Screen -->
+        <button id="btn-login-theme-toggle" class="btn btn-secondary-outline btn-sm login-theme-toggle" title="Đổi giao diện">
+            <i class="fa-solid fa-moon"></i>
+        </button>
         <div class="login-header">
             <div class="logo-icon"><i class="fa-solid fa-robot"></i></div>
             <h2>VNV-BOT V2</h2>
             <p>Hệ thống Giám sát & Quản lý Phân phối Tin tức</p>
         </div>
+        
+        <!-- Form Đăng Nhập Nội Bộ (Admin) -->
         <form id="login-form">
             <div class="form-group">
                 <label for="username"><i class="fa-solid fa-user"></i> Tên đăng nhập</label>
-                <input type="text" id="username" placeholder="Nhập username..." required autocomplete="username">
+                <input type="text" id="username" placeholder="Nhập username..." autocomplete="username">
             </div>
             <div class="form-group">
                 <label for="password"><i class="fa-solid fa-lock"></i> Mật khẩu</label>
-                <input type="password" id="password" placeholder="Nhập mật khẩu..." required autocomplete="current-password">
+                <div class="password-input-wrapper">
+                    <input type="password" id="password" placeholder="Nhập mật khẩu..." autocomplete="current-password">
+                    <button type="button" id="btn-toggle-password" class="toggle-password-btn" title="Hiện/Ẩn mật khẩu">
+                        <i class="fa-solid fa-eye"></i>
+                    </button>
+                </div>
             </div>
             <div id="login-error" class="alert alert-danger hide"></div>
             <button type="submit" class="btn btn-primary btn-block">Đăng Nhập <i class="fa-solid fa-arrow-right-to-bracket"></i></button>
@@ -51,33 +64,49 @@
                     <span class="user-role badge" id="profile-role">...</span>
                 </div>
             </div>
+
+            <!-- Thanh Chuyển Đổi Quyền Theo Phân Cấp (RBAC) -->
+            <div id="role-switcher-container" style="display: none; margin: 0 12px 10px 12px; padding: 8px 10px; background: rgba(99, 102, 241, 0.08); border: 1px solid rgba(99, 102, 241, 0.2); border-radius: 8px;">
+                <div id="role-switcher-content">
+                    <!-- Được render động theo quyền của currentUser -->
+                </div>
+            </div>
             
             <nav class="nav-menu">
-                <a href="#" class="nav-item active" data-target="panel-dashboard">
-                    <i class="fa-solid fa-chart-pie"></i> Tổng quan
+                <a href="#" class="nav-item cluster-admin active" data-target="panel-dashboard">
+                    <i class="fa-solid fa-chart-pie"></i> Tổng Quan
                 </a>
-                <a href="#" class="nav-item" data-target="panel-submissions">
-                    <i class="fa-solid fa-circle-check"></i> Kết quả nộp bài
+                <a href="#" class="nav-item" data-target="panel-region-workspace">
+                    <i class="fa-solid fa-map-location-dot"></i> Điều Hành Vùng
                 </a>
-                <a href="#" class="nav-item" data-target="panel-reports">
-                    <i class="fa-solid fa-file-invoice"></i> Báo cáo ngày
+                <a href="#" class="nav-item cluster-admin" data-target="panel-cluster-workspace">
+                    <i class="fa-solid fa-layer-group"></i> Điều Hành Cụm 5
                 </a>
-                <!-- Chỉ hiển thị cho Admin -->
-                <a href="#" class="nav-item admin-only" data-target="panel-clusters">
-                    <i class="fa-solid fa-folder-tree"></i> Quản lý Cụm
+                <a href="#" class="nav-item" data-target="panel-members">
+                    <i class="fa-solid fa-user-group"></i> Quản lý Sứ giả
                 </a>
-                <a href="#" class="nav-item admin-only" data-target="panel-regions">
-                    <i class="fa-solid fa-map-location-dot"></i> Quản lý Vùng
+                <a href="#" class="nav-item" data-target="panel-settings">
+                    <i class="fa-solid fa-sliders"></i> Cài Đặt Trạng Thái
                 </a>
-                <a href="#" class="nav-item admin-only" data-target="panel-users">
+                <a href="#" class="nav-item" data-target="panel-help">
+                    <i class="fa-solid fa-book-open"></i> Hướng Dẫn Sử Dụng
+                </a>
+                <!-- Hiển thị cho Trưởng Cụm & Admin -->
+                <a href="#" class="nav-item cluster-admin" data-target="panel-regions">
+                    <i class="fa-solid fa-map-location-dot"></i> Cấu hình Vùng
+                </a>
+                <a href="#" class="nav-item cluster-admin" data-target="panel-users">
                     <i class="fa-solid fa-users-gear"></i> Tài khoản quản trị
                 </a>
-                <a href="#" class="nav-item admin-only" data-target="panel-audit">
-                    <i class="fa-solid fa-clock-rotate-left"></i> Nhật ký thao tác
+                <a href="#" class="nav-item cluster-admin" data-target="panel-audit">
+                    <i class="fa-solid fa-clock-rotate-left"></i> Nhật ký & Hệ thống
                 </a>
             </nav>
 
             <div class="sidebar-footer">
+                <button id="btn-theme-toggle" class="btn btn-secondary-outline btn-block" style="margin-bottom: 10px;">
+                    <i class="fa-solid fa-moon"></i> Giao diện tối
+                </button>
                 <button id="btn-logout" class="btn btn-danger-outline btn-block">
                     <i class="fa-solid fa-power-off"></i> Đăng xuất
                 </button>
@@ -87,163 +116,463 @@
         <!-- Main Content Area -->
         <main class="main-content">
             
-            <!-- PANEL: DASHBOARD (TỔNG QUAN) -->
+            <!-- PANEL: DASHBOARD (TỔNG QUAN HỆ THỐNG) -->
             <section id="panel-dashboard" class="content-panel active">
-                <div class="panel-header">
-                    <h1>Bảng Điều Khiển Tổng Quan</h1>
-                    <p>Giám sát thời gian thực số liệu nộp bài & phân chia địa phương</p>
-                </div>
-
-                <!-- Thống kê nhanh (Summary Cards) -->
-                <div class="metrics-grid">
-                    <div class="metric-card glass-card">
-                        <div class="card-icon blue"><i class="fa-solid fa-folder-tree"></i></div>
-                        <div class="card-data">
-                            <span class="value" id="stat-clusters">0</span>
-                            <span class="label">Tổng số Cụm</span>
-                        </div>
+                <div class="workspace-header">
+                    <div class="workspace-title-box">
+                        <h1><i class="fa-solid fa-chart-pie" style="color: var(--color-primary);"></i> Tổng Quan Điều Hành</h1>
+                        <p>Theo dõi tiến độ hoàn thành nhiệm vụ và điều hành quét bài tự động toàn Cụm 5</p>
                     </div>
-                    <div class="metric-card glass-card">
-                        <div class="card-icon green"><i class="fa-solid fa-map-location-dot"></i></div>
-                        <div class="card-data">
-                            <span class="value" id="stat-regions">0</span>
-                            <span class="label">Tổng số Vùng</span>
-                        </div>
-                    </div>
-                    <div class="metric-card glass-card">
-                        <div class="card-icon purple"><i class="fa-solid fa-users"></i></div>
-                        <div class="card-data">
-                            <span class="value" id="stat-members">0</span>
-                            <span class="label">Tổng số Sứ giả</span>
-                        </div>
-                    </div>
-                    <div class="metric-card glass-card">
-                        <div class="card-icon amber"><i class="fa-solid fa-clipboard-question"></i></div>
-                        <div class="card-data">
-                            <span class="value" id="stat-tasks">0</span>
-                            <span class="label">Nhiệm vụ phát hiện</span>
-                        </div>
-                    </div>
-                    <div class="metric-card glass-card">
-                        <div class="card-icon rose"><i class="fa-solid fa-circle-check"></i></div>
-                        <div class="card-data">
-                            <span class="value" id="stat-submissions">0</span>
-                            <span class="label">Bài nộp hôm nay</span>
-                        </div>
+                    <div class="workspace-toolbar">
+                        <select id="dash-work-date" class="form-control input-compact" style="width: 200px !important; font-weight: 600;" title="Chọn ngày xem thống kê (7 ngày gần nhất)">
+                        </select>
+                        <button id="btn-dash-scan-zalo" class="btn btn-primary btn-compact btn-pulse" title="Bấm để quét tin nhắn Zalo ngay lập tức">
+                            <i class="fa-solid fa-rocket"></i> Quét Zalo ngay
+                        </button>
+                        <span id="dash-last-scan-time" style="font-size: 11.5px; color: var(--text-muted);">Chưa quét lần nào</span>
                     </div>
                 </div>
 
-                <!-- Giao diện giám sát tin nhắn Zalo mô phỏng / Hướng dẫn -->
-                <div class="layout-grid">
-                    <div class="glass-card welcome-card">
-                        <h3><i class="fa-solid fa-sparkles text-gradient-primary"></i> VNV-Bot V2 Local Agent</h3>
-                        <p>Hệ thống tự động lắng nghe tin nhắn Zalo, tổng hợp báo cáo và liên kết Google Sheet. SQLite lưu trữ dữ liệu chính thức.</p>
-                        <hr class="divider">
-                        <div class="quick-status">
-                            <div class="status-item">
-                                <span class="indicator active"></span>
-                                <span>Database SQLite: <strong>Hoạt động</strong></span>
+                <!-- 4 Thẻ Thống Kê (Stat Cards) -->
+                <div class="stats-grid">
+                    <div class="stat-card stat-blue">
+                        <div class="stat-icon"><i class="fa-solid fa-users"></i></div>
+                        <div class="stat-details">
+                            <span class="stat-label">Tổng sứ giả</span>
+                            <span class="stat-value" id="stat-total-members">0</span>
+                        </div>
+                    </div>
+                    <div class="stat-card stat-green">
+                        <div class="stat-icon"><i class="fa-solid fa-circle-check"></i></div>
+                        <div class="stat-details">
+                            <span class="stat-label">Hoàn thành</span>
+                            <span class="stat-value" id="stat-completed">0</span>
+                            <span class="stat-change" id="stat-completed-change">0% hôm nay</span>
+                        </div>
+                    </div>
+                    <div class="stat-card stat-red">
+                        <div class="stat-icon"><i class="fa-solid fa-circle-xmark"></i></div>
+                        <div class="stat-details">
+                            <span class="stat-label">Chưa hoàn thành</span>
+                            <span class="stat-value" id="stat-incomplete">0</span>
+                        </div>
+                    </div>
+                    <div class="stat-card stat-purple">
+                        <div class="stat-icon"><i class="fa-solid fa-chart-line"></i></div>
+                        <div class="stat-details">
+                            <span class="stat-label">Tỉ lệ hoàn thành</span>
+                            <span class="stat-value" id="stat-rate">0%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bảng Tổng Quan Các Vùng -->
+                <div class="glass-card" style="padding: 0; overflow: hidden; margin-bottom: 16px;">
+                    <div style="padding: 10px 16px; border-bottom: 1px solid var(--panel-border); display: flex; justify-content: space-between; align-items: center;">
+                        <h2 class="section-title" style="margin: 0; font-size: 13.5px;"><i class="fa-solid fa-table-list"></i> Tiến Độ Từng Vùng Cụm 5</h2>
+                    </div>
+                    <div class="table-container" style="margin-bottom: 0;">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Vùng</th>
+                                    <th>Hoàn thành</th>
+                                    <th>Tiến độ</th>
+                                    <th>Trạng thái</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-dashboard-regions-body">
+                                <tr><td colspan="4" style="text-align: center; padding: 20px;">Đang tải dữ liệu...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- PANEL: REGION WORKSPACE (ĐIỀU HÀNH VÙNG) -->
+            <section id="panel-region-workspace" class="content-panel">
+                <!-- Workspace Header & Unified Toolbar -->
+                <div class="workspace-header">
+                    <div class="workspace-title-box">
+                        <h1 id="rw-page-title"><i class="fa-solid fa-map-location-dot" style="color: #60a5fa;"></i> VÙNG 28</h1>
+                    </div>
+                    <div class="workspace-toolbar">
+                        <select id="rw-region-select" class="form-control input-compact" style="width: 100px !important;" title="Chọn Vùng">
+                            <option value="25">VÙNG 25</option>
+                            <option value="26">VÙNG 26</option>
+                            <option value="27">VÙNG 27</option>
+                            <option value="28">VÙNG 28</option>
+                            <option value="29">VÙNG 29</option>
+                            <option value="30">VÙNG 30</option>
+                            <option value="31">VÙNG 31</option>
+                        </select>
+                        <select id="rw-work-date" class="form-control input-compact" style="width: 220px !important; min-width: 220px !important;" title="Chọn ngày báo cáo (7 ngày gần nhất)">
+                        </select>
+                        <div style="display: inline-flex; align-items: center; gap: 3px;">
+                            <input type="text" id="rw-sheet-tab" class="form-control input-compact" style="width: 58px !important; text-align: center;" value="T9/26" placeholder="Tab Sheet" title="Tên Tab Trang tính Google Sheets">
+                            <button id="btn-rw-save-settings" class="btn btn-secondary-outline btn-compact" style="padding: 0 7px;" title="Lưu cấu hình Tab Sheet"><i class="fa-solid fa-floppy-disk"></i></button>
+                        </div>
+                        <a id="link-rw-open-sheet" href="#" target="_blank" class="btn btn-secondary-outline btn-compact rw-open-sheet-btn" style="padding: 0 8px; text-decoration: none; display: none;" title="Mở trực tiếp Google Sheet của Vùng">
+                            <i class="fa-solid fa-arrow-up-right-from-square"></i> Mở Sheet
+                        </a>
+                        <button type="button" id="btn-rw-sync-sheet-top" class="btn btn-secondary-outline btn-compact" style="padding: 0 8px;" onclick="handleSyncMembersFromSheet()" title="Đồng bộ danh sách Sứ giả từ Google Sheet">
+                            <i class="fa-solid fa-arrows-rotate"></i> Đồng bộ Sheet
+                        </button>
+                        <button id="btn-open-zalo-login" class="btn btn-secondary-outline btn-compact" style="padding: 0 8px;" title="Đăng Nhập / Đổi Tài Khoản Zalo">
+                            <i class="fa-solid fa-qrcode"></i> Zalo
+                        </button>
+                        <label class="toggle-switch-compact" title="Bật: Mở hiện cửa sổ Zalo trên màn hình để xem thao tác quét | Tắt: Chạy ngầm Zalo thu nhỏ không che màn hình">
+                            <input type="checkbox" id="rw-toggle-show-browser">
+                            <span class="toggle-slider-compact"></span>
+                            <span class="toggle-label-text"><i class="fa-solid fa-desktop"></i> Hiện Zalo</span>
+                        </label>
+                        <button id="btn-rw-run-report" class="btn btn-cta-region-compact" onclick="runRegionReport()" title="Bấm để quét bài tin nhắn, ghi Sheet và xuất Báo Cáo Vùng">
+                            <i class="fa-solid fa-bolt"></i> Quét báo cáo
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Compact Sub-bar: Metric Chips + Inline Micro Color Palette -->
+                <div class="workspace-subbar">
+                    <div class="metric-chips-group">
+                        <span class="metric-chip" id="rw-members-summary"><i class="fa-solid fa-users"></i> Đang tải...</span>
+                        <span class="metric-chip badge-ok" id="rw-stat-completed-chip"><i class="fa-solid fa-check"></i> Hoàn thành: 0</span>
+                        <span class="metric-chip badge-none" id="rw-stat-incomplete-chip"><i class="fa-solid fa-clock"></i> Chưa nộp: 0</span>
+                    </div>
+                    <div class="micro-color-strip" id="rw-micro-color-strip" title="Click vào từng màu để đổi màu ô tương ứng trên Google Sheets (tự động lưu)">
+                        <span style="font-size: 11px; font-weight: 600; color: var(--text-muted); display: inline-flex; align-items: center; gap: 4px; white-space: nowrap;"><i class="fa-solid fa-palette"></i> Màu:</span>
+                        <div id="rw-palette-chips-container" style="display: inline-flex; align-items: center; gap: 5px; flex-wrap: nowrap;"></div>
+                    </div>
+                </div>
+
+                <!-- Banner cảnh báo chưa ghi Sheet / chờ đồng bộ bù (nếu có) -->
+                <div id="rw-sheet-sync-alert" class="glass-card" style="display: none; padding: 10px 16px; margin-bottom: 12px; border-left: 4px solid #f59e0b; background: rgba(245, 158, 11, 0.08); align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <i class="fa-solid fa-triangle-exclamation" style="color: #f59e0b; font-size: 16px;"></i>
+                        <div>
+                            <strong style="color: var(--text-primary); font-size: 12.5px;" id="rw-sheet-sync-alert-title">Dữ liệu ngày này chưa được ghi vào Google Sheet</strong>
+                            <p style="margin: 1px 0 0 0; font-size: 11.5px; color: var(--text-secondary);" id="rw-sheet-sync-alert-desc">Báo cáo đã lưu trên bot nhưng Google Sheet chưa có tab hoặc chưa đồng bộ.</p>
+                        </div>
+                    </div>
+                    <button type="button" id="btn-rw-retry-sheet-sync" class="btn btn-primary btn-sm" style="background: #f59e0b; border-color: #f59e0b; font-weight: 600; padding: 4px 10px; font-size: 11.5px;">
+                        <i class="fa-solid fa-arrows-rotate"></i> Ghi bù lên Google Sheet
+                    </button>
+                </div>
+
+                <!-- Split Workspace (55% Table - 45% Report Preview) -->
+                <div class="split-workspace-grid">
+                    <!-- Pane Left: Nhân sự Vùng -->
+                    <div class="workspace-card-pane">
+                        <!-- Hàng 1: Cụm nút thao tác (Thứ tự: Mở Sheet -> Đồng bộ Sheet -> Excel -> Lưu -> Mapping tên Zalo) -->
+                        <div class="pane-header" style="display: flex; justify-content: flex-start; align-items: center; gap: 6px; margin-bottom: 8px; flex-wrap: wrap;">
+                            <a id="link-rw-open-sheet-header" href="#" target="_blank" class="btn btn-secondary-outline btn-sm rw-open-sheet-btn" style="padding: 3px 8px; font-size: 11.5px; text-decoration: none; display: none; white-space: nowrap;" title="Mở trực tiếp Google Sheet của Vùng">
+                                <i class="fa-solid fa-arrow-up-right-from-square"></i> Mở Sheet
+                            </a>
+                            <button type="button" id="btn-rw-sync-sheet" class="btn btn-secondary-outline btn-sm" style="padding: 3px 8px; font-size: 11.5px; white-space: nowrap;" title="Đồng bộ danh sách Sứ giả từ Google Sheet">
+                                <i class="fa-solid fa-arrows-rotate"></i> Đồng bộ Sheet
+                            </button>
+                            <button type="button" id="btn-rw-open-excel-modal" class="btn btn-secondary-outline btn-sm" style="padding: 3px 8px; font-size: 11.5px; white-space: nowrap;" title="Nhập danh sách ánh xạ tên từ Excel">
+                                <i class="fa-solid fa-file-excel"></i> Excel
+                            </button>
+                            <button type="button" id="btn-rw-save-mappings" class="btn btn-primary btn-sm" style="padding: 3px 8px; font-size: 11.5px; white-space: nowrap;" title="Lưu danh sách ánh xạ tên Zalo">
+                                <i class="fa-solid fa-floppy-disk"></i> Lưu
+                            </button>
+                            <button type="button" id="btn-rw-auto-guess-zalo" class="btn btn-secondary-outline btn-sm" style="padding: 3px 8px; font-size: 11.5px; white-space: nowrap;" title="Bot tự động vào Zalo quét nhóm và mapping tên Zalo cho từng Sứ giả">
+                                <i class="fa-solid fa-wand-magic-sparkles"></i> Mapping tên Zalo
+                            </button>
+                        </div>
+
+                        <!-- Hàng 2: Thanh lọc trạng thái -->
+                        <div class="pane-subbar" style="display: flex; align-items: center; gap: 6px; padding: 5px 8px; margin-bottom: 8px; background: rgba(99, 102, 241, 0.04); border: 1px solid var(--panel-border); border-radius: 6px;">
+                            <span style="font-size: 11px; font-weight: 600; color: var(--text-muted); margin-right: 2px;">Lọc trạng thái:</span>
+                            <div class="filter-pills-row" style="display: flex; align-items: center; gap: 4px; flex-wrap: nowrap;">
+                                <button type="button" class="filter-pill rw-filter-pill active" data-filter="all" style="padding: 2px 10px; font-size: 11px; white-space: nowrap;">Tất cả</button>
+                                <button type="button" class="filter-pill rw-filter-pill" data-filter="done" style="padding: 2px 10px; font-size: 11px; white-space: nowrap;">✅ Xong</button>
+                                <button type="button" class="filter-pill rw-filter-pill" data-filter="not" style="padding: 2px 10px; font-size: 11px; white-space: nowrap;">⏳ Chưa</button>
                             </div>
-                            <div class="status-item">
-                                <span class="indicator active"></span>
-                                <span>Google Sheet API: <strong>Sẵn sàng (Local Mock)</strong></span>
-                            </div>
+                        </div>
+                        <div class="pane-body">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 45px;">STT</th>
+                                        <th>Họ Tên / Zalo Mapping</th>
+                                        <th style="width: 130px; min-width: 130px; text-align: center;">Vai trò</th>
+                                        <th style="width: 85px;">Trạng thái</th>
+                                        <th>Ghi chú</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="rw-members-table-body">
+                                    <tr><td colspan="5" style="text-align: center; padding: 20px;">Đang tải danh sách...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Pane Right: Báo Cáo Vùng Mẫu 1 -->
+                    <div class="workspace-card-pane">
+                        <div class="pane-header">
+                            <h3 class="pane-title"><i class="fa-solid fa-file-lines" style="color: #10b981; opacity: 0.85;"></i> Báo Cáo Vùng (Mẫu 1)</h3>
+                            <button id="btn-rw-copy-report" class="btn btn-secondary-outline btn-sm" style="padding: 4px 10px; font-size: 11.5px;">
+                                <i class="fa-regular fa-copy"></i> Sao chép
+                            </button>
+                        </div>
+                        <div class="pane-body" style="display: flex; flex-direction: column;">
+                            <textarea id="rw-report-preview-text" class="preview-textarea" style="flex: 1; width: 100%; height: 100%; min-height: 0; resize: none;" readonly placeholder="Bấm 'Quét Bài & Xuất Báo Cáo' hoặc chọn ngày để xem trước nội dung..."></textarea>
                         </div>
                     </div>
                 </div>
             </section>
 
-            <!-- PANEL: KẾT QUẢ NỘP BÀI -->
-            <section id="panel-submissions" class="content-panel">
-                <div class="panel-header">
-                    <h1>Kết Quả Nộp Bài</h1>
-                    <p>Lịch sử gửi DONE / Ảnh của các Sứ giả</p>
+            <!-- PANEL: CLUSTER WORKSPACE (ĐIỀU HÀNH CỤM 5) -->
+            <section id="panel-cluster-workspace" class="content-panel">
+                <!-- Workspace Header & Toolbar -->
+                <div class="workspace-header">
+                    <div class="workspace-title-box">
+                        <h1><i class="fa-solid fa-layer-group" style="color: var(--color-purple);"></i> Điều Hành Cụm 5</h1>
+                        <p>Trưởng Cụm 5 (Nguyễn Thuận An): Giám sát 7 Vùng & Bắn báo cáo lên BĐH toàn quốc</p>
+                    </div>
+                    <div class="workspace-toolbar">
+                        <select id="cw-work-date" class="form-control input-compact" style="width: 200px !important;" title="Chọn ngày báo cáo (7 ngày gần nhất)">
+                        </select>
+                        <a id="link-cw-open-sheet" href="#" target="_blank" class="btn btn-secondary-outline btn-compact" style="display: none; align-items: center; gap: 6px; text-decoration: none;" title="Mở Google Sheet Cụm 5">
+                            <i class="fa-solid fa-arrow-up-right-from-square" style="color: #10b981;"></i> Mở Sheet Cụm 5
+                        </a>
+                        <button id="btn-cw-auto-map-all" onclick="handleAutoGuessAllClusterMappings()" class="btn btn-secondary-outline btn-compact" title="Tự động quét và khớp nickname Zalo cho tất cả 7 Vùng Cụm 5">
+                            <i class="fa-solid fa-wand-magic-sparkles" style="color: #8b5cf6;"></i> Auto-map Zalo 7 Vùng
+                        </button>
+                        <button id="btn-cw-run-cluster-report" class="btn btn-cta-cluster-compact" title="Gom dữ liệu 7 Vùng, tạo Báo cáo Mẫu 2 và gửi BĐH toàn quốc (Tag @Phạm Minh Tú)">
+                            <i class="fa-solid fa-paper-plane"></i> Tổng Hợp & Bắn Báo Cáo Cụm 5
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 7-Region Progress Pills Strip -->
+                <div class="cluster-region-strip" id="cw-region-pills-strip">
+                    <!-- Loaded dynamically by JS -->
+                </div>
+
+                <!-- Split Workspace (45% 7-Region Matrix - 55% Cluster Report Preview) -->
+                <div class="split-cluster-grid">
+                    <!-- Pane Left: Ma trận 7 Vùng -->
+                    <div class="workspace-card-pane">
+                        <div class="pane-header">
+                            <h3 class="pane-title"><i class="fa-solid fa-table-cells" style="color: var(--color-purple);"></i> Tiến Độ 7 Vùng Cụm 5</h3>
+                            <span class="badge badge-role-leader" id="cw-total-cluster-stat">7 Vùng Active</span>
+                        </div>
+                        <div class="pane-body">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Vùng</th>
+                                        <th>Trưởng Vùng</th>
+                                        <th>Tiến độ</th>
+                                        <th>Tỉ lệ</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="cw-regions-table-body">
+                                    <tr><td colspan="4" style="text-align: center; padding: 20px;">Đang tải tiến độ...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Pane Right: Báo Cáo Cụm 5 Mẫu 2 -->
+                    <div class="workspace-card-pane">
+                        <div class="pane-header">
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <h3 class="pane-title"><i class="fa-solid fa-file-invoice" style="color: #8b5cf6; opacity: 0.85;"></i> Báo Cáo Cụm 5 (Mẫu 2)</h3>
+                                <span class="badge badge-late" style="font-size: 10.5px;">Tag @Phạm Minh Tú (22h15 - 22h30)</span>
+                            </div>
+                            <button id="btn-cw-copy-report" class="btn btn-secondary-outline btn-sm" style="padding: 4px 10px; font-size: 11.5px;">
+                                <i class="fa-regular fa-copy"></i> Sao chép
+                            </button>
+                        </div>
+                        <div class="pane-body" style="display: flex; flex-direction: column;">
+                            <textarea id="cw-report-preview-text" class="preview-textarea" style="flex: 1; width: 100%; height: 100%; min-height: 0; resize: none;" readonly placeholder="Bấm 'Tổng Hợp & Bắn Báo Cáo Cụm 5' để xuất báo cáo..."></textarea>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+
+            <!-- PANEL: QUẢN LÝ SỨ GIẢ -->
+            <section id="panel-members" class="content-panel">
+                <div class="workspace-header">
+                    <div class="workspace-title-box">
+                        <h1><i class="fa-solid fa-user-group" style="color: var(--color-primary);"></i> Quản Lý Sứ Giả</h1>
+                        <p>Danh sách Sứ giả phân phối theo 7 Vùng Cụm 5</p>
+                    </div>
+                    <div class="workspace-toolbar">
+                        <button class="btn btn-secondary-outline btn-compact" id="btn-members-sync-sheet" onclick="handleSyncAllMembersFromSheet()"><i class="fa-solid fa-arrows-rotate"></i> Đồng bộ từ Google Sheet</button>
+                        <button class="btn btn-primary btn-compact" onclick="showMemberModal()"><i class="fa-solid fa-user-plus"></i> Thêm Sứ giả mới</button>
+                    </div>
                 </div>
                 <div class="glass-card table-container">
                     <table class="data-table">
                         <thead>
                             <tr>
-                                <th>Thời gian</th>
-                                <th>Sứ giả</th>
+                                <th>Họ và Tên</th>
                                 <th>Tên Zalo</th>
-                                <th>Vùng</th>
-                                <th>Nhiệm vụ</th>
-                                <th>Thể loại</th>
-                                <th>Nội dung</th>
-                                <th>Trạng thái</th>
+                                <th>Zalo ID</th>
+                                <th>Thuộc Vùng</th>
+                                <th>Cụm</th>
+                                <th>Vai Trò</th>
+                                <th>Trạng Thái</th>
+                                <th>Thao Tác</th>
                             </tr>
                         </thead>
-                        <tbody id="table-submissions-body">
+                        <tbody id="table-members-body">
                             <!-- JS load rows -->
                         </tbody>
                     </table>
                 </div>
             </section>
 
-            <!-- PANEL: BÁO CÁO NGÀY -->
-            <section id="panel-reports" class="content-panel">
-                <div class="panel-header">
-                    <h1>Báo Cáo Ngày</h1>
-                    <p>Quản lý xuất báo cáo trực tiếp sang các Google Sheet riêng của từng Vùng</p>
-                </div>
-                <div class="glass-card table-container">
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th>Ngày tạo</th>
-                                <th>Nhiệm vụ</th>
-                                <th>Phạm vi báo cáo</th>
-                                <th>Tổng số SG</th>
-                                <th>Hoàn thành</th>
-                                <th>Chưa hoàn thành</th>
-                                <th>Đồng bộ Sheets</th>
-                                <th>Thao tác</th>
-                            </tr>
-                        </thead>
-                        <tbody id="table-reports-body">
-                            <!-- JS load rows -->
-                        </tbody>
-                    </table>
-                </div>
-            </section>
 
-            <!-- PANEL: QUẢN LÝ CỤM (ADMIN ONLY) -->
-            <section id="panel-clusters" class="content-panel">
-                <div class="panel-header flex-header">
-                    <div>
-                        <h1>Quản Lý Cụm</h1>
-                        <p>Danh sách các Cụm phân phối và Trưởng Cụm</p>
+            <!-- PANEL: SETTINGS & PALETTE (CÀI ĐẶT TRẠNG THÁI) -->
+            <section id="panel-settings" class="content-panel">
+                <div class="workspace-header">
+                    <div class="workspace-title-box">
+                        <h1><i class="fa-solid fa-sliders" style="color: var(--color-primary);"></i> Cài Đặt Trạng Thái</h1>
+                        <p>Tùy chỉnh tên trạng thái, ký hiệu văn bản ghi vào Google Sheet và màu sắc đánh dấu tự động</p>
                     </div>
-                    <button class="btn btn-primary" onclick="showClusterModal()"><i class="fa-solid fa-plus"></i> Thêm Cụm mới</button>
+                    <div class="workspace-toolbar">
+                        <button type="button" class="btn btn-primary btn-compact" id="btn-save-settings">
+                            <i class="fa-solid fa-floppy-disk"></i> Lưu cài đặt
+                        </button>
+                        <button type="button" class="btn btn-secondary-outline btn-compact" id="btn-reset-settings">
+                            <i class="fa-solid fa-rotate-left"></i> Khôi phục mặc định
+                        </button>
+                    </div>
                 </div>
-                <div class="glass-card table-container">
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Tên Cụm</th>
-                                <th>Trưởng Cụm</th>
-                                <th>Ngày khởi tạo</th>
-                                <th>Thao tác</th>
-                            </tr>
-                        </thead>
-                        <tbody id="table-clusters-body">
-                            <!-- JS load rows -->
-                        </tbody>
-                    </table>
+
+                <!-- Cài đặt Trạng Thái Google Sheets (Hợp nhất: Văn bản + Màu sắc) -->
+                <div class="glass-card settings-section" style="padding: 16px 18px; margin-bottom: 14px;">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; flex-wrap: wrap; gap: 10px;">
+                        <div>
+                            <h3 class="settings-section-title" style="margin-top: 0; margin-bottom: 4px; font-size: 13.5px;">
+                                <i class="fa-solid fa-pen-to-square"></i> Cài đặt Trạng Thái Google Sheets
+                            </h3>
+                            <p style="color: var(--text-muted); font-size: 12px; margin-bottom: 0;">
+                                Tùy chỉnh tên trạng thái, ký hiệu ghi vào ô Sheet và màu nền. Thêm hoặc xoá trạng thái tự do.
+                            </p>
+                        </div>
+                        <button type="button" class="btn btn-sm btn-primary" id="btn-add-custom-status">
+                            <i class="fa-solid fa-plus"></i> Thêm trạng thái mới
+                        </button>
+                    </div>
+
+                    <!-- Nút Bật/Tắt Tô Màu Ô Trên Google Sheets -->
+                    <div class="glass-card" style="display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; margin-bottom: 16px; background: rgba(99, 102, 241, 0.05); border: 1px solid rgba(99, 102, 241, 0.2); border-radius: var(--radius-md); flex-wrap: wrap; gap: 12px;">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <div style="width: 36px; height: 36px; border-radius: 8px; background: rgba(99, 102, 241, 0.15); display: flex; align-items: center; justify-content: center; color: var(--color-primary); font-size: 16px; flex-shrink: 0;">
+                                <i class="fa-solid fa-fill-drip"></i>
+                            </div>
+                            <div>
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <strong style="font-size: 13px; color: var(--text-primary);">Tô màu ô khi ghi dữ liệu lên Google Sheets</strong>
+                                    <span id="sheet-color-status-badge" class="badge badge-secondary" style="font-size: 11px;">Đang Tắt</span>
+                                </div>
+                                <p style="margin: 2px 0 0 0; font-size: 11.5px; color: var(--text-muted);">
+                                    <strong>Bật:</strong> Bot sẽ tô màu nền ô theo bảng màu bên dưới. <strong>Tắt (mặc định):</strong> Bot chỉ điền chữ (Ok, Xin làm muộn...) và không tô màu ô.
+                                </p>
+                            </div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <label class="toggle-switch-compact" title="Gạt sang để Bật/Tắt tô màu ô trên Google Sheet">
+                                <input type="checkbox" id="cfg-enable-sheet-colors">
+                                <span class="toggle-slider-compact"></span>
+                                <span class="toggle-label-text" id="toggle-color-label" style="font-weight: 600;">Chỉ điền chữ (Tắt màu)</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Danh sách tất cả trạng thái (thêm, xoá, đổi tên, đổi text, đổi màu tự do) -->
+                    <div id="custom-statuses-container" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; margin-top: 14px;"></div>
+                </div>
+
+                <!-- 3. Thông tin tài khoản -->
+                <div class="glass-card settings-section" style="padding: 16px 18px; margin-bottom: 16px;">
+                    <h3 class="settings-section-title" style="margin-top: 0; margin-bottom: 12px; font-size: 13.5px;">
+                        <i class="fa-solid fa-user-circle"></i> Thông tin tài khoản
+                    </h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1.5fr; gap: 14px; align-items: start;">
+                        <div>
+                            <div style="color: var(--text-muted); font-size: 12px; margin-bottom: 2px;">Gmail / Username</div>
+                            <div id="setting-user-email" style="font-weight: 600; font-size: 13px;">—</div>
+                        </div>
+                        <div>
+                            <div style="color: var(--text-muted); font-size: 12px; margin-bottom: 2px;">Vai trò</div>
+                            <div><span class="badge badge-info" id="setting-user-role">—</span></div>
+                        </div>
+                        <div>
+                            <div style="color: var(--text-muted); font-size: 12px; margin-bottom: 2px;">Vùng quản lý</div>
+                            <div id="setting-user-regions" style="font-weight: 600; font-size: 13px;">—</div>
+                        </div>
+                        <div>
+                            <div style="color: var(--text-muted); font-size: 12px; margin-bottom: 2px;">Google Sheet Vùng</div>
+                            <div id="setting-user-sheet" style="font-weight: 500; font-size: 12px; word-break: break-all;">—</div>
+                        </div>
+                    </div>
                 </div>
             </section>
 
             <!-- PANEL: QUẢN LÝ VÙNG (ADMIN ONLY) -->
             <section id="panel-regions" class="content-panel">
-                <div class="panel-header flex-header">
-                    <div>
-                        <h1>Quản Lý Vùng</h1>
-                        <p>Gán Vùng vào Cụm, gán Trưởng Vùng và tích hợp Google Sheet cho từng Region</p>
+                <div class="workspace-header">
+                    <div class="workspace-title-box">
+                        <h1><i class="fa-solid fa-map-location-dot" style="color: var(--color-primary);"></i> Quản Lý Vùng & Google Sheets</h1>
+                        <p>Quản lý liên kết Google Sheet cho Cụm 5 & 7 Vùng, gán Trưởng Vùng và tích hợp Zalo</p>
                     </div>
-                    <button class="btn btn-primary" onclick="showRegionModal()"><i class="fa-solid fa-plus"></i> Thêm Vùng mới</button>
+                    <div class="workspace-toolbar">
+                        <button class="btn btn-primary btn-compact" onclick="showRegionModal()"><i class="fa-solid fa-plus"></i> Thêm Vùng mới</button>
+                    </div>
                 </div>
+
+                <!-- 1. Quản Lý Liên Kết Google Sheet (Cụm 5 & 7 Vùng) -->
+                <div class="glass-card" style="padding: 16px 20px; margin-bottom: 20px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 10px;">
+                        <div>
+                            <h3 style="margin: 0; font-size: 15px; font-weight: 700; color: var(--text-primary); display: flex; align-items: center; gap: 8px;">
+                                <i class="fa-solid fa-file-excel" style="color: #10b981;"></i> Quản Lý Liên Kết Google Sheet (Cụm 5 & 7 Vùng)
+                            </h3>
+                            <p style="margin: 4px 0 0; font-size: 12px; color: var(--text-muted);">
+                                Admin cấu hình liên kết Google Sheet tại đây sẽ lập tức áp dụng toàn hệ thống và hiển thị trực tiếp cho Trưởng Cụm & Trưởng Vùng.
+                            </p>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <button type="button" class="btn btn-sm btn-primary" onclick="openBulkMonthTabModal()" style="display: inline-flex; align-items: center; gap: 6px;">
+                                <i class="fa-solid fa-bolt"></i> Chuyển Tab Tháng Đồng Loạt
+                            </button>
+                            <button type="button" class="btn btn-sm btn-secondary-outline" onclick="loadAdminSheetLinksTable()" title="Làm mới">
+                                <i class="fa-solid fa-arrows-rotate"></i> Làm mới
+                            </button>
+                        </div>
+                    </div>
+                    <div class="table-container" style="margin-bottom: 0;">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 140px;">Cấp Quản Lý</th>
+                                    <th>Liên kết Google Sheet (URL)</th>
+                                    <th style="width: 130px;">Tab Trang Tính</th>
+                                    <th style="width: 190px; text-align: center;">Thao Tác</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-admin-sheets-body">
+                                <tr><td colspan="4" style="text-align: center; padding: 14px;">Đang tải danh sách Google Sheets...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 2. Danh Sách 7 Vùng -->
                 <div class="glass-card table-container">
+                    <div style="padding: 12px 16px; border-bottom: 1px solid var(--panel-border);">
+                        <h4 style="margin: 0; font-size: 13.5px; font-weight: 700; color: var(--text-secondary);">
+                            <i class="fa-solid fa-list-check"></i> Cấu hình Chi Tiết 7 Vùng (Zalo Group & Trưởng Vùng)
+                        </h4>
+                    </div>
                     <table class="data-table">
                         <thead>
                             <tr>
@@ -265,23 +594,28 @@
 
             <!-- PANEL: TÀI KHOẢN (ADMIN ONLY) -->
             <section id="panel-users" class="content-panel">
-                <div class="panel-header flex-header">
-                    <div>
-                        <h1>Tài Khoản Quản Trị</h1>
+                <div class="workspace-header">
+                    <div class="workspace-title-box">
+                        <h1><i class="fa-solid fa-users-gear" style="color: var(--color-primary);"></i> Tài Khoản Quản Trị</h1>
                         <p>Quản lý tài khoản đăng nhập của Admin, Trưởng Cụm, Trưởng Vùng</p>
                     </div>
-                    <button class="btn btn-primary" onclick="showUserModal()"><i class="fa-solid fa-plus"></i> Thêm Tài khoản</button>
+                    <div class="workspace-toolbar">
+                        <button class="btn btn-primary btn-compact" onclick="showUserModal()"><i class="fa-solid fa-plus"></i> Thêm Tài khoản</button>
+                    </div>
                 </div>
                 <div class="glass-card table-container">
                     <table class="data-table">
                         <thead>
                             <tr>
-                                <th>Username</th>
+                                <th>Username / Email</th>
                                 <th>Họ Tên</th>
                                 <th>Zalo ID</th>
                                 <th>Vai trò</th>
+                                <th>Phương thức</th>
                                 <th>Trạng thái</th>
+                                <th>Đăng nhập lần đầu</th>
                                 <th>Đăng nhập cuối</th>
+                                <th>Lượt Login</th>
                                 <th>Thao tác</th>
                             </tr>
                         </thead>
@@ -292,11 +626,32 @@
                 </div>
             </section>
 
-            <!-- PANEL: AUDIT LOG (ADMIN ONLY) -->
+            <!-- PANEL: AUDIT LOG & SYSTEM (ADMIN ONLY) -->
             <section id="panel-audit" class="content-panel">
-                <div class="panel-header">
-                    <h1>Nhật Ký Thao Tác</h1>
-                    <p>Lịch sử cấu hình và thao tác quản lý của Admin để giám sát hệ thống</p>
+                <div class="workspace-header">
+                    <div class="workspace-title-box">
+                        <h1><i class="fa-solid fa-clock-rotate-left" style="color: var(--color-primary);"></i> Nhật Ký & Quản Trị Hệ Thống</h1>
+                        <p>Lịch sử thao tác của Admin, trạng thái cơ sở dữ liệu và sao lưu định kỳ</p>
+                    </div>
+                    <div class="workspace-toolbar">
+                        <a href="/api/system/backup" download class="btn btn-primary btn-compact" style="text-decoration:none;">
+                            <i class="fa-solid fa-database"></i> Sao lưu SQLite
+                        </a>
+                    </div>
+                </div>
+
+                <div class="glass-card" style="padding: 16px 20px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 15px;">
+                    <div class="quick-status" style="display: flex; gap: 20px; align-items: center; flex-wrap: wrap;">
+                        <div class="status-item" style="display: flex; align-items: center; gap: 8px;">
+                            <span class="indicator active" style="width: 10px; height: 10px; border-radius: 50%; background: #10b981; display: inline-block;"></span>
+                            <span>Database SQLite (WAL): <strong>Hoạt động</strong></span>
+                        </div>
+                        <div class="status-item" style="display: flex; align-items: center; gap: 8px;">
+                            <span class="indicator active" style="width: 10px; height: 10px; border-radius: 50%; background: #10b981; display: inline-block;"></span>
+                            <span>Google Sheets API: <strong>Sẵn sàng (Local/Safe Mode)</strong></span>
+                        </div>
+                    </div>
+                    <span style="color: var(--text-muted); font-size: 0.85rem;"><i class="fa-solid fa-shield-halved"></i> Bảo mật phiên & WAL mode tự động</span>
                 </div>
                 <div class="glass-card table-container">
                     <table class="data-table">
@@ -317,6 +672,303 @@
                 </div>
             </section>
 
+            <!-- PANEL: HƯỚNG DẪN SỬ DỤNG TRỰC TIẾP TRÊN WEB (HELP CENTER WITH SUB-MENU & REAL SCREENSHOTS) -->
+            <section id="panel-help" class="content-panel">
+                <div class="workspace-header">
+                    <div class="workspace-title-box">
+                        <h1><i class="fa-solid fa-book-open" style="color: var(--color-primary);"></i> Cẩm Nang Hướng Dẫn Sử Dụng VNV Bot</h1>
+                        <p>Hướng dẫn chi tiết từng tính năng kèm hình ảnh chụp thực tế từ hệ thống</p>
+                    </div>
+                </div>
+
+                <div class="guide-layout">
+                    <!-- SUB-MENU BÊN TRÁI -->
+                    <aside class="glass-card guide-sidebar">
+                        <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; padding: 4px 8px; letter-spacing: 0.5px;">
+                            <i class="fa-solid fa-list-ul"></i> Danh Mục Bài Viết
+                        </div>
+                        <div class="guide-menu-list">
+                            <div class="guide-menu-item active" data-article="guide-art-1" onclick="switchGuideArticle('guide-art-1')">
+                                <i class="fa-solid fa-circle-play" style="color: #3b82f6;"></i>
+                                <span>1. Khởi động & Mở Zalo</span>
+                            </div>
+                            <div class="guide-menu-item" data-article="guide-art-2" onclick="switchGuideArticle('guide-art-2')">
+                                <i class="fa-solid fa-wand-magic-sparkles" style="color: #10b981;"></i>
+                                <span>2. Khớp Tên Zalo (1-Click)</span>
+                            </div>
+                            <div class="guide-menu-item" data-article="guide-art-3" onclick="switchGuideArticle('guide-art-3')">
+                                <i class="fa-solid fa-bolt" style="color: #f59e0b;"></i>
+                                <span>3. Quét bài & Báo cáo</span>
+                            </div>
+                            <div class="guide-menu-item" data-article="guide-art-4" onclick="switchGuideArticle('guide-art-4')">
+                                <i class="fa-solid fa-palette" style="color: #8b5cf6;"></i>
+                                <span>4. Cài đặt màu & Sheet</span>
+                            </div>
+                            <div class="guide-menu-item" data-article="guide-art-5" onclick="switchGuideArticle('guide-art-5')">
+                                <i class="fa-solid fa-notes-medical" style="color: #ec4899;"></i>
+                                <span>5. Xin hoãn & Quân sự</span>
+                            </div>
+                            <div class="guide-menu-item" data-article="guide-art-6" onclick="switchGuideArticle('guide-art-6')">
+                                <i class="fa-solid fa-power-off" style="color: #ef4444;"></i>
+                                <span>6. Dừng quét & Tắt bot</span>
+                            </div>
+                        </div>
+                    </aside>
+
+                    <!-- KHU VỰC NỘI DUNG BÀI VIẾT BÊN PHẢI -->
+                    <div class="guide-content-area">
+
+                        <!-- BÀI 1: KHỞI ĐỘNG & MỞ ZALO -->
+                        <article id="guide-art-1" class="glass-card guide-article active" style="padding: 24px;">
+                            <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--panel-border); padding-bottom: 14px; margin-bottom: 18px;">
+                                <h2 style="margin: 0; font-size: 18px; color: #3b82f6; display: flex; align-items: center; gap: 10px;">
+                                    <i class="fa-solid fa-circle-play"></i> Bài 1: Khởi Động Bot & Mở Kết Nối Zalo Lần Đầu
+                                </h2>
+                                <span class="badge badge-info" style="font-size: 11.5px;">Chỉ làm 1 lần duy nhất</span>
+                            </div>
+
+                            <p style="font-size: 13.5px; line-height: 1.7; color: var(--text-secondary);">
+                                Khi bạn nhận được thư mục bot từ Trưởng Cụm hoặc Quản trị viên, bạn chỉ cần thực hiện 3 bước đơn giản sau để bắt đầu:
+                            </p>
+
+                            <h3 style="font-size: 14.5px; margin: 16px 0 8px 0; color: var(--text-primary);">
+                                Bước 1.1: Khởi động và Đăng nhập bằng tài khoản Vùng
+                            </h3>
+                            <ul style="padding-left: 20px; font-size: 13px; line-height: 1.8; color: var(--text-secondary);">
+                                <li>Nhấp đúp chuột vào file <strong><code>VNV-Bot.exe</code></strong> trong thư mục bot.</li>
+                                <li>Trình duyệt sẽ tự động mở lên trang đăng nhập <code>http://localhost:3000</code>.</li>
+                                <li>Nhập <strong>Tên đăng nhập</strong> và <strong>Mật khẩu</strong> của Vùng bạn quản lý (ví dụ: <code>truongvung28</code> / <code>truongvung28</code>).</li>
+                            </ul>
+
+                            <!-- ẢNH CHỤP THỰC TẾ: MÀN HÌNH ĐĂNG NHẬP -->
+                            <div class="guide-img-box">
+                                <img src="img/guide/guide_step1_login.png" alt="Màn hình đăng nhập VNV Bot" class="guide-img">
+                                <div class="guide-img-caption">
+                                    <i class="fa-solid fa-camera"></i> Hình 1: Màn hình đăng nhập VNV Bot trên trình duyệt web
+                                </div>
+                            </div>
+
+                            <h3 style="font-size: 14.5px; margin: 20px 0 8px 0; color: var(--text-primary);">
+                                Bước 1.2: Mở Zalo và quét mã QR kết nối
+                            </h3>
+                            <ul style="padding-left: 20px; font-size: 13px; line-height: 1.8; color: var(--text-secondary);">
+                                <li>Sau khi đăng nhập vào giao diện Vùng, nhìn lên <strong>thanh điều khiển phía trên</strong>, tìm nút <strong>[<i class="fa-solid fa-qrcode"></i> Zalo]</strong>.</li>
+                                <li>Bấm vào nút này, bot sẽ tự động mở một cửa sổ Google Chrome độc lập dành riêng cho Zalo.</li>
+                                <li>Bạn mở ứng dụng Zalo trên điện thoại, chọn <strong>Quét mã QR</strong> trên màn hình máy tính để đăng nhập.</li>
+                                <li><strong>Hoàn tất!</strong> Từ các lần sau trở đi, Zalo sẽ tự động lưu phiên làm việc trên máy tính của bạn, không cần quét mã lại.</li>
+                            </ul>
+
+                            <!-- ẢNH CHỤP THỰC TẾ: NÚT ZALO TRÊN THANH CÔNG CỤ -->
+                            <div class="guide-img-box">
+                                <img src="img/guide/guide_step3_toolbar.png" alt="Thanh điều khiển có nút Zalo" class="guide-img">
+                                <div class="guide-img-caption">
+                                    <i class="fa-solid fa-camera"></i> Hình 2: Vị trí nút [Zalo] và nút [Quét báo cáo] trên thanh điều hành Vùng
+                                </div>
+                            </div>
+                        </article>
+
+                        <!-- BÀI 2: KHỚP TÊN ZALO TỰ ĐỘNG -->
+                        <article id="guide-art-2" class="glass-card guide-article" style="padding: 24px;">
+                            <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--panel-border); padding-bottom: 14px; margin-bottom: 18px;">
+                                <h2 style="margin: 0; font-size: 18px; color: #10b981; display: flex; align-items: center; gap: 10px;">
+                                    <i class="fa-solid fa-wand-magic-sparkles"></i> Bài 2: Tự Động Khớp Tên Zalo (Mapping 1-Click)
+                                </h2>
+                                <span class="badge badge-success" style="font-size: 11.5px;">Tiện ích thông minh</span>
+                            </div>
+
+                            <p style="font-size: 13.5px; line-height: 1.7; color: var(--text-secondary);">
+                                <strong>Tại sao cần tính năng này?</strong><br>
+                                Trên Google Sheet là <em>Tên thật</em> (ví dụ: <code>Nguyễn Thị Tuyết Như</code>), nhưng trên Zalo họ thường để biệt danh hoặc tiền tố (ví dụ: <code>aTuyết Như</code>, <code>Pé Như</code>...).<br>
+                                Tính năng này giúp bot tự động vào nhóm chat Zalo của Vùng, quét danh sách người gửi và <strong>tự khớp nick Zalo với tên thật của từng Sứ giả</strong> mà bạn không phải gõ tay thủ công!
+                            </p>
+
+                            <h3 style="font-size: 14.5px; margin: 16px 0 8px 0; color: var(--text-primary);">
+                                Cách thực hiện:
+                            </h3>
+                            <ol style="padding-left: 20px; font-size: 13px; line-height: 1.8; color: var(--text-secondary);">
+                                <li>Vào trang <strong>Điều Hành Vùng</strong>.</li>
+                                <li>Ngay phía trên bảng danh sách Sứ giả, nhấp vào nút <strong>[<i class="fa-solid fa-wand-magic-sparkles"></i> Mapping tên Zalo]</strong>.</li>
+                                <li>Bot sẽ tự mở nhóm Zalo, đọc danh sách thành viên rồi <strong>tự động đóng cửa sổ Zalo</strong> lại.</li>
+                                <li>Trình duyệt của bạn sẽ hiển thị thông báo thành công. Toàn bộ tên Zalo của Sứ giả đã được tự động điền vào ô tương ứng!</li>
+                            </ol>
+
+                            <!-- ẢNH CHỤP THỰC TẾ: CỤM NÚT MAPPING VÀ CÁC THAO TÁC -->
+                            <div class="guide-img-box">
+                                <img src="img/guide/guide_step2_mapping_buttons.png" alt="Cụm nút Mapping tên Zalo" class="guide-img">
+                                <div class="guide-img-caption">
+                                    <i class="fa-solid fa-camera"></i> Hình 3: Nút [Mapping tên Zalo] nằm cạnh nút [Đồng bộ Sheet] và nút [Lưu]
+                                </div>
+                            </div>
+
+                            <!-- ẢNH CHỤP THỰC TẾ: HÀNG SỨ GIẢ VỚI Ô MAPPING -->
+                            <div class="guide-img-box">
+                                <img src="img/guide/guide_step2_member_row.png" alt="Hàng thành viên có ô nhập tên Zalo" class="guide-img">
+                                <div class="guide-img-caption">
+                                    <i class="fa-solid fa-camera"></i> Hình 4: Ô Tên Zalo được bot tự động điền và khớp chính xác
+                                </div>
+                            </div>
+                        </article>
+
+                        <!-- BÀI 3: QUÉT BÀI & BÁO CÁO HÀNG NGÀY -->
+                        <article id="guide-art-3" class="glass-card guide-article" style="padding: 24px;">
+                            <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--panel-border); padding-bottom: 14px; margin-bottom: 18px;">
+                                <h2 style="margin: 0; font-size: 18px; color: #f59e0b; display: flex; align-items: center; gap: 10px;">
+                                    <i class="fa-solid fa-bolt"></i> Bài 3: Hướng Dẫn Quét Bài & Xuất Báo Cáo Hàng Ngày
+                                </h2>
+                                <span class="badge" style="background: #fef3c7; color: #92400e; font-size: 11.5px; font-weight: 700;">Khung giờ 21h00 - 22h30</span>
+                            </div>
+
+                            <p style="font-size: 13.5px; line-height: 1.7; color: var(--text-secondary);">
+                                Mỗi tối khi đến giờ báo cáo, công việc của Trưởng Vùng hoặc Phó Vùng chỉ mất <strong>đúng 30 giây</strong>:
+                            </p>
+
+                            <ol style="padding-left: 20px; font-size: 13px; line-height: 1.8; color: var(--text-secondary);">
+                                <li>Vào trang <strong>Điều Hành Vùng</strong>.</li>
+                                <li>Chọn ngày cần báo cáo ở ô lịch (mặc định luôn là <em>Hôm nay</em>; nếu chạy trễ hoặc quét bù thì có thể chọn các ngày cũ trong vòng 7 ngày gần nhất).</li>
+                                <li>Bấm nút lớn <strong>[<i class="fa-solid fa-bolt"></i> Quét báo cáo]</strong> &rarr; Bấm <strong>Đồng ý</strong>.</li>
+                                <li>🤖 <strong>Bot sẽ tự động:</strong>
+                                    <br>&bull; Mở Zalo tìm đúng nhóm Vùng.
+                                    <br>&bull; Quét xuôi tin nhắn từ mốc báo cáo hôm trước đến hết ngày, kiểm tra ảnh minh chứng thật (loại trừ nút Like).
+                                    <br>&bull; Điền chữ <code>Oke</code> lên cột tương ứng trên Google Sheet (kể cả các bài nộp bù ngày cũ).
+                                    <br>&bull; Soạn sẵn toàn bộ nội dung Báo Cáo Vùng (Mẫu 1) vào ô chat Zalo dưới dạng <strong>Bản Nháp</strong>.
+                                </li>
+                                <li>Bạn chỉ cần chuyển sang cửa sổ Zalo, xem lại nội dung bản nháp trong ô chat và bấm <strong>Enter (Gửi)</strong>!</li>
+                            </ol>
+
+                            <!-- ẢNH CHỤP THỰC TẾ: TOÀN BỘ KHÔNG GIAN ĐIỀU HÀNH VÙNG -->
+                            <div class="guide-img-box">
+                                <img src="img/guide/guide_step3_workspace.png" alt="Toàn bộ không gian Điều Hành Vùng" class="guide-img">
+                                <div class="guide-img-caption">
+                                    <i class="fa-solid fa-camera"></i> Hình 5: Giao diện Điều Hành Vùng với bảng Sứ giả (bên trái) và Báo Cáo Mẫu 1 (bên phải)
+                                </div>
+                            </div>
+                        </article>
+
+                        <!-- BÀI 4: BẬT/TẮT TÔ MÀU & CÀI ĐẶT GOOGLE SHEET -->
+                        <article id="guide-art-4" class="glass-card guide-article" style="padding: 24px;">
+                            <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--panel-border); padding-bottom: 14px; margin-bottom: 18px;">
+                                <h2 style="margin: 0; font-size: 18px; color: #8b5cf6; display: flex; align-items: center; gap: 10px;">
+                                    <i class="fa-solid fa-palette"></i> Bài 4: Cài Đặt Văn Bản & Bật/Tắt Tô Màu Google Sheets
+                                </h2>
+                                <span class="badge" style="background: #ede9fe; color: #6d28d9; font-size: 11.5px; font-weight: 700;">Tùy biến linh hoạt</span>
+                            </div>
+
+                            <p style="font-size: 13.5px; line-height: 1.7; color: var(--text-secondary);">
+                                Tại menu <strong>Cài Đặt Trạng Thái</strong> (<code>http://localhost:3000/#settings</code>), bạn có thể tùy chỉnh cách bot ghi dữ liệu lên Google Sheet:
+                            </p>
+
+                            <h3 style="font-size: 14.5px; margin: 16px 0 8px 0; color: var(--text-primary);">
+                                1. Cài đặt Trạng Thái Google Sheets (Hợp nhất Văn bản & Màu sắc):
+                            </h3>
+                            <ul style="padding-left: 20px; font-size: 13px; line-height: 1.8; color: var(--text-secondary);">
+                                <li><strong>Quản lý trạng thái theo thẻ card:</strong> Mỗi trạng thái bao gồm Tên hiển thị, Ký hiệu ghi Sheet và Màu sắc ô tương ứng.</li>
+                                <li><strong>Ký hiệu ghi Sheet:</strong>
+                                    <br>&bull; <em>Hoàn thành:</em> Mặc định là <code>Oke</code> (bạn có thể đổi thành <code>Ok</code>, <code>Xong</code>, <code>1</code>...).
+                                    <br>&bull; <em>Chưa nộp:</em> Mặc định để trống để ô trắng sạch sẽ, không ghi đè chữ rác lên bảng tính.
+                                    <br>&bull; <em>Làm muộn / Đi quân sự / Xin nghỉ...:</em> Ghi đúng ký hiệu quy định của Vùng.
+                                </li>
+                                <li><strong>Bảng màu 80 ô chuẩn Google Sheets:</strong> Bấm nút <code>[🎨 Đổi màu]</code> trên từng thẻ để chọn mã màu trực quan từ 8 dải màu chuẩn Google Sheets.</li>
+                                <li><strong>Thêm & Xóa trạng thái tự do:</strong> Bấm <code>[+ Thêm trạng thái mới]</code> để tạo thêm bất kỳ trạng thái nào của riêng bạn, hoặc bấm <code>[🗑️ Xóa]</code> để loại bỏ trạng thái không còn sử dụng.</li>
+                            </ul>
+
+                            <h3 style="font-size: 14.5px; margin: 20px 0 8px 0; color: var(--text-primary);">
+                                2. Công tắc Bật / Tắt Tô Màu Ô:
+                            </h3>
+                            <ul style="padding-left: 20px; font-size: 13px; line-height: 1.8; color: var(--text-secondary);">
+                                <li><strong>Mặc định là TẮT (Chỉ điền chữ):</strong> Bot chỉ điền chữ <code>Oke</code> vào ô, giữ nguyên 100% màu nền ban đầu của trang tính.</li>
+                                <li><strong>Gạt sang BẬT:</strong> Bot sẽ vừa điền chữ vừa tô màu nền ô chuẩn xác theo các mã màu bạn đã chọn.</li>
+                            </ul>
+
+                            <!-- ẢNH CHỤP THỰC TẾ: GIAO DIỆN CÀI ĐẶT TRẠNG THÁI HỢP NHẤT -->
+                            <div class="guide-img-box">
+                                <img src="img/guide/guide_step4_settings_unified.png" alt="Giao diện Cài đặt Trạng Thái Google Sheets" class="guide-img">
+                                <div class="guide-img-caption">
+                                    <i class="fa-solid fa-camera"></i> Hình 6: Giao diện Cài đặt Trạng Thái Google Sheets hợp nhất (Thêm/Xóa/Sửa văn bản và màu sắc trực quan)
+                                </div>
+                            </div>
+                        </article>
+
+                        <!-- BÀI 5: SỨ GIẢ XIN HOÃN / QUÂN SỰ / NGHỈ PHÉP -->
+                        <article id="guide-art-5" class="glass-card guide-article" style="padding: 24px;">
+                            <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--panel-border); padding-bottom: 14px; margin-bottom: 18px;">
+                                <h2 style="margin: 0; font-size: 18px; color: #ec4899; display: flex; align-items: center; gap: 10px;">
+                                    <i class="fa-solid fa-notes-medical"></i> Bài 5: Sứ Giả Xin Hoãn / Quân Sự / Nghỉ Phép / Ôn Thi
+                                </h2>
+                                <span class="badge" style="background: #fdf2f8; color: #9d174d; font-size: 11.5px; font-weight: 700;">Tự động nhận diện</span>
+                            </div>
+
+                            <p style="font-size: 13.5px; line-height: 1.7; color: var(--text-secondary);">
+                                Bạn <strong>không cần phải cài đặt phức tạp gì trên phần mềm</strong>! Khi trong Vùng có bạn xin phép hoãn nhiệm vụ, bạn chỉ cần làm như sau:
+                            </p>
+
+                            <h3 style="font-size: 14.5px; margin: 16px 0 8px 0; color: var(--text-primary);">
+                                Cách ghi chú trực tiếp trên Google Sheet:
+                            </h3>
+                            <ul style="padding-left: 20px; font-size: 13px; line-height: 1.8; color: var(--text-secondary);">
+                                <li>Mở Google Sheet của Vùng (có thể bấm nút <strong>[Mở Sheet]</strong> trên thanh công cụ của bot).</li>
+                                <li>Tìm đến dòng tên của bạn Sứ giả đó, gõ trực tiếp nội dung xin phép vào ô ngày hoặc cột Ghi chú bên phải.</li>
+                                <li>Cú pháp gõ tự nhiên, ví dụ:
+                                    <br>&bull; <code>học quân sự xin hoãn đến 23/08</code> (hoặc <em>quân sự, nghĩa vụ</em>)
+                                    <br>&bull; <code>ôn thi đến 25/09</code> (hoặc <em>lịch thi, đi viện, nhập viện</em>)
+                                    <br>&bull; <code>bận việc gia đình</code> (hoặc <em>xin nghỉ, có phép</em>)
+                                </li>
+                            </ul>
+
+                            <h3 style="font-size: 14.5px; margin: 20px 0 8px 0; color: var(--text-primary);">
+                                Bot sẽ tự động xử lý ra sao?
+                            </h3>
+                            <ul style="padding-left: 20px; font-size: 13px; line-height: 1.8; color: var(--text-secondary);">
+                                <li>Bot tự động đọc ghi chú này về máy và đưa vào mục <strong>6. Lý do -> * Xin làm muộn/bổ sung</strong> trong Báo Cáo Zalo.</li>
+                                <li>Bạn đó <strong>tuyệt đối không bị xếp vào diện "Không phản hồi"</strong>.</li>
+                                <li>Nếu chính Trưởng Vùng xin nghỉ/hoãn, bot tự động đổi tên người ký báo cáo sang Phó Vùng!</li>
+                            </ul>
+                        </article>
+
+                        <!-- BÀI 6: DỪNG QUÉT KHẨN CẤP & TẮT BOT -->
+                        <article id="guide-art-6" class="glass-card guide-article" style="padding: 24px;">
+                            <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--panel-border); padding-bottom: 14px; margin-bottom: 18px;">
+                                <h2 style="margin: 0; font-size: 18px; color: #ef4444; display: flex; align-items: center; gap: 10px;">
+                                    <i class="fa-solid fa-power-off"></i> Bài 6: Dừng Quét Khẩn Cấp & Tắt Bot An Toàn
+                                </h2>
+                                <span class="badge" style="background: #fef2f2; color: #991b1b; font-size: 11.5px; font-weight: 700;">An toàn & Nhẹ máy</span>
+                            </div>
+
+                            <h3 style="font-size: 14.5px; margin: 16px 0 8px 0; color: var(--text-primary);">
+                                1. Dừng quét khẩn cấp (Hủy quét tức thì & đóng tab Zalo):
+                            </h3>
+                            <ul style="padding-left: 20px; font-size: 13px; line-height: 1.8; color: var(--text-secondary);">
+                                <li>Trong lúc bot đang quét bài Zalo, nếu bạn muốn hủy quét ngay lập tức:</li>
+                                <li>Nút quét lúc này sẽ tự động chuyển sang màu đỏ: <strong><code>[🛑 Dừng quét (Bấm để dừng)]</code></strong>.</li>
+                                <li>Bạn chỉ việc nhấp vào nút đỏ này, bot sẽ lập tức dừng quét ngay trong tích tắc và <strong>tự động đóng luôn tab Zalo vừa mở lên để quét</strong>, trả lại màn hình làm việc thông thoáng cho bạn.</li>
+                            </ul>
+
+                            <div class="guide-img-box">
+                                <img src="img/guide/guide_step6_stop_button.png" alt="Nút Dừng quét màu đỏ" class="guide-img">
+                                <div class="guide-img-caption">
+                                    <i class="fa-solid fa-camera"></i> Hình 7: Nút quét chuyển màu đỏ [🛑 Dừng quét (Bấm để dừng)] khi đang hoạt động
+                                </div>
+                            </div>
+
+                            <h3 style="font-size: 14.5px; margin: 20px 0 8px 0; color: var(--text-primary);">
+                                2. Cách tắt bot khi làm xong việc:
+                            </h3>
+                            <ul style="padding-left: 20px; font-size: 13px; line-height: 1.8; color: var(--text-secondary);">
+                                <li>Sau khi gửi báo cáo xong, bạn chỉ cần <strong>Đóng cửa sổ dòng lệnh đen</strong> (hoặc bấm tổ hợp phím <code>Ctrl + C</code>).</li>
+                                <li>Toàn bộ tiến trình máy chủ sẽ tắt hoàn toàn 100%, không hề chạy ngầm gây nóng máy hay tốn RAM của bạn.</li>
+                            </ul>
+
+                            <div class="guide-img-box">
+                                <img src="img/guide/guide_step6_terminal_exit.png" alt="Cửa sổ đen tắt bot an toàn" class="guide-img">
+                                <div class="guide-img-caption">
+                                    <i class="fa-solid fa-camera"></i> Hình 8: Cửa sổ Console VNV-Bot — Bấm Ctrl + C hoặc nhấp nút [✕] đỏ để tắt bot an toàn
+                                </div>
+                            </div>
+                        </article>
+
+                    </div>
+                </div>
+            </section>
+
         </main>
     </div>
 
@@ -330,13 +982,17 @@
             <h3 id="modal-user-title">Thêm Tài Khoản</h3>
             <form id="form-user">
                 <input type="hidden" id="edit-user-id">
-                <div class="form-group">
+                <div class="form-group" id="group-user-username">
                     <label for="input-username">Username</label>
-                    <input type="text" id="input-username" required>
+                    <input type="text" id="input-username">
                 </div>
-                <div class="form-group">
+                <div class="form-group" id="group-user-password">
                     <label for="input-password">Mật khẩu (Để trống nếu không muốn đổi)</label>
                     <input type="password" id="input-password">
+                </div>
+                <div class="form-group" id="group-user-email">
+                    <label for="input-email">Email (Dùng cho Google OAuth)</label>
+                    <input type="email" id="input-email">
                 </div>
                 <div class="form-group">
                     <label for="input-fullname">Họ và Tên</label>
@@ -369,30 +1025,6 @@
         </div>
     </div>
 
-    <!-- Modal Cluster -->
-    <div id="modal-cluster" class="modal-overlay">
-        <div class="modal-content glass-card">
-            <h3 id="modal-cluster-title">Thêm Cụm Mới</h3>
-            <form id="form-cluster">
-                <input type="hidden" id="edit-cluster-id">
-                <div class="form-group">
-                    <label for="input-cluster-name">Tên Cụm</label>
-                    <input type="text" id="input-cluster-name" placeholder="Ví dụ: Cụm 5" required>
-                </div>
-                <div class="form-group">
-                    <label for="select-cluster-manager">Gán Trưởng Cụm</label>
-                    <select id="select-cluster-manager">
-                        <option value="">-- Chưa gán --</option>
-                        <!-- Danh sách user có role cluster_leader sẽ được nạp vào đây -->
-                    </select>
-                </div>
-                <div class="modal-actions">
-                    <button type="button" class="btn btn-secondary-outline" onclick="closeModal('modal-cluster')">Hủy</button>
-                    <button type="submit" class="btn btn-primary">Lưu lại</button>
-                </div>
-            </form>
-        </div>
-    </div>
 
     <!-- Modal Region -->
     <div id="modal-region" class="modal-overlay">
@@ -467,7 +1099,377 @@
         </div>
     </div>
 
-    <!-- Main JS Application -->
-    <script src="main.js"></script>
+
+    <!-- Modal Member -->
+    <div id="modal-member" class="modal-overlay">
+        <div class="modal-content glass-card">
+            <h3 id="modal-member-title">Thêm Sứ Giả Mới</h3>
+            <form id="form-member">
+                <input type="hidden" id="edit-member-id">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="input-member-fullname">Họ và Tên</label>
+                        <input type="text" id="input-member-fullname" placeholder="Nhập họ tên thật..." required>
+                    </div>
+                    <div class="form-group">
+                        <label for="input-member-zaloname">Tên Zalo</label>
+                        <input type="text" id="input-member-zaloname" placeholder="Tên hiển thị Zalo..." required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="input-member-zaloid">Zalo ID (Tùy chọn)</label>
+                        <input type="text" id="input-member-zaloid" placeholder="ID Zalo...">
+                    </div>
+                    <div class="form-group">
+                        <label for="select-member-region">Thuộc Vùng</label>
+                        <select id="select-member-region" required>
+                            <option value="">-- Chọn Vùng --</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="select-member-role">Vai trò</label>
+                        <select id="select-member-role">
+                            <option value="EMISSARY">Sứ giả</option>
+                            <option value="LEADER">⭐ Trưởng Vùng</option>
+                            <option value="DEPUTY">🎖️ Phó Vùng</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="select-member-status">Trạng thái</label>
+                        <select id="select-member-status">
+                            <option value="Active">Active</option>
+                            <option value="Inactive">Inactive</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary-outline" onclick="closeModal('modal-member')">Hủy</button>
+                    <button type="submit" class="btn btn-primary">Lưu lại</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+        <!-- Modal Nhập từ Excel -->
+    <div id="modal-excel-import" class="modal-overlay">
+        <div class="modal-content glass-card" style="max-width: 520px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; border-bottom: 1px solid var(--panel-border); padding-bottom: 12px;">
+                <h3 style="margin: 0; font-size: 1.1rem; display: flex; align-items: center; gap: 8px;">
+                    <i class="fa-solid fa-file-excel" style="color: #10b981;"></i> Nhập Dữ Liệu Ánh Xạ Từ Excel
+                </h3>
+                <button type="button" class="btn-icon" onclick="closeExcelImportModal()" style="background: none; border: none; font-size: 1.2rem; cursor: pointer; color: var(--text-muted);">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 12px; line-height: 1.5;">
+                Copy 2 cột từ Excel và dán vào đây: <b>Cột 1 là Tên Sheet</b>, <b>Cột 2 là Tên Zalo</b>.<br>
+                <i>Nếu chỉ có 1 cột Tên Sheet, hệ thống sẽ tự lấy tên thật làm Tên Zalo.</i>
+            </p>
+            <textarea id="rw-excel-import-text" class="form-control" style="width: 100%; height: 200px; font-family: monospace; font-size: 13px; resize: vertical; white-space: pre; margin-bottom: 16px;" placeholder="Nguyễn Văn A&#9;Pé Na&#10;Trần Thị B&#9;Cô bé mùa đông"></textarea>
+            <div class="modal-actions" style="display: flex; justify-content: flex-end; gap: 10px;">
+                <button type="button" class="btn btn-secondary-outline" onclick="closeExcelImportModal()">Hủy</button>
+                <button type="button" class="btn btn-primary" id="btn-confirm-excel-import">Xác nhận nạp dữ liệu</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Invite -->
+    <div id="modal-invite" class="modal-overlay">
+        <div class="modal-content glass-card" style="max-width: 520px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; border-bottom: 1px solid var(--panel-border); padding-bottom: 12px;">
+                <h3 style="margin: 0; padding: 0; border: none; display: flex; align-items: center; gap: 10px; font-size: 18px; font-weight: 700;">
+                    <i class="fa-solid fa-paper-plane" style="color: var(--color-sky);"></i> Lời Mời Đăng Nhập
+                </h3>
+                <button type="button" class="btn-icon" onclick="closeModal('modal-invite')" style="background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.2rem;">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            
+            <div id="invite-status-banner" style="margin-bottom: 16px;">
+                <!-- Content set dynamically -->
+            </div>
+
+            <div class="form-group" style="margin-bottom: 20px;">
+                <label for="invite-text-preview" style="font-weight: 600; margin-bottom: 8px; display: block; color: var(--text-secondary);">Nội dung lời mời:</label>
+                <textarea id="invite-text-preview" class="preview-textarea" readonly rows="5" style="resize: vertical;" onclick="this.select()"></textarea>
+            </div>
+
+            <div class="modal-actions" style="margin-top: 20px;">
+                <button type="button" id="btn-copy-again" class="btn btn-secondary-outline" onclick="copyInviteTextAgain()">
+                    <i class="fa-regular fa-copy"></i> Sao chép lại
+                </button>
+                <button type="button" class="btn btn-primary" onclick="closeModal('modal-invite')">
+                    Đóng
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Confirm -->
+    <div id="modal-confirm" class="modal-overlay">
+        <div class="modal-content glass-card" style="max-width: 440px; text-align: center; padding: 28px 24px;">
+            <div id="confirm-modal-icon" style="font-size: 48px; margin-bottom: 16px;">
+                <i class="fa-solid fa-triangle-exclamation" style="color: var(--color-rose);"></i>
+            </div>
+            <h3 id="confirm-modal-title" style="font-size: 19px; font-weight: 700; margin-bottom: 12px; border: none; padding: 0;">Xác Nhận Thao Tác</h3>
+            <p id="confirm-modal-message" style="color: var(--text-secondary); font-size: 14px; line-height: 1.6; margin-bottom: 24px;"></p>
+            <div style="display: flex; gap: 12px; justify-content: center;">
+                <button type="button" id="confirm-modal-btn-cancel" class="btn btn-secondary-outline" style="min-width: 100px;">Hủy</button>
+                <button type="button" id="confirm-modal-btn-confirm" class="btn btn-danger" style="min-width: 100px;">Đồng ý</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Alert -->
+    <div id="modal-alert" class="modal-overlay">
+        <div class="modal-content glass-card" style="max-width: 420px; text-align: center; padding: 28px 24px;">
+            <div id="alert-modal-icon" style="font-size: 48px; margin-bottom: 16px;">
+                <i class="fa-solid fa-circle-info" style="color: var(--color-sky);"></i>
+            </div>
+            <h3 id="alert-modal-title" style="font-size: 19px; font-weight: 700; margin-bottom: 12px; border: none; padding: 0;">Thông Báo</h3>
+            <p id="alert-modal-message" style="color: var(--text-secondary); font-size: 14px; line-height: 1.6; margin-bottom: 24px; white-space: pre-wrap;"></p>
+            <div style="display: flex; justify-content: center;">
+                <button type="button" id="alert-modal-btn-ok" class="btn btn-primary" style="min-width: 110px;">Đã hiểu</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Sheet Tab Warning (Tự code cảnh báo thiếu tab tháng mới trên Google Sheet) -->
+    <div id="modal-sheet-tab-warning" class="modal-overlay">
+        <div class="modal-content glass-card" style="max-width: 540px; text-align: left; padding: 26px 28px;">
+            <div style="display: flex; align-items: flex-start; gap: 16px; margin-bottom: 18px;">
+                <div style="width: 48px; height: 48px; min-width: 48px; border-radius: 12px; background: rgba(245, 158, 11, 0.15); display: flex; align-items: center; justify-content: center; font-size: 24px; color: #f59e0b;">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                </div>
+                <div>
+                    <h3 style="font-size: 18px; font-weight: 700; margin: 0 0 6px 0; color: var(--text-primary); border: none; padding: 0;">
+                        Chưa Có Tab Tháng Mới Trên Google Sheet
+                    </h3>
+                    <p style="margin: 0; font-size: 13px; color: var(--text-secondary);">
+                        Phát hiện chưa có tab tháng tương ứng trên Google Trang tính của Vùng
+                    </p>
+                </div>
+            </div>
+
+            <div style="background: rgba(245, 158, 11, 0.08); border: 1px solid rgba(245, 158, 11, 0.25); border-radius: 8px; padding: 14px 16px; margin-bottom: 18px; font-size: 13.5px; line-height: 1.6;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                    <span style="color: var(--text-muted);">Vùng làm việc:</span>
+                    <strong id="tab-warn-region-name" style="color: var(--text-primary);">Vùng 27</strong>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                    <span style="color: var(--text-muted);">Ngày báo cáo:</span>
+                    <strong id="tab-warn-work-date" style="color: var(--text-primary);">01/10/2026</strong>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                    <span style="color: var(--text-muted);">Tab tháng yêu cầu:</span>
+                    <span class="badge" id="tab-warn-expected-tab" style="background: #f59e0b; color: #fff; font-weight: 700; padding: 2px 8px; border-radius: 4px;">T10/26</span>
+                </div>
+                <div style="display: flex; justify-content: space-between;">
+                    <span style="color: var(--text-muted);">Các tab hiện có:</span>
+                    <span id="tab-warn-existing-tabs" style="font-style: italic; color: var(--text-secondary); max-width: 60%; text-align: right; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">T8/26, T9/26</span>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 22px; font-size: 13px; line-height: 1.6; color: var(--text-secondary);">
+                <p style="margin: 0 0 8px 0;">
+                    <i class="fa-solid fa-circle-check" style="color: #10b981; margin-right: 6px;"></i>
+                    <strong>Vẫn cho phép Tổng hợp Báo cáo:</strong> Bot sẽ quét tin nhắn, đối chiếu sứ giả và sinh Báo cáo Vùng Mẫu 1 gửi Zalo đúng giờ. Toàn bộ dữ liệu được lưu an toàn trong hệ thống bot.
+                </p>
+                <p style="margin: 0;">
+                    <i class="fa-solid fa-pause" style="color: #f59e0b; margin-right: 6px;"></i>
+                    <strong>Tạm dừng ghi Google Sheet:</strong> Do trang tính chưa có tab <code id="tab-warn-code-tab" style="font-weight: 700; color: #f59e0b;">T10/26</code>, bot tạm thời chưa ghi đè để tránh lỗi. Bạn có thể bấm <strong>[Tiếp tục tổng hợp]</strong> để lấy nội dung báo cáo trước, sau đó tạo tab và bấm <strong>[Ghi bù]</strong>.
+                </p>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+                <button type="button" id="btn-tab-warn-continue" class="btn btn-primary" style="width: 100%; justify-content: center; padding: 11px 16px; font-weight: 600; font-size: 14px;">
+                    <i class="fa-solid fa-play"></i> Tiếp tục tổng hợp (Chưa ghi Sheet)
+                </button>
+                <button type="button" id="btn-tab-warn-autocreate" class="btn" style="width: 100%; justify-content: center; padding: 11px 16px; font-weight: 600; font-size: 14px; background: #6366f1; color: white;">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i> ✨ Tự động tạo Tab mới & Ghi ngay
+                </button>
+                <button type="button" class="btn btn-secondary-outline" onclick="closeModal('modal-sheet-tab-warning')" style="width: 100%; justify-content: center; padding: 9px 16px;">
+                    Đóng / Để tôi tự tạo trên Google Sheet
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Thêm Màu Trạng Thái Tùy Chỉnh Theo Tài Khoản -->
+    <div id="modal-custom-status" class="modal-overlay">
+        <div class="modal-content glass-card" style="max-width: 440px; text-align: left; padding: 24px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; border-bottom: 1px solid var(--panel-border); padding-bottom: 12px;">
+                <h3 style="margin: 0; font-size: 1.15rem; display: flex; align-items: center; gap: 8px;">
+                    <i class="fa-solid fa-palette" style="color: var(--color-primary);"></i> Thêm Màu Trạng Thái Mới
+                </h3>
+                <button type="button" class="btn-icon" onclick="closeModal('modal-custom-status')" style="background: none; border: none; font-size: 1.2rem; cursor: pointer; color: var(--text-muted);">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <p style="font-size: 12.5px; color: var(--text-secondary); margin-bottom: 14px; line-height: 1.5;">
+                Trạng thái này được <strong>lưu riêng trên tài khoản của bạn</strong>, cho phép bạn tự định nghĩa tên trạng thái và chọn màu sắc trong bảng 80 ô.
+            </p>
+            <div class="form-group" style="margin-bottom: 14px;">
+                <label class="form-label" for="custom-status-name" style="font-weight: 600; margin-bottom: 6px; display: block;">Tên trạng thái <span style="color: red;">*</span></label>
+                <input type="text" id="custom-status-name" class="form-control" placeholder="Ví dụ: Hoàn thành, Trễ, Đi quân sự...">
+            </div>
+            <div class="form-group" style="margin-bottom: 14px;">
+                <label class="form-label" for="custom-status-behavior" style="font-weight: 600; margin-bottom: 6px; display: block;">Áp dụng cho (Hành vi Bot) <span style="color: red;">*</span></label>
+                <select id="custom-status-behavior" class="form-select" style="width: 100%; padding: 8px 12px; border-radius: 6px; font-size: 13px; font-weight: 600; background: var(--bg-dark); color: var(--text-primary); border: 1px solid var(--panel-border);">
+                    <option value="ON_TIME">🟢 Hoàn thành đúng hạn (Nộp trong ngày)</option>
+                    <option value="LATE_COMPLETED">🟠 Làm trễ / Nộp bù (Nộp bù ngày cũ)</option>
+                    <option value="INCOMPLETE">🔴 Chưa làm / Không phản hồi (Hết hạn không nộp)</option>
+                    <option value="ON_LEAVE">🟣 Xin hoãn / Xin phép (Quân sự, ôn thi, nghỉ...)</option>
+                    <option value="CUSTOM">⚪ Tùy chỉnh khác</option>
+                </select>
+                <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">
+                    Bot sẽ tự động nhận diện hành vi khi bạn nhập tên, hoặc bạn có thể tự chọn.
+                </div>
+            </div>
+            <div class="form-group" style="margin-bottom: 14px;">
+                <label class="form-label" style="font-weight: 600; margin-bottom: 6px; display: block;">Chọn màu (Bảng màu 80 ô Google Sheets)</label>
+                <div style="display: flex; align-items: center; gap: 12px; margin-top: 6px;">
+                    <div id="custom-status-swatch" style="width: 38px; height: 38px; border-radius: 6px; border: 1px solid rgba(0,0,0,0.15); background-color: #38761d; box-shadow: inset 0 0 4px rgba(0,0,0,0.1);"></div>
+                    <span id="custom-status-hex" style="font-family: monospace; font-size: 13px; font-weight: 700;">#38761D</span>
+                    <button type="button" class="btn btn-sm btn-secondary-outline" id="btn-picker-custom-status">Chọn màu</button>
+                </div>
+            </div>
+            <div class="form-group" style="margin-bottom: 20px;">
+                <label class="form-label" for="custom-status-text" style="font-weight: 600; margin-bottom: 6px; display: block;">Văn bản ghi vào ô Sheet (Tùy chọn)</label>
+                <input type="text" id="custom-status-text" class="form-control" placeholder="Mặc định lấy theo tên trạng thái">
+            </div>
+            <div class="modal-actions" style="display: flex; justify-content: flex-end; gap: 10px;">
+                <button type="button" class="btn btn-secondary-outline" onclick="closeModal('modal-custom-status')">Hủy</button>
+                <button type="button" class="btn btn-primary" id="btn-confirm-save-custom-status">
+                    <i class="fa-solid fa-check"></i> Lưu trạng thái
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Cập Nhật Liên Kết Google Sheet (Admin) -->
+    <div id="modal-sheet-link" class="modal-overlay">
+        <div class="modal-content glass-card" style="max-width: 520px; text-align: left; padding: 24px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; border-bottom: 1px solid var(--panel-border); padding-bottom: 12px;">
+                <h3 style="margin: 0; font-size: 1.15rem; display: flex; align-items: center; gap: 8px;">
+                    <i class="fa-solid fa-file-excel" style="color: #10b981;"></i> Cập Nhật Liên Kết Google Sheet
+                </h3>
+                <button type="button" class="btn-icon" onclick="closeModal('modal-sheet-link')" style="background: none; border: none; font-size: 1.2rem; cursor: pointer; color: var(--text-muted);">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <input type="hidden" id="edit-sheet-target-type">
+            <input type="hidden" id="edit-sheet-target-id">
+            <div style="background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: 8px; padding: 10px 14px; margin-bottom: 14px;">
+                <strong id="edit-sheet-target-label" style="color: #065f46; font-size: 13.5px;">Cập nhật Google Sheet</strong>
+                <p style="margin: 3px 0 0; font-size: 12px; color: #047857;">Liên kết này sẽ áp dụng toàn hệ thống và hiển thị trực tiếp cho người quản lý.</p>
+            </div>
+            <div class="form-group" style="margin-bottom: 14px;">
+                <label class="form-label" for="edit-sheet-url" style="font-weight: 600; margin-bottom: 6px; display: block;">Đường dẫn Google Sheet (URL) <span style="color: red;">*</span></label>
+                <input type="text" id="edit-sheet-url" class="form-control" placeholder="https://docs.google.com/spreadsheets/d/.../edit">
+                <small style="color: var(--text-muted); font-size: 11px; margin-top: 4px; display: block;">Dán link trang tính đầy đủ. Hệ thống sẽ tự động bóc tách Spreadsheet ID.</small>
+            </div>
+            <div class="form-group" style="margin-bottom: 20px;">
+                <label class="form-label" for="edit-sheet-name" style="font-weight: 600; margin-bottom: 6px; display: block;">Tên Tab Trang Tính (Mặc định tab tháng)</label>
+                <input type="text" id="edit-sheet-name" class="form-control" placeholder="Ví dụ: T9/26, Tab1...">
+            </div>
+            <div class="modal-actions" style="display: flex; justify-content: flex-end; gap: 10px;">
+                <button type="button" class="btn btn-secondary-outline" onclick="closeModal('modal-sheet-link')">Hủy</button>
+                <button type="button" class="btn btn-primary" id="btn-save-sheet-link">
+                    <i class="fa-solid fa-floppy-disk"></i> Lưu liên kết Sheet
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: ĐỔI TAB THÁNG ĐỒNG LOẠT -->
+    <div id="modal-bulk-month-tab" class="modal-backdrop" style="display: none;">
+        <div class="modal-card" style="max-width: 480px;">
+            <div class="modal-header">
+                <h3 style="margin: 0; font-size: 16px; font-weight: 700; display: flex; align-items: center; gap: 8px;">
+                    <i class="fa-solid fa-calendar-days" style="color: var(--color-primary);"></i> Chuyển Đổi Tab Tháng Đồng Loạt
+                </h3>
+                <button type="button" class="modal-close-btn" onclick="closeModal('modal-bulk-month-tab')">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="modal-body" style="padding: 16px 20px;">
+                <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 14px;">
+                    Áp dụng tên Tab tháng làm việc mới cho toàn bộ các Vùng và Cụm trong hệ thống (Ví dụ khi bước sang chu kỳ tháng mới).
+                </p>
+                <div class="form-group" style="margin-bottom: 14px;">
+                    <label style="display: block; font-size: 12.5px; font-weight: 600; margin-bottom: 6px;">Tên Tab Tháng Mới</label>
+                    <input type="text" id="input-bulk-month-tab" class="form-control" placeholder="Ví dụ: T10/26" style="font-weight: 700; color: var(--color-primary);" />
+                    <div style="font-size: 11.5px; color: var(--text-muted); margin-top: 4px;">
+                        Gợi ý: Định dạng chuẩn của hệ thống là <code>T[Tháng]/[Năm]</code> (như <code>T9/26</code>, <code>T10/26</code>).
+                    </div>
+                </div>
+                <div style="margin-bottom: 12px; background: rgba(0,0,0,0.02); border: 1px solid var(--panel-border); border-radius: 6px; padding: 10px 12px;">
+                    <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; cursor: pointer;">
+                        <input type="checkbox" id="check-bulk-apply-clusters" checked style="width: 16px; height: 16px;" />
+                        <span>Áp dụng cho cả Cụm 5 và toàn bộ 7 Vùng</span>
+                    </label>
+                </div>
+                <div style="margin-bottom: 12px; background: rgba(99, 102, 241, 0.05); border: 1px dashed var(--color-primary); border-radius: 6px; padding: 10px 12px;">
+                    <label style="display: flex; align-items: flex-start; gap: 8px; font-size: 13px; cursor: pointer;">
+                        <input type="checkbox" id="check-bulk-auto-duplicate" style="width: 16px; height: 16px; margin-top: 2px;" />
+                        <span>
+                            <strong>Tự động nhân bản Tab mới trên Google Sheet</strong>
+                            <div style="font-size: 11.5px; color: var(--text-muted); margin-top: 2px;">
+                                Nếu tab mới chưa tồn tại trên Sheet của Vùng, Bot sẽ tự động gọi Google Sheets API nhân bản từ tab tháng cũ sang.
+                            </div>
+                        </span>
+                    </label>
+                </div>
+            </div>
+            <div class="modal-footer" style="padding: 12px 20px; display: flex; justify-content: flex-end; gap: 10px;">
+                <button type="button" class="btn btn-secondary-outline" onclick="closeModal('modal-bulk-month-tab')">Hủy</button>
+                <button type="button" id="btn-confirm-bulk-month-tab" class="btn btn-primary" onclick="submitBulkMonthTab()">
+                    <i class="fa-solid fa-check"></i> Xác Nhận Chuyển Tab
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification Container (Thông báo nổi góc màn hình) -->
+    <div id="toast-container" style="position: fixed; bottom: 24px; right: 24px; z-index: 999999; display: flex; flex-direction: column; gap: 10px; pointer-events: none;"></div>
+
+    <!-- Modular Application JS Scripts -->
+    <script src="js/utils.js?v=2.3.0"></script>
+    <script src="js/theme.js?v=2.3.0"></script>
+    <script src="js/auth.js?v=2.3.0"></script>
+    <script src="js/router.js?v=2.3.0"></script>
+    <script src="js/regions.js?v=2.3.0"></script>
+    <script src="js/users.js?v=2.3.0"></script>
+    <script src="js/members.js?v=2.3.0"></script>
+    <script src="js/audit.js?v=2.3.0"></script>
+    <script src="js/region_workspace.js?v=2.3.3"></script>
+    <script src="js/cluster_workspace.js?v=2.3.0"></script>
+    <script src="js/settings.js?v=2.3.4"></script>
+    <script src="js/dashboard.js?v=2.3.0"></script>
+    <script src="main.js?v=2.3.1"></script>
+    <!-- Live Reload / Hot Swap Script cho Development -->
+    <script>
+        (function() {
+            if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+                try {
+                    const es = new EventSource('/api/live-reload');
+                    es.onmessage = function(e) {
+                        if (e.data === 'reload-css') {
+                            document.querySelectorAll('link[rel="stylesheet"]').forEach(function(link) {
+                                const rawHref = link.getAttribute('href').split('?')[0];
+                                link.setAttribute('href', rawHref + '?t=' + Date.now());
+                            });
+                        } else if (e.data === 'reload') {
+                            window.location.reload();
+                        }
+                    };
+                } catch (err) {}
+            }
+        })();
+    </script>
 </body>
 </html>

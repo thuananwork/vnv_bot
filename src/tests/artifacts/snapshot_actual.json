@@ -1,0 +1,812 @@
+{
+  "sheet_id_vung_1": {
+    "TASK_01_IMAGE - 2026-07-02": [
+      [
+        "Họ Tên Sứ Giả",
+        "Tên Zalo",
+        "Trạng Thái",
+        "Ghi Chú",
+        "Thời Gian Gửi"
+      ],
+      [
+        "Sứ Giả 1",
+        "zalo_name_1",
+        "ĐÃ HOÀN THÀNH",
+        "",
+        "<TIMESTAMP>"
+      ],
+      [
+        "Sứ Giả 10",
+        "zalo_name_10",
+        "ĐÃ HOÀN THÀNH",
+        "",
+        "<TIMESTAMP>"
+      ],
+      [
+        "Sứ Giả 2",
+        "zalo_name_2",
+        "CHƯA NỘP",
+        "",
+        "<TIMESTAMP>"
+      ],
+      [
+        "Sứ Giả 3",
+        "zalo_name_3",
+        "CHƯA NỘP",
+        "",
+        "<TIMESTAMP>"
+      ],
+      [
+        "Sứ Giả 4",
+        "zalo_name_4",
+        "ĐÃ HOÀN THÀNH",
+        "",
+        "<TIMESTAMP>"
+      ],
+      [
+        "Sứ Giả 5",
+        "zalo_name_5",
+        "ĐÃ HOÀN THÀNH",
+        "",
+        "<TIMESTAMP>"
+      ],
+      [
+        "Sứ Giả 6",
+        "zalo_name_6",
+        "ĐÃ HOÀN THÀNH",
+        "",
+        "<TIMESTAMP>"
+      ],
+      [
+        "Sứ Giả 7",
+        "zalo_name_7",
+        "CHƯA NỘP",
+        "",
+        "<TIMESTAMP>"
+      ],
+      [
+        "Sứ Giả 8",
+        "zalo_name_8",
+        "CHƯA NỘP",
+        "",
+        "<TIMESTAMP>"
+      ],
+      [
+        "Sứ Giả 9",
+        "zalo_name_9",
+        "ĐÃ HOÀN THÀNH",
+        "",
+        "<TIMESTAMP>"
+      ]
+    ]
+  },
+  "sheet_id_vung_2": {
+    "TASK_01_IMAGE - 2026-07-02": [
+      [
+        "Họ Tên Sứ Giả",
+        "Tên Zalo",
+        "Trạng Thái",
+        "Ghi Chú",
+        "Thời Gian Gửi"
+      ],
+      [
+        "Sứ Giả 11",
+        "zalo_name_11",
+        "ĐÃ HOÀN THÀNH",
+        "",
+        "<TIMESTAMP>"
+      ],
+      [
+        "Sứ Giả 12",
+        "zalo_name_12",
+        "CHƯA NỘP",
+        "",
+        "<TIMESTAMP>"
+      ],
+      [
+        "Sứ Giả 13",
+        "zalo_name_13",
+        "ĐÃ HOÀN THÀNH",
+        "",
+        "<TIMESTAMP>"
+      ],
+      [
+        "Sứ Giả 14",
+        "zalo_name_14",
+        "CHƯA NỘP",
+        "",
+        "<TIMESTAMP>"
+      ],
+      [
+        "Sứ Giả 15",
+        "zalo_name_15",
+        "CHƯA NỘP",
+        "",
+        "<TIMESTAMP>"
+      ],
+      [
+        "Sứ Giả 16",
+        "zalo_name_16",
+        "CHƯA NỘP",
+        "",
+        "<TIMESTAMP>"
+      ],
+      [
+        "Sứ Giả 17",
+        "zalo_name_17",
+        "ĐÃ HOÀN THÀNH",
+        "",
+        "<TIMESTAMP>"
+      ],
+      [
+        "Sứ Giả 18",
+        "zalo_name_18",
+        "ĐÃ HOÀN THÀNH",
+        "",
+        "<TIMESTAMP>"
+      ],
+      [
+        "Sứ Giả 19",
+        "zalo_name_19",
+        "ĐÃ HOÀN THÀNH",
+        "",
+        "<TIMESTAMP>"
+      ],
+      [
+        "Sứ Giả 20",
+        "zalo_name_20",
+        "CHƯA NỘP",
+        "",
+        "<TIMESTAMP>"
+      ]
+    ]
+  },
+  "sheet_id_vung_3": {
+    "TASK_01_IMAGE - 2026-07-02": [
+      [
+        "Họ Tên Sứ Giả",
+        "Tên Zalo",
+        "Trạng Thái",
+        "Ghi Chú",
+        "Thời Gian Gửi"
+      ],
+      [
+        "Sứ Giả 21",
+        "zalo_name_21",
+        "ĐÃ HOÀN THÀNH",
+        "",
+        "<TIMESTAMP>"
+      ],
+      [
+        "Sứ Giả 22",
+        "zalo_name_22",
+        "ĐÃ HOÀN THÀNH",
+        "",
+        "<TIMESTAMP>"
+      ],
+      [
+        "Sứ Giả 23",
+        "zalo_name_23",
+        "ĐÃ HOÀN THÀNH",
+        "",
+        "<TIMESTAMP>"
+      ],
+      [
+        "Sứ Giả 24",
+        "zalo_name_24",
+        "ĐÃ HOÀN THÀNH",
+        "",
+        "<TIMESTAMP>"
+      ],
+      [
+        "Sứ Giả 25",
+        "zalo_name_25",
+        "ĐÃ HOÀN THÀNH",
+        "",
+        "<TIMESTAMP>"
+      ],
+      [
+        "Sứ Giả 26",
+        "zalo_name_26",
+        "ĐÃ HOÀN THÀNH",
+        "",
+        "<TIMESTAMP>"
+      ],
+      [
+        "Sứ Giả 27",
+        "zalo_name_27",
+        "CHƯA NỘP",
+        "",
+        "<TIMESTAMP>"
+      ],
+      [
+        "Sứ Giả 28",
+        "zalo_name_28",
+        "CHƯA NỘP",
+        "",
+        "<TIMESTAMP>"
+      ],
+      [
+        "Sứ Giả 29",
+        "zalo_name_29",
+        "CHƯA NỘP",
+        "",
+        "<TIMESTAMP>"
+      ],
+      [
+        "Sứ Giả 30",
+        "zalo_name_30",
+        "CHƯA NỘP",
+        "",
+        "<TIMESTAMP>"
+      ]
+    ]
+  },
+  "sheet_id_vung_4": {
+    "TASK_01_IMAGE - 2026-07-02": [
+      [
+        "Họ Tên Sứ Giả",
+        "Tên Zalo",
+        "Trạng Thái",
+        "Ghi Chú",
+        "Thời Gian Gửi"
+      ],
+      [
+        "Sứ Giả 31",
+        "zalo_name_31",
+        "ĐÃ HOÀN THÀNH",
+        "",
+        "<TIMESTAMP>"
+      ],
+      [
+        "Sứ Giả 32",
+        "zalo_name_32",
+        "ĐÃ HOÀN THÀNH",
+        "",
+        "<TIMESTAMP>"
+      ],
+      [
+        "Sứ Giả 33",
+        "zalo_name_33",
+        "CHƯA NỘP",
+        "",
+        "<TIMESTAMP>"
+      ],
+      [
+        "Sứ Giả 34",
+        "zalo_name_34",
+        "ĐÃ HOÀN THÀNH",
+        "",
+        "<TIMESTAMP>"
+      ],
+      [
+        "Sứ Giả 35",
+        "zalo_name_35",
+        "CHƯA NỘP",
+        "",
+        "<TIMESTAMP>"
+      ],
+      [
+        "Sứ Giả 36",
+        "zalo_name_36",
+        "ĐÃ HOÀN THÀNH",
+        "",
+        "<TIMESTAMP>"
+      ],
+      [
+        "Sứ Giả 37",
+        "zalo_name_37",
+        "CHƯA NỘP",
+        "",
+        "<TIMESTAMP>"
+      ],
+      [
+        "Sứ Giả 38",
+        "zalo_name_38",
+        "ĐÃ HOÀN THÀNH",
+        "",
+        "<TIMESTAMP>"
+      ],
+      [
+        "Sứ Giả 39",
+        "zalo_name_39",
+        "ĐÃ HOÀN THÀNH",
+        "",
+        "<TIMESTAMP>"
+      ],
+      [
+        "Sứ Giả 40",
+        "zalo_name_40",
+        "ĐÃ HOÀN THÀNH",
+        "",
+        "<TIMESTAMP>"
+      ]
+    ]
+  },
+  "sheet_id_vung_5": {
+    "TASK_01_IMAGE - 2026-07-02": [
+      [
+        "Họ Tên Sứ Giả",
+        "Tên Zalo",
+        "Trạng Thái",
+        "Ghi Chú",
+        "Thời Gian Gửi"
+      ],
+      [
+        "Sứ Giả 41",
+        "zalo_name_41",
+        "ĐÃ HOÀN THÀNH",
+        "",
+        "<TIMESTAMP>"
+      ],
+      [
+        "Sứ Giả 42",
+        "zalo_name_42",
+        "ĐÃ HOÀN THÀNH",
+        "",
+        "<TIMESTAMP>"
+      ],
+      [
+        "Sứ Giả 43",
+        "zalo_name_43",
+        "ĐÃ HOÀN THÀNH",
+        "",
+        "<TIMESTAMP>"
+      ],
+      [
+        "Sứ Giả 44",
+        "zalo_name_44",
+        "CHƯA NỘP",
+        "",
+        "<TIMESTAMP>"
+      ],
+      [
+        "Sứ Giả 45",
+        "zalo_name_45",
+        "CHƯA NỘP",
+        "",
+        "<TIMESTAMP>"
+      ],
+      [
+        "Sứ Giả 46",
+        "zalo_name_46",
+        "ĐÃ HOÀN THÀNH",
+        "",
+        "<TIMESTAMP>"
+      ],
+      [
+        "Sứ Giả 47",
+        "zalo_name_47",
+        "ĐÃ HOÀN THÀNH",
+        "",
+        "<TIMESTAMP>"
+      ],
+      [
+        "Sứ Giả 48",
+        "zalo_name_48",
+        "ĐÃ HOÀN THÀNH",
+        "",
+        "<TIMESTAMP>"
+      ],
+      [
+        "Sứ Giả 49",
+        "zalo_name_49",
+        "ĐÃ HOÀN THÀNH",
+        "",
+        "<TIMESTAMP>"
+      ],
+      [
+        "Sứ Giả 50",
+        "zalo_name_50",
+        "ĐÃ HOÀN THÀNH",
+        "",
+        "<TIMESTAMP>"
+      ]
+    ]
+  },
+  "sheet_id_vung_6": {
+    "TASK_01_IMAGE - 2026-07-02": [
+      [
+        "Họ Tên Sứ Giả",
+        "Tên Zalo",
+        "Trạng Thái",
+        "Ghi Chú",
+        "Thời Gian Gửi"
+      ],
+      [
+        "Sứ Giả 51",
+        "zalo_name_51",
+        "ĐÃ HOÀN THÀNH",
+        "",
+        "<TIMESTAMP>"
+      ],
+      [
+        "Sứ Giả 52",
+        "zalo_name_52",
+        "ĐÃ HOÀN THÀNH",
+        "",
+        "<TIMESTAMP>"
+      ],
+      [
+        "Sứ Giả 53",
+        "zalo_name_53",
+        "ĐÃ HOÀN THÀNH",
+        "",
+        "<TIMESTAMP>"
+      ],
+      [
+        "Sứ Giả 54",
+        "zalo_name_54",
+        "ĐÃ HOÀN THÀNH",
+        "",
+        "<TIMESTAMP>"
+      ],
+      [
+        "Sứ Giả 55",
+        "zalo_name_55",
+        "CHƯA NỘP",
+        "",
+        "<TIMESTAMP>"
+      ],
+      [
+        "Sứ Giả 56",
+        "zalo_name_56",
+        "CHƯA NỘP",
+        "",
+        "<TIMESTAMP>"
+      ],
+      [
+        "Sứ Giả 57",
+        "zalo_name_57",
+        "ĐÃ HOÀN THÀNH",
+        "",
+        "<TIMESTAMP>"
+      ],
+      [
+        "Sứ Giả 58",
+        "zalo_name_58",
+        "ĐÃ HOÀN THÀNH",
+        "",
+        "<TIMESTAMP>"
+      ],
+      [
+        "Sứ Giả 59",
+        "zalo_name_59",
+        "ĐÃ HOÀN THÀNH",
+        "",
+        "<TIMESTAMP>"
+      ],
+      [
+        "Sứ Giả 60",
+        "zalo_name_60",
+        "CHƯA NỘP",
+        "",
+        "<TIMESTAMP>"
+      ]
+    ]
+  },
+  "sheet_id_vung_7": {
+    "TASK_01_IMAGE - 2026-07-02": [
+      [
+        "Họ Tên Sứ Giả",
+        "Tên Zalo",
+        "Trạng Thái",
+        "Ghi Chú",
+        "Thời Gian Gửi"
+      ],
+      [
+        "Sứ Giả 61",
+        "zalo_name_61",
+        "ĐÃ HOÀN THÀNH",
+        "",
+        "<TIMESTAMP>"
+      ],
+      [
+        "Sứ Giả 62",
+        "zalo_name_62",
+        "CHƯA NỘP",
+        "",
+        "<TIMESTAMP>"
+      ],
+      [
+        "Sứ Giả 63",
+        "zalo_name_63",
+        "CHƯA NỘP",
+        "",
+        "<TIMESTAMP>"
+      ],
+      [
+        "Sứ Giả 64",
+        "zalo_name_64",
+        "CHƯA NỘP",
+        "",
+        "<TIMESTAMP>"
+      ],
+      [
+        "Sứ Giả 65",
+        "zalo_name_65",
+        "ĐÃ HOÀN THÀNH",
+        "",
+        "<TIMESTAMP>"
+      ],
+      [
+        "Sứ Giả 66",
+        "zalo_name_66",
+        "CHƯA NỘP",
+        "",
+        "<TIMESTAMP>"
+      ],
+      [
+        "Sứ Giả 67",
+        "zalo_name_67",
+        "CHƯA NỘP",
+        "",
+        "<TIMESTAMP>"
+      ],
+      [
+        "Sứ Giả 68",
+        "zalo_name_68",
+        "CHƯA NỘP",
+        "",
+        "<TIMESTAMP>"
+      ],
+      [
+        "Sứ Giả 69",
+        "zalo_name_69",
+        "ĐÃ HOÀN THÀNH",
+        "",
+        "<TIMESTAMP>"
+      ],
+      [
+        "Sứ Giả 70",
+        "zalo_name_70",
+        "ĐÃ HOÀN THÀNH",
+        "",
+        "<TIMESTAMP>"
+      ]
+    ]
+  },
+  "sheet_id_vung_8": {
+    "TASK_01_IMAGE - 2026-07-02": [
+      [
+        "Họ Tên Sứ Giả",
+        "Tên Zalo",
+        "Trạng Thái",
+        "Ghi Chú",
+        "Thời Gian Gửi"
+      ],
+      [
+        "Sứ Giả 71",
+        "zalo_name_71",
+        "ĐÃ HOÀN THÀNH",
+        "",
+        "<TIMESTAMP>"
+      ],
+      [
+        "Sứ Giả 72",
+        "zalo_name_72",
+        "ĐÃ HOÀN THÀNH",
+        "",
+        "<TIMESTAMP>"
+      ],
+      [
+        "Sứ Giả 73",
+        "zalo_name_73",
+        "ĐÃ HOÀN THÀNH",
+        "",
+        "<TIMESTAMP>"
+      ],
+      [
+        "Sứ Giả 74",
+        "zalo_name_74",
+        "ĐÃ HOÀN THÀNH",
+        "",
+        "<TIMESTAMP>"
+      ],
+      [
+        "Sứ Giả 75",
+        "zalo_name_75",
+        "CHƯA NỘP",
+        "",
+        "<TIMESTAMP>"
+      ],
+      [
+        "Sứ Giả 76",
+        "zalo_name_76",
+        "ĐÃ HOÀN THÀNH",
+        "",
+        "<TIMESTAMP>"
+      ],
+      [
+        "Sứ Giả 77",
+        "zalo_name_77",
+        "ĐÃ HOÀN THÀNH",
+        "",
+        "<TIMESTAMP>"
+      ],
+      [
+        "Sứ Giả 78",
+        "zalo_name_78",
+        "CHƯA NỘP",
+        "",
+        "<TIMESTAMP>"
+      ],
+      [
+        "Sứ Giả 79",
+        "zalo_name_79",
+        "ĐÃ HOÀN THÀNH",
+        "",
+        "<TIMESTAMP>"
+      ],
+      [
+        "Sứ Giả 80",
+        "zalo_name_80",
+        "ĐÃ HOÀN THÀNH",
+        "",
+        "<TIMESTAMP>"
+      ]
+    ]
+  },
+  "sheet_id_vung_9": {
+    "TASK_01_IMAGE - 2026-07-02": [
+      [
+        "Họ Tên Sứ Giả",
+        "Tên Zalo",
+        "Trạng Thái",
+        "Ghi Chú",
+        "Thời Gian Gửi"
+      ],
+      [
+        "Sứ Giả 81",
+        "zalo_name_81",
+        "CHƯA NỘP",
+        "",
+        "<TIMESTAMP>"
+      ],
+      [
+        "Sứ Giả 82",
+        "zalo_name_82",
+        "ĐÃ HOÀN THÀNH",
+        "",
+        "<TIMESTAMP>"
+      ],
+      [
+        "Sứ Giả 83",
+        "zalo_name_83",
+        "ĐÃ HOÀN THÀNH",
+        "",
+        "<TIMESTAMP>"
+      ],
+      [
+        "Sứ Giả 84",
+        "zalo_name_84",
+        "CHƯA NỘP",
+        "",
+        "<TIMESTAMP>"
+      ],
+      [
+        "Sứ Giả 85",
+        "zalo_name_85",
+        "ĐÃ HOÀN THÀNH",
+        "",
+        "<TIMESTAMP>"
+      ],
+      [
+        "Sứ Giả 86",
+        "zalo_name_86",
+        "ĐÃ HOÀN THÀNH",
+        "",
+        "<TIMESTAMP>"
+      ],
+      [
+        "Sứ Giả 87",
+        "zalo_name_87",
+        "ĐÃ HOÀN THÀNH",
+        "",
+        "<TIMESTAMP>"
+      ],
+      [
+        "Sứ Giả 88",
+        "zalo_name_88",
+        "ĐÃ HOÀN THÀNH",
+        "",
+        "<TIMESTAMP>"
+      ],
+      [
+        "Sứ Giả 89",
+        "zalo_name_89",
+        "ĐÃ HOÀN THÀNH",
+        "",
+        "<TIMESTAMP>"
+      ],
+      [
+        "Sứ Giả 90",
+        "zalo_name_90",
+        "ĐÃ HOÀN THÀNH",
+        "",
+        "<TIMESTAMP>"
+      ]
+    ]
+  },
+  "sheet_id_vung_10": {
+    "TASK_01_IMAGE - 2026-07-02": [
+      [
+        "Họ Tên Sứ Giả",
+        "Tên Zalo",
+        "Trạng Thái",
+        "Ghi Chú",
+        "Thời Gian Gửi"
+      ],
+      [
+        "Sứ Giả 100",
+        "zalo_name_100",
+        "CHƯA NỘP",
+        "",
+        "<TIMESTAMP>"
+      ],
+      [
+        "Sứ Giả 91",
+        "zalo_name_91",
+        "ĐÃ HOÀN THÀNH",
+        "",
+        "<TIMESTAMP>"
+      ],
+      [
+        "Sứ Giả 92",
+        "zalo_name_92",
+        "CHƯA NỘP",
+        "",
+        "<TIMESTAMP>"
+      ],
+      [
+        "Sứ Giả 93",
+        "zalo_name_93",
+        "ĐÃ HOÀN THÀNH",
+        "",
+        "<TIMESTAMP>"
+      ],
+      [
+        "Sứ Giả 94",
+        "zalo_name_94",
+        "CHƯA NỘP",
+        "",
+        "<TIMESTAMP>"
+      ],
+      [
+        "Sứ Giả 95",
+        "zalo_name_95",
+        "ĐÃ HOÀN THÀNH",
+        "",
+        "<TIMESTAMP>"
+      ],
+      [
+        "Sứ Giả 96",
+        "zalo_name_96",
+        "ĐÃ HOÀN THÀNH",
+        "",
+        "<TIMESTAMP>"
+      ],
+      [
+        "Sứ Giả 97",
+        "zalo_name_97",
+        "ĐÃ HOÀN THÀNH",
+        "",
+        "<TIMESTAMP>"
+      ],
+      [
+        "Sứ Giả 98",
+        "zalo_name_98",
+        "ĐÃ HOÀN THÀNH",
+        "",
+        "<TIMESTAMP>"
+      ],
+      [
+        "Sứ Giả 99",
+        "zalo_name_99",
+        "CHƯA NỘP",
+        "",
+        "<TIMESTAMP>"
+      ]
+    ]
+  }
+}

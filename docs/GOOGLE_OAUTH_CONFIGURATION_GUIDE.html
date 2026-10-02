@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HƯỚNG DẪN CẤU HÌNH GOOGLE OAUTH HYBRID AUTHENTICATION — VNV-BOT V2 - VNV-Bot</title>
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --bg-body: #f8fafc;
+      --bg-card: #ffffff;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      color: var(--text-main);
+      background-color: var(--bg-body);
+      line-height: 1.65;
+      padding: 30px 20px;
+    }
+    .doc-container {
+      max-width: 900px;
+      margin: 0 auto;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 40px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.04);
+    }
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+    }
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+      color: var(--primary);
+      font-weight: 600;
+      font-size: 0.9rem;
+      padding: 6px 14px;
+      border-radius: 6px;
+      background: #eff6ff;
+      transition: background 0.15s;
+    }
+    .back-btn:hover { background: #dbeafe; }
+    h1 { font-size: 1.75rem; color: #0f172a; margin-bottom: 16px; font-weight: 800; }
+    h2 { font-size: 1.35rem; color: #0f172a; margin: 28px 0 14px; font-weight: 700; border-bottom: 1px solid #f1f5f9; padding-bottom: 6px; }
+    h3 { font-size: 1.15rem; color: #1e293b; margin: 20px 0 10px; font-weight: 600; }
+    h4 { font-size: 1rem; color: #334155; margin: 16px 0 8px; font-weight: 600; }
+    p { font-size: 0.95rem; margin-bottom: 12px; color: #334155; }
+    ul, ol { margin-left: 24px; margin-bottom: 16px; font-size: 0.95rem; }
+    li { margin-bottom: 6px; color: #334155; }
+    strong { color: #0f172a; }
+    blockquote {
+      border-left: 4px solid var(--primary);
+      background: #eff6ff;
+      padding: 12px 18px;
+      border-radius: 6px;
+      margin: 16px 0;
+      color: #1e40af;
+      font-size: 0.92rem;
+    }
+    pre {
+      background: #0f172a;
+      color: #f8fafc;
+      padding: 16px 20px;
+      border-radius: 8px;
+      overflow-x: auto;
+      margin: 16px 0;
+      font-family: Consolas, Monaco, "Courier New", monospace;
+      font-size: 0.88rem;
+    }
+    code {
+      font-family: Consolas, Monaco, "Courier New", monospace;
+      background: #f1f5f9;
+      color: #0f172a;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.88rem;
+    }
+    pre code { background: transparent; padding: 0; color: inherit; }
+    table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 0.9rem; }
+    th, td { padding: 10px 14px; border: 1px solid var(--border); text-align: left; }
+    th { background: #f8fafc; font-weight: 600; color: #1e293b; }
+    tr:nth-child(even) td { background: #fafafa; }
+    hr { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
+    a { color: var(--primary); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .doc-img { max-width: 100%; border-radius: 8px; border: 1px solid var(--border); margin: 16px 0; }
+  </style>
+</head>
+<body>
+  <div class="doc-container">
+    <div class="top-bar">
+      <a href="../HUONG_DAN_SU_DUNG.html" class="back-btn">⬅ Quay lại Cẩm Nang Sử Dụng</a>
+      <span style="font-size: 0.82rem; color: var(--text-muted);">VNV-Bot v2.0 Docs</span>
+    </div>
+    <h1>HƯỚNG DẪN CẤU HÌNH GOOGLE OAUTH HYBRID AUTHENTICATION — VNV-BOT V2</h1>
+<p>Tài liệu này hướng dẫn chi tiết cách cấu hình Google OAuth 2.0 cho ứng dụng VNV-Bot V2 trên mô hình triển khai chính thức <strong>Local Standalone Windows</strong>.</p>
+<hr />
+<h2>1. Tạo OAuth Client ID Trên Google Cloud Console</h2>
+<ol>
+<li>Truy cập <a href="https://console.cloud.google.com/" target="_blank">Google Cloud Console</a>.</li>
+<li>Chọn dự án (Project) của bạn hoặc tạo một dự án mới.</li>
+<li>Điều hướng đến <strong>APIs &amp; Services &gt; Credentials</strong>.</li>
+<li>Nhấn <strong>Create Credentials</strong> và chọn <strong>OAuth client ID</strong>.</li>
+<li>Chọn loại ứng dụng (<strong>Application type</strong>): <code>Web application</code>.</li>
+<li>Điền thông tin chính xác cho mô hình Local Standalone Windows:</li>
+</ol>
+<ul>
+<li><strong>Name</strong>: <code>VNV-Bot V2 Local</code></li>
+<li><strong>Authorized redirect URIs</strong> (BẮT BUỘC KHỚP 100%):</li>
+</ul>
+<pre><code class="language-text">     http://localhost:3000/api/auth/google/callback</code></pre>
+<ul>
+<li><em>Lưu ý về Authorized JavaScript origins</em>: Vì VNV-Bot V2 xử lý luồng Google OAuth hoàn toàn ở phía Server (Authorization Code Grant + PKCE qua endpoint backend <code>/api/auth/google</code>), ứng dụng <strong>KHÔNG</strong> yêu cầu đăng ký Authorized JavaScript origins. Mục này có thể để trống.</li>
+</ul>
+<ol>
+<li>Nhấn <strong>Create</strong> để lấy <code>Client ID</code> và <code>Client Secret</code>.</li>
+</ol>
+<hr />
+<h2>2. Cấu Hình Biến Môi Trường Canonical (<code>.env</code>)</h2>
+<p>VNV-Bot V2 sử dụng bộ tên biến môi trường chuẩn <strong>Canonical</strong>. Thêm các biến sau vào tệp <code>config/.env</code>:</p>
+<pre><code class="language-env"># ==========================================
+# GOOGLE OAUTH CONFIGURATION (CANONICAL)
+# ==========================================
+GOOGLE_OAUTH_CLIENT_ID=your-client-id.apps.googleusercontent.com
+GOOGLE_OAUTH_CLIENT_SECRET=your-client-secret
+GOOGLE_OAUTH_REDIRECT_URI=http://localhost:3000/api/auth/google/callback
+
+# Domain email được phép đăng nhập (phân cách bằng dấu phẩy)
+ALLOWED_EMAIL_DOMAINS=vnv.vn,gmail.com
+
+# Key mã hóa Session (Dài tối thiểu 32 ký tự, hỗ trợ rotate phân cách bằng dấu phẩy)
+SESSION_SECRET=super_secret_session_key_minimum_32_characters_long
+
+# Cấu hình Cookie cho môi trường Local Standalone (Bắt buộc false cho localhost HTTP)
+COOKIE_SECURE=false</code></pre>
+<hr />
+<h2>3. Cấu Hình Biến Session Secret &amp; Secret Rotation (<code>SESSION_SECRET</code>)</h2>
+<h3>3.1 Quy Tắc Cấu Hình</h3>
+<ul>
+<li><strong>Tên biến môi trường</strong>: <code>SESSION_SECRET</code> (Sử dụng duy nhất biến này cho cả active secret và rotation list).</li>
+<li><strong>Độ dài tối thiểu</strong>: Phần tử secret chính (đầu tiên) bắt buộc phải có độ dài từ <strong>32 ký tự trở lên</strong>.</li>
+<li><strong>Cơ chế Secret Rotation</strong>: Khi cần đổi secret mà không muốn ngắt phiên đăng nhập của người dùng active, cung cấp danh sách secret phân cách bằng dấu phẩy <code>,</code>:</li>
+</ul>
+<pre><code class="language-env">  SESSION_SECRET=new_secret_minimum_32_characters_long,old_secret_minimum_32_characters_long</code></pre>
+<p>  Express-session sẽ sử dụng secret đầu tiên để tạo chữ ký cho cookie phiên mới, đồng thời dùng các secret phía sau để kiểm tra tính hợp lệ của cookie phiên cũ.</p>
+<h3>3.2 Lệnh Tạo Secret An Toàn</h3>
+<p>Bạn có thể tạo chuỗi cryptographically secure secret ngẫu nhiên bằng lệnh Node.js trên Windows PowerShell / CMD:</p>
+<pre><code class="language-bash">node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"</code></pre>
+<p>Sao chép chuỗi kết quả và dán vào tệp <code>config/.env</code> tại biến <code>SESSION_SECRET</code>.</p>
+<hr />
+<h2>4. Quy Tắc Nghiêm Cấm Sử Dụng Legacy Environment Variables</h2>
+<p>⚠️ <strong>CẢNH BÁO NGUY HIỂM</strong>:</p>
+<p>Không được sử dụng các tên biến cũ (Legacy) dưới đây trong tệp <code>.env</code>:</p>
+<ul>
+<li>❌ <code>GOOGLE_CLIENT_ID</code></li>
+<li>❌ <code>GOOGLE_CLIENT_SECRET</code></li>
+<li>❌ <code>GOOGLE_REDIRECT_URI</code></li>
+</ul>
+<p>Nếu ứng dụng phát hiện bất kỳ biến legacy nào tồn tại trong môi trường, hệ thống sẽ <strong>Fail-Fast</strong> và lập tức dừng tiến trình khởi động để tránh nhầm lẫn cấu hình.</p>
+<hr />
+<h2>5. Cấu Hình Domain Whitelist (<code>ALLOWED_EMAIL_DOMAINS</code>)</h2>
+<p>Biến <code>ALLOWED_EMAIL_DOMAINS</code> kiểm soát danh sách tên miền email được phép đăng nhập vào hệ thống:</p>
+<ul>
+<li>Cú pháp: Danh sách các domain phân cách bởi dấu phẩy <code>,</code>.</li>
+<li>Ví dụ: <code>ALLOWED_EMAIL_DOMAINS=vnv.vn,gmail.com</code></li>
+<li>Tự động chuẩn hóa: Chuẩn hóa Unicode NFC, khoảng trắng và chữ hoa/thường; đồng thời áp dụng quy tắc canonical riêng cho địa chỉ Gmail (loại bỏ biến thể dot/plus-tag và quy đổi <code>googlemail.com</code> thành <code>gmail.com</code>).</li>
+</ul>
+<hr />
+<h2>6. Hướng Dẫn Chạy Local Trực Tiếp Trên Windows (Primary Deployment Mode)</h2>
+<ol>
+<li>Mở PowerShell hoặc Command Prompt tại thư mục dự án <code>d:\Project\vnv_bot</code>.</li>
+<li>Kiểm tra tệp <code>config/.env</code> đã có đầy đủ các biến môi trường canonical ở Mục 2.</li>
+<li>Đảm bảo cổng HTTP (mặc định 3000) không bị chiếm dụng.</li>
+<li>Khởi động ứng dụng trên Windows:</li>
+</ol>
+<pre><code class="language-powershell">   npm run dev</code></pre>
+<p>   hoặc:</p>
+<pre><code class="language-powershell">   node src/index.js</code></pre>
+<ol>
+<li>Mở trình duyệt và truy cập <code>http://localhost:3000</code> để sử dụng ứng dụng.</li>
+</ol>
+<hr />
+<h2>7. Các Lỗi Cấu Hình Phổ Biến &amp; Cách Chẩn Đoán (Troubleshooting)</h2>
+<table>
+<thead><tr>
+<th>Dấu hiệu / Lỗi</th>
+<th>Nguyên nhân phổ biến</th>
+<th>Cách xử lý</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><strong>Server dừng ngay khi khởi động (<code>FATAL: Thiếu các biến cấu hình bắt buộc</code>)</strong></td>
+<td>Thiếu biến canonical <code>GOOGLE_OAUTH_<em></code> hoặc đang dùng tên biến legacy <code>GOOGLE_CLIENT_</em></code>.</td>
+<td>Kiểm tra lại tệp <code>config/.env</code>, đổi tên key thành <code>GOOGLE_OAUTH_CLIENT_ID</code>, <code>GOOGLE_OAUTH_CLIENT_SECRET</code>, <code>GOOGLE_OAUTH_REDIRECT_URI</code>.</td>
+</tr>
+<tr>
+<td><strong>Lỗi <code>redirect_uri_mismatch</code> từ Google</strong></td>
+<td><code>GOOGLE_OAUTH_REDIRECT_URI</code> trong <code>.env</code> không khớp 100% với Redirect URI khai báo trên Google Cloud Console.</td>
+<td>Kiểm tra từng ký tự, port, và đường dẫn <code>http://localhost:3000/api/auth/google/callback</code>.</td>
+</tr>
+<tr>
+<td><strong>Lỗi 403 <code>Email domain is not allowed</code></strong></td>
+<td>Domain email Google đăng nhập không nằm trong danh sách <code>ALLOWED_EMAIL_DOMAINS</code>.</td>
+<td>Bổ sung domain của email đó vào biến <code>ALLOWED_EMAIL_DOMAINS</code> trong <code>config/.env</code>.</td>
+</tr>
+<tr>
+<td><strong>Lỗi <code>Phần tử đầu tiên của SESSION_SECRET phải dài tối thiểu 32 ký tự</code></strong></td>
+<td>Phần tử đầu tiên trong <code>SESSION_SECRET</code> ngắn hơn 32 ký tự.</td>
+<td>Tạo secret mới dài từ 32 ký tự trở lên theo hướng dẫn ở Mục 3.2.</td>
+</tr>
+</tbody></table>
+<hr />
+<h2>8. Optional Server Deployment — Not Part of the Current Approved Release</h2>
+<p>Mô hình triển khai Server bên ngoài (VPS, Cloud Hosting, HTTPS, PM2) <strong>KHÔNG</strong> thuộc phạm vi phát hành được duyệt hiện tại:</p>
+<ul>
+<li>Yêu cầu cấu hình thêm domain HTTPS, reverse proxy (Nginx/Cloudflare), <code>COOKIE_SECURE=true</code>, và PM2 process manager.</li>
+<li><strong>Mọi hình thức triển khai Server bên ngoài bắt buộc phải có sự phê duyệt riêng bằng văn bản từ Product Owner.</strong></li>
+</ul>
+
+  </div>
+</body>
+</html>

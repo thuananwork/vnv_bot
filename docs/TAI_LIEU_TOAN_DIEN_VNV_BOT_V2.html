@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TÀI LIỆU TOÀN DIỆN HỆ THỐNG VNV-BOT V2 - VNV-Bot</title>
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --bg-body: #f8fafc;
+      --bg-card: #ffffff;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      color: var(--text-main);
+      background-color: var(--bg-body);
+      line-height: 1.65;
+      padding: 30px 20px;
+    }
+    .doc-container {
+      max-width: 900px;
+      margin: 0 auto;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 40px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.04);
+    }
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+    }
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+      color: var(--primary);
+      font-weight: 600;
+      font-size: 0.9rem;
+      padding: 6px 14px;
+      border-radius: 6px;
+      background: #eff6ff;
+      transition: background 0.15s;
+    }
+    .back-btn:hover { background: #dbeafe; }
+    h1 { font-size: 1.75rem; color: #0f172a; margin-bottom: 16px; font-weight: 800; }
+    h2 { font-size: 1.35rem; color: #0f172a; margin: 28px 0 14px; font-weight: 700; border-bottom: 1px solid #f1f5f9; padding-bottom: 6px; }
+    h3 { font-size: 1.15rem; color: #1e293b; margin: 20px 0 10px; font-weight: 600; }
+    h4 { font-size: 1rem; color: #334155; margin: 16px 0 8px; font-weight: 600; }
+    p { font-size: 0.95rem; margin-bottom: 12px; color: #334155; }
+    ul, ol { margin-left: 24px; margin-bottom: 16px; font-size: 0.95rem; }
+    li { margin-bottom: 6px; color: #334155; }
+    strong { color: #0f172a; }
+    blockquote {
+      border-left: 4px solid var(--primary);
+      background: #eff6ff;
+      padding: 12px 18px;
+      border-radius: 6px;
+      margin: 16px 0;
+      color: #1e40af;
+      font-size: 0.92rem;
+    }
+    pre {
+      background: #0f172a;
+      color: #f8fafc;
+      padding: 16px 20px;
+      border-radius: 8px;
+      overflow-x: auto;
+      margin: 16px 0;
+      font-family: Consolas, Monaco, "Courier New", monospace;
+      font-size: 0.88rem;
+    }
+    code {
+      font-family: Consolas, Monaco, "Courier New", monospace;
+      background: #f1f5f9;
+      color: #0f172a;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.88rem;
+    }
+    pre code { background: transparent; padding: 0; color: inherit; }
+    table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 0.9rem; }
+    th, td { padding: 10px 14px; border: 1px solid var(--border); text-align: left; }
+    th { background: #f8fafc; font-weight: 600; color: #1e293b; }
+    tr:nth-child(even) td { background: #fafafa; }
+    hr { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
+    a { color: var(--primary); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .doc-img { max-width: 100%; border-radius: 8px; border: 1px solid var(--border); margin: 16px 0; }
+  </style>
+</head>
+<body>
+  <div class="doc-container">
+    <div class="top-bar">
+      <a href="../HUONG_DAN_SU_DUNG.html" class="back-btn">⬅ Quay lại Cẩm Nang Sử Dụng</a>
+      <span style="font-size: 0.82rem; color: var(--text-muted);">VNV-Bot v2.0 Docs</span>
+    </div>
+    <h1>TÀI LIỆU TOÀN DIỆN HỆ THỐNG VNV-BOT V2</h1>
+<h2>BẢN ĐẶC TẢ KIẾN TRÚC, QUY TRÌNH NGHIỆP VỤ, CƠ SỞ DỮ LIỆU &amp; HIỆN TRẠNG KỸ THUẬT</h2>
+<blockquote><strong>Tài liệu phục vụ:</strong> Trưởng Cụm 5 (Solution Architect / Tech Lead) rà soát, hiệu chỉnh và định hướng hoàn thiện hệ thống.</blockquote>
+<blockquote><strong>Phiên bản hiện tại của mã nguồn:</strong> 2.0.0</blockquote>
+<blockquote><strong>Môi trường vận hành mục tiêu:</strong> Windows Local PC (Node.js v18+, SQLite3, Chrome/Edge, Google Sheets API, Zalo Web Automation).</blockquote>
+<blockquote><strong>Thời điểm trích xuất tài liệu:</strong> Tháng 09/2026.</blockquote>
+<hr />
+<h1>MỤC LỤC</h1>
+<ol>
+<li><a href="#1-bối-cảnh-bài-toán--triết-lý-vận-hành" target="_blank">Bối Cảnh Bài Toán &amp; Triết Lý Vận Hành</a></li>
+<li><a href="#2-kiến-trúc-kỹ-thuật-tổng-thể-system-architecture" target="_blank">Kiến Trúc Kỹ Thuật Tổng Thể (System Architecture)</a></li>
+<li><a href="#3-cấu-trúc-thư-mục--vai-trò-từng-file-mã-nguồn" target="_blank">Cấu Trúc Thư Mục &amp; Vai Trò Từng File Mã Nguồn</a></li>
+<li><a href="#4-mô-hình-dữ-liệu-chi-tiết-database-schema---14-bảng" target="_blank">Mô Hình Dữ Liệu Chi Tiết (Database Schema - 14 Bảng)</a></li>
+<li><a href="#5-dữ-liệu-nhân-sự-thực-tế-master-registry-vùng-27--cụm-5" target="_blank">Dữ Liệu Nhân Sự Thực Tế (Master Registry Vùng 27 &amp; Cụm 5)</a></li>
+<li><a href="#6-quy-trình--luồng-hoạt-động-vận-hành-toàn-diện-cho-người-dùng-operational-workflows" target="_blank">Quy Trình &amp; Luồng Hoạt Động Vận Hành Toàn Diện Cho Người Dùng (Operational Workflows)</a></li>
+</ol>
+<ul>
+<li><a href="#61-bảng-phân-định-trách-nhiệm-vận-hành-raci--role-responsibilities" target="_blank">6.1. Bảng Phân Định Trách Nhiệm Vận Hành (RACI)</a></li>
+<li><a href="#62-sơ-đồ-luồng-hoạt-động-tổng-thể-24-giờ-24-hour-operational-swimlane" target="_blank">6.2. Sơ Đồ Luồng Hoạt Động Tổng Thể 24 Giờ (24h Operational Swimlane)</a></li>
+<li><a href="#63-chi-tiết-luồng-vận-hành-cho-từng-nhóm-người-dùng" target="_blank">6.3. Chi Tiết Luồng Vận Hành Cho Từng Nhóm Người Dùng</a></li>
+<li><a href="#luồng-dành-cho-trưởng-vùng--phó-vùng-14-người" target="_blank">🅰️ Luồng Dành Cho Trưởng Vùng &amp; Phó Vùng (14 người)</a></li>
+<li><a href="#luồng-dành-cho-trưởng-cụm-5-bạn---nguyễn-thuận-an" target="_blank">🅱️ Luồng Dành Cho Trưởng Cụm 5 (Bạn - Nguyễn Thuận An)</a></li>
+<li><a href="#luồng-dành-cho-sứ-giả-trong-group-zalo-vùng" target="_blank">🆎 Luồng Dành Cho Sứ Giả Trong Group Zalo Vùng</a></li>
+<li><a href="#luồng-xử-lý-nội-bộ-của-bot-technical-data-pipeline" target="_blank">⚙️ Luồng Xử Lý Nội Bộ Của Bot (Technical Data Pipeline)</a></li>
+</ul>
+<ol>
+<li><a href="#7-giao-diện-web--các-tính-năng-điều-hành-web-ui-features" target="_blank">Giao Diện Web &amp; Các Tính Năng Điều Hành (Web UI Features)</a></li>
+<li><a href="#8-danh-mục-chi-tiết-api-endpoints" target="_blank">Danh Mục Chi Tiết API Endpoints</a></li>
+<li><a href="#9-cơ-chế-chạy-ngầm-cron-schedulers-vs-luồng-nút-bấm-on-demand" target="_blank">Cơ Chế Chạy Ngầm (Cron Schedulers) vs Luồng Nút Bấm (On-Demand)</a></li>
+<li><a href="#10-bảng-phân-tích-kỹ-thuật-các-điểm-chưa-đúng-ý-hoặc-cần-sửa-đổi" target="_blank">BẢNG PHÂN TÍCH KỸ THUẬT: CÁC ĐIỂM CHƯA ĐÚNG Ý HOẶC CẦN SỬA ĐỔI</a></li>
+</ol>
+<hr />
+<h1>1. BỐI CẢNH BÀI TOÁN &amp; TRIẾT LÝ VẬN HÀNH</h1>
+<h3>1.1. Cơ cấu tổ chức thực tế</h3>
+<ul>
+<li><strong>Cụm 5 (Nhóm Thiện Nguyện VNV)</strong> do <strong>Nguyễn Thuận An (Trưởng Cụm)</strong> trực tiếp chỉ đạo.</li>
+<li>Quản lý <strong>7 Vùng</strong>: Vùng 25, Vùng 26, Vùng 27, Vùng 28, Vùng 29, Vùng 30, Vùng 31.</li>
+<li>Quy mô: Mỗi vùng có 1 Trưởng Vùng, 1 Phó Vùng và <strong>1–30 Sứ giả</strong> (Tổng toàn cụm: <strong>~114 nhân sự</strong>).</li>
+<li>Người dùng trực tiếp của phần mềm: <strong>~20 người (gồm: 1 Trưởng Cụm, 7 Trưởng Vùng, 7 Phó Vùng)</strong>.</li>
+</ul>
+<h3>1.2. Triết lý vận hành: "Human-in-the-Loop &amp; On-Demand" (Bán Tự Động)</h3>
+<ul>
+<li><strong>KHÔNG tự động hóa 100% mù quáng:</strong> Không để Bot tự quyết định bắn báo cáo sai lệch khi chưa có người duyệt.</li>
+<li><strong>Quyền kiểm soát thuộc về Trưởng/Phó Vùng:</strong></li>
+<li>Khung giờ làm việc (Ca ngày / Ca tối) do từng Vùng tự cấu hình trên Web UI.</li>
+<li>Các thao tác cốt lõi kích hoạt bằng <strong>Nút Bấm Trực Tiếp (On-Demand Buttons)</strong>:</li>
+<li>Bấm nút $\rightarrow$ Mới lấy bài chia sẻ. (Nếu không bấm, Trưởng vùng tự share trên Zalo $\rightarrow$ Bot bỏ qua không báo lỗi).</li>
+<li>Bấm nút $\rightarrow$ Mới quét bài, ghi Google Sheet và tạo văn bản Báo cáo Vùng Mẫu 1.</li>
+<li>Bấm nút $\rightarrow$ Trưởng Cụm mới gom số liệu 7 Vùng tạo Báo cáo Cụm Mẫu 2 tag <code>@Phạm Minh Tú</code>.</li>
+<li><strong>Khắc phục triệt để lỗi của V1:</strong></li>
+<li>V1 thất bại vì cuộn ngược Zalo tìm ngày (mất tin nhắn), cố gắng tải và OCR hàng trăm ảnh (nghẽn mạng, lỗi).</li>
+<li>V2 khắc phục: <strong>Chỉ đọc nội dung text của tin nhắn</strong> (Sứ giả gửi 3+ ảnh luôn kèm text có tên và ngày nhiệm vụ), tra cứu bằng <strong>từ điển ánh xạ danh tính cố định (Identity Registry)</strong>.</li>
+</ul>
+<hr />
+<h1>2. KIẾN TRÚC KỸ THUẬT TỔNG THỂ (SYSTEM ARCHITECTURE)</h1>
+<pre><code class="language-">┌─────────────────────────────────────────────────────────────────────────────────┐
+│                           WINDOWS LOCAL PC OPERATOR                             │
+│                  (Trình duyệt Chrome: http://localhost:3000)                    │
+└──────────────────────────────────────┬──────────────────────────────────────────┘
+                                       │ HTTP / REST / Cookie Session
+                                       ▼
+┌─────────────────────────────────────────────────────────────────────────────────┐
+│                         NODE.JS / EXPRESS BACKEND SERVER                        │
+│                                                                                 │
+│  ┌──────────────────────┐  ┌───────────────────────┐  ┌──────────────────────┐  │
+│  │   Routes &amp; Auth      │  │  On-Demand Services   │  │   Parser &amp; Mapping   │  │
+│  │  - /api/v2/regions   │  │  - forwardTask()      │  │  - message_parser    │  │
+│  │  - /api/v2/cluster   │  │  - scanAndReport()    │  │  - identity_resolver │  │
+│  │  - /api/v2/zalo      │  │  - aggregateCluster() │  │  - reports_v2        │  │
+│  └──────────┬───────────┘  └───────────┬───────────┘  └──────────┬───────────┘  │
+│             │                          │                         │              │
+│             └──────────────────────────┼─────────────────────────┘              │
+│                                        ▼                                        │
+│  ┌───────────────────────────────────────────────────────────────────────────┐  │
+│  │                   SQLite DATABASE (data/vnv_bot.db)                       │  │
+│  │   - members (Master Registry)     - submissions (Kết quả ngày)           │  │
+│  │   - identity_mappings (Từ điển)   - reports (Văn bản Mẫu 1 &amp; 2)           │  │
+│  │   - regions (Cấu hình giờ 7 Vùng) - raw_events &amp; zalo_message_queue       │  │
+│  └───────────────────────────────────────────────────────────────────────────┘  │
+└─────────────────────┬─────────────────────────────────────┬─────────────────────┘
+                      │                                     │
+       Puppeteer-Core │                                     │ Googleapis v4
+       Profile Session│                                     │ Service Account / OAuth
+                      ▼                                     ▼
+     ┌────────────────────────────────┐    ┌─────────────────────────────────┐
+     │      ZALO WEB AUTOMATION       │    │     GOOGLE SPREADSHEETS V4      │
+     │      (https://chat.zalo.me)    │    │ (Ma trận tháng: Cột D..AH, R4..)│
+     │  Profile: ./zalo_session       │    │ Spreadsheet ID: 1o36kM3Z6...    │
+     │  - Group CỤM 5 (Nguồn bài)     │    │  - Tab: T8/26 (Vùng 27)         │
+     │  - Group VÙNG 27 (Nộp bài)     │    │  - Ghi chuẩn: "Oke", lý do      │
+     │  - Group BĐH (Tag @PhạmMinhTú) │    └─────────────────────────────────┘
+     └────────────────────────────────┘</code></pre>
+<h3>Thành phần công nghệ (Tech Stack):</h3>
+<ol>
+<li><strong>Runtime:</strong> Node.js (CommonJS modules).</li>
+<li><strong>Web Framework:</strong> Express 4.x, Cookie-parser, Express-session (lưu session vào SQLite bằng <code>connect-sqlite3</code>).</li>
+<li><strong>Cơ sở dữ liệu:</strong> SQLite3 (<code>data/vnv_bot.db</code>) chạy chế độ WAL (Write-Ahead Logging), hỗ trợ foreign keys.</li>
+<li><strong>Tương tác Zalo:</strong> <code>puppeteer-core</code> gắn với Google Chrome có sẵn trên Windows (<code>C:\Program Files\Google\Chrome\Application\chrome.exe</code>), lưu trữ thư mục phiên <code>./zalo_session</code>.</li>
+<li><strong>Google Sheets:</strong> Thư viện <code>googleapis</code> v4 kết hợp <code>google-auth-library</code> (hỗ trợ cả Service Account key JSON và Google OAuth2).</li>
+<li><strong>Lập lịch (Legacy/Background):</strong> <code>node-cron</code> quản lý các tác vụ backup DB và quét định kỳ nếu bật chế độ tự động.</li>
+<li><strong>Frontend:</strong> HTML5 Single Page Application, CSS3 Glassmorphism Theme (Dark/Light toggle), Vanilla JavaScript (không dùng React/Vue để nhẹ và chạy offline ngay lập tức).</li>
+</ol>
+<hr />
+<h1>3. CẤU TRÚC THƯ MỤC &amp; VAI TRÒ TỪNG FILE MÃ NGUỒN</h1>
+<pre><code class="language-">d:\Project\vnv_bot\
+├── config/
+│   ├── .env                    # Biến môi trường hệ thống (Port, Safe Mode, Google ID, Session Key)
+│   └── .env.example            # Bản mẫu cấu hình
+├── data/
+│   └── vnv_bot.db              # File cơ sở dữ liệu SQLite chính của dự án
+├── zalo_session/               # Thư mục lưu Profile Google Chrome (Cookies, Cache Zalo Web đã đăng nhập)
+├── scripts/
+│   ├── build_desktop.js        # Script đóng gói dự án ra bản Desktop portable
+│   └── open_zalo_login.js      # Script mở cửa sổ Chrome thật để quét mã QR đăng nhập Zalo
+├── src/
+│   ├── index.js                # Điểm khởi động chính (Khởi tạo DB -&gt; Tải Env -&gt; Chạy App lắng nghe cổng 3000)
+│   ├── app.js                  # Cấu hình Express app, middleware bảo mật, các route API chung
+│   ├── config/
+│   │   └── db.js               # Kết nối SQLite, hàm query helper (db.get, db.all, db.run), auto-migrate
+│   ├── database/
+│   │   ├── schema_v2.sql       # Lược đồ 14 bảng quan hệ hoàn chỉnh
+│   │   └── seed_v2.sql         # Dữ liệu nạp mẫu chuẩn (19 nhân sự Vùng 27, 7 Vùng, 1 Cụm)
+│   ├── middlewares/
+│   │   └── auth.js             # Middleware xác thực đăng nhập, phân quyền (Admin, Cluster, Region)
+│   ├── routes/
+│   │   └── actions_v2.js       # Router chứa toàn bộ các endpoint On-Demand V2 (Forward, Report, Zalo Login)
+│   ├── services/
+│   │   ├── on_demand_actions.js    # Dịch vụ cốt lõi điều phối 3 nút bấm (Forward, Quét Vùng, Gom Cụm)
+│   │   ├── message_parser.js       # Bộ phân tích cú pháp tin nhắn Sứ giả (Text, ngày, lý do, nộp bù)
+│   │   ├── identity_resolver.js    # Bộ 4 tầng ánh xạ tên Zalo về Họ tên Google Sheet
+│   │   ├── sheet_matrix_sync.js    # Dịch vụ tính toán tọa độ ô ma trận (Cột D..AH, Hàng R4..R24) và ghi Sheet
+│   │   ├── reports_v2.js           # Bộ sinh văn bản Báo cáo Vùng Mẫu 1 và Báo cáo Cụm 5 Mẫu 2
+│   │   ├── zalo_browser_manager.js # Dịch vụ điều khiển Puppeteer mở cửa sổ Zalo Web quét QR
+│   │   ├── state_machine.js        # Quản lý trạng thái vòng đời ngày (IDLE -&gt; FORWARDED -&gt; EVALUATED -&gt; ...)
+│   │   └── zalo/
+│   │       ├── puppeteer_worker.js # Worker theo dõi DOM Zalo Web (MutationObserver) &amp; gõ phím gửi tin
+│   │       └── pipeline.js         # Hàng đợi xử lý tin nhắn bất đồng bộ chống trùng lặp
+│   ├── tests/
+│   │   ├── browser_full_features.test.js # Test tự động 22 kịch bản trên trình duyệt Chrome thật
+│   │   ├── actions_v2_e2e.test.js        # Test tích hợp luồng nghiệp vụ On-Demand
+│   │   └── system_design_v2.test.js      # Test kiểm tra tính toàn vẹn kiến trúc và DB
+│   └── web/
+│       ├── index.html          # Giao diện điều hành (Bảng Điều Hành Vùng, Bảng Điều Hành Cụm 5, Admin)
+│       ├── main.js             # Mã nguồn JavaScript frontend xử lý API, tương tác bảng, 6 màu trạng thái
+│       └── style.css           # Giao diện CSS hiện đại, hỗ trợ Dark Mode
+└── package.json                # Danh sách thư viện và npm scripts</code></pre>
+<hr />
+<h1>4. MÔ HÌNH DỮ LIỆU CHI TIẾT (DATABASE SCHEMA - 14 BẢNG)</h1>
+<p>Lược đồ dữ liệu được thiết kế tập trung trong file <code>src/database/schema_v2.sql</code>:</p>
+<pre><code class="language-mermaid">erDiagram
+    CLUSTERS ||--o{ REGIONS : contains
+    REGIONS ||--o{ MEMBERS : registers
+    MEMBERS ||--o{ IDENTITY_MAPPINGS : maps
+    REGIONS ||--o{ SUBMISSIONS : tracks
+    MEMBERS ||--o{ SUBMISSIONS : submits
+    TASKS ||--o{ SUBMISSIONS : assigned
+    TASKS ||--o{ REPORTS : generates
+    REGIONS ||--o{ REPORTS : publishes
+    USERS ||--o{ AUDIT_LOGS : performs</code></pre>
+<h3>Danh sách chi tiết 14 bảng:</h3>
+<ol>
+<li><strong><code>users</code></strong>: Tài khoản quản trị nội bộ đăng nhập Web (<code>admin</code>, <code>cluster_leader</code>, <code>region_leader</code>). Mật khẩu mã hóa bcryptjs, hỗ trợ cả Google OAuth.</li>
+<li><strong><code>clusters</code></strong>: Quản lý Cụm. Hiện tại: <code>id = 5</code>, <code>cluster_name = 'Cụm 5'</code>, <code>leader_name = 'Nguyễn Thuận An'</code>.</li>
+<li><strong><code>regions</code></strong>: Quản lý 7 Vùng (ID 25 đến 31). Lưu cấu hình khung giờ riêng từng vùng (<code>task_start_time</code>, <code>task_end_time</code>, <code>report_start_time</code>, <code>report_end_time</code>), tên tab Google Sheet (<code>sheet_name</code>), Zalo Group ID.</li>
+<li><strong><code>members</code> (Bảng trọng yếu - Master Registry)</strong>:</li>
+</ol>
+<ul>
+<li>Danh sách nhân sự chuẩn hóa theo đúng thứ tự Google Sheet.</li>
+<li>Các trường cốt lõi: <code>region_id</code>, <code>sheet_row_index</code> (vị trí hàng vật lý trên sheet: R4, R5, R8..), <code>real_name</code> (họ tên chuẩn), <code>role</code> (<code>LEADER</code>, <code>DEPUTY</code>, <code>EMISSARY</code>), <code>join_date</code>.</li>
+</ul>
+<ol>
+<li><strong><code>identity_mappings</code> (Từ điển ánh xạ Zalo $\leftrightarrow$ Sheet)</strong>:</li>
+</ol>
+<ul>
+<li>Lưu trữ các biến thể tên của Sứ giả: <code>member_id</code>, <code>zalo_user_id</code>, <code>zalo_display_name</code> ("Thanh Trà ❤️"), <code>normalized_alias</code> ("thanh tra"), <code>confidence_score</code>.</li>
+</ul>
+<ol>
+<li><strong><code>raw_events</code></strong>: Lưu trữ mọi tin nhắn thô đọc được từ Zalo để làm bằng chứng kiểm toán (Audit Trail) và chống mất dữ liệu khi bot crash.</li>
+<li><strong><code>tasks</code></strong>: Lưu trữ nhiệm vụ ngày được phát hành (<code>task_code</code> định dạng <code>TSK-C5-YYYYMMDD-01</code>, link Facebook, nội dung).</li>
+<li><strong><code>submissions</code> (Bảng lưu kết quả nộp bài hàng ngày)</strong>:</li>
+</ol>
+<ul>
+<li>Khóa duy nhất: <code>UNIQUE(work_date, member_id)</code>.</li>
+<li>Trạng thái <code>status</code>:</li>
+<li><code>OK</code>: Đã hoàn thành (được ghi "Oke" lên Sheet).</li>
+<li><code>NO_RESPONSE</code>: Chưa nộp / không phản hồi (để ô trống trên Sheet).</li>
+<li><code>LATE_REQUEST</code>: Xin làm muộn / xin phép (ghi lý do lên Sheet).</li>
+<li><code>SUPPLEMENT</code>: Nộp bù ngày cũ (đưa vào mục 7 của Báo cáo).</li>
+<li><code>OFF</code>: Xin nghỉ hoạt động.</li>
+<li><code>notes</code>: Chuỗi lý do (ví dụ: <em>"Học quân sự nên hoãn đến 10/08/2026"</em>).</li>
+<li><code>supplement_dates_json</code>: Mảng JSON chứa các ngày nộp bù (ví dụ <code>["2026-08-18", "2026-08-19"]</code>).</li>
+<li><code>sheet_synced</code>: Đánh dấu 0/1 đã đồng bộ lên Google Sheet thành công hay chưa.</li>
+</ul>
+<ol>
+<li><strong><code>reports</code></strong>: Lưu trữ nội dung văn bản báo cáo đã sinh (Mẫu 1 và Mẫu 2) kèm số lượng thống kê <code>total_completed</code>, <code>total_incomplete</code>.</li>
+<li><strong><code>daily_operations</code></strong>: Máy trạng thái theo dõi tiến trình ngày (<code>IDLE</code> $\rightarrow$ <code>TASK_FORWARDED</code> $\rightarrow$ <code>EVALUATED</code> $\rightarrow$ <code>SHEET_SYNCED</code> $\rightarrow$ <code>REPORTS_DISPATCHED</code>).</li>
+<li><strong><code>zalo_message_queue</code></strong>: Hàng đợi gửi tin nhắn Zalo bất đồng bộ với cơ chế retry khi gặp lỗi mạng.</li>
+<li><strong><code>local_config</code></strong>: Lưu trữ cấu hình key-value tùy biến cục bộ.</li>
+<li><strong><code>audit_logs</code></strong>: Nhật ký ghi vết mọi hành vi người dùng (đăng nhập, sửa giờ, bấm quét bài, ghi sheet).</li>
+<li><strong><code>schema_migrations</code></strong>: Quản lý phiên bản nâng cấp cấu trúc database tự động.</li>
+</ol>
+<hr />
+<h1>5. DỮ LIỆU NHÂN SỰ THỰC TẾ (MASTER REGISTRY VÙNG 27 &amp; CỤM 5)</h1>
+<p>Theo liên kết Google Sheet thực tế của Vùng 27 (Tab <code>T8/26</code>):  </p>
+<p><code>https://docs.google.com/spreadsheets/d/1o36kM3Z68ZqAId7YxfC4Nnoq8RRO-xhQSls-lNXfgds/edit?gid=1065763286#gid=1065763286</code></p>
+<p>Cơ sở dữ liệu đã nạp chuẩn xác <strong>19 nhân sự của Vùng 27</strong> ứng với số hàng trên trang tính:</p>
+<table>
+<thead><tr>
+<th>STT</th>
+<th>Vị trí Hàng Sheet (<code>sheet_row_index</code>)</th>
+<th>Họ và Tên Chuẩn (<code>real_name</code>)</th>
+<th>Vai Trò</th>
+<th>Nickname Zalo Đã Mapped</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><strong>Hàng 4</strong></td>
+<td><strong>Phạm Quang Đại</strong></td>
+<td>Trưởng Vùng</td>
+<td>Phạm Quang Đại, Quang Đại</td>
+</tr>
+<tr>
+<td>2</td>
+<td><strong>Hàng 5</strong></td>
+<td><strong>Nguyễn Thị Thanh Trà</strong></td>
+<td>Phó Vùng</td>
+<td>Thanh Trà, Trà Nguyễn, Thanh Trà ❤️</td>
+</tr>
+<tr>
+<td>-</td>
+<td><em>Hàng 6-7</em></td>
+<td><em>(Dòng tiêu đề bảng trên Sheet)</em></td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>3</td>
+<td><strong>Hàng 8</strong></td>
+<td>Nguyễn Thị Phương Trinh</td>
+<td>Sứ giả</td>
+<td>Phương Trinh, Trinh Nguyễn</td>
+</tr>
+<tr>
+<td>4</td>
+<td><strong>Hàng 9</strong></td>
+<td>Thàn Thị Quỳnh Nhi</td>
+<td>Sứ giả</td>
+<td>Quỳnh Nhi</td>
+</tr>
+<tr>
+<td>5</td>
+<td><strong>Hàng 10</strong></td>
+<td>Nguyễn Thị Yến Nhi</td>
+<td>Sứ giả</td>
+<td>Yến Nhi</td>
+</tr>
+<tr>
+<td>6</td>
+<td><strong>Hàng 11</strong></td>
+<td>Cù Ngọc Quỳnh</td>
+<td>Sứ giả</td>
+<td>Cù Quỳnh, Quỳnh Cù</td>
+</tr>
+<tr>
+<td>7</td>
+<td><strong>Hàng 12</strong></td>
+<td>Phan Văn Lãm</td>
+<td>Sứ giả</td>
+<td>Phan Lãm</td>
+</tr>
+<tr>
+<td>8</td>
+<td><strong>Hàng 13</strong></td>
+<td>Nguyễn Tiến Dũng</td>
+<td>Sứ giả</td>
+<td>Tiến Dũng</td>
+</tr>
+<tr>
+<td>9</td>
+<td><strong>Hàng 14</strong></td>
+<td>Huỳnh Kim Ngân</td>
+<td>Sứ giả</td>
+<td>Kim Ngân</td>
+</tr>
+<tr>
+<td>10</td>
+<td><strong>Hàng 15</strong></td>
+<td>Mai Thị Thủy</td>
+<td>Sứ giả</td>
+<td>Mai Thủy</td>
+</tr>
+<tr>
+<td>11</td>
+<td><strong>Hàng 16</strong></td>
+<td>Nguyễn Anh Hoàng Phúc</td>
+<td>Sứ giả</td>
+<td>Hoàng Phúc</td>
+</tr>
+<tr>
+<td>12</td>
+<td><strong>Hàng 17</strong></td>
+<td>Trần Thị Như Ý</td>
+<td>Sứ giả</td>
+<td>Như Ý</td>
+</tr>
+<tr>
+<td>13</td>
+<td><strong>Hàng 18</strong></td>
+<td>Đỗ Phương Vy</td>
+<td>Sứ giả</td>
+<td>Phương Vy</td>
+</tr>
+<tr>
+<td>14</td>
+<td><strong>Hàng 19</strong></td>
+<td>Trần Lê Bích Thảo</td>
+<td>Sứ giả</td>
+<td>Bích Thảo</td>
+</tr>
+<tr>
+<td>15</td>
+<td><strong>Hàng 20</strong></td>
+<td>Dương Quỳnh Như</td>
+<td>Sứ giả</td>
+<td>Quỳnh Như</td>
+</tr>
+<tr>
+<td>16</td>
+<td><strong>Hàng 21</strong></td>
+<td>Nguyễn Thị Kiều Trang</td>
+<td>Sứ giả</td>
+<td>Kiều Trang</td>
+</tr>
+<tr>
+<td>17</td>
+<td><strong>Hàng 22</strong></td>
+<td>Mai Thị Thúy Vân</td>
+<td>Sứ giả</td>
+<td>Thúy Vân</td>
+</tr>
+<tr>
+<td>18</td>
+<td><strong>Hàng 23</strong></td>
+<td>Nguyễn Hoàng Anh</td>
+<td>Sứ giả</td>
+<td>Hoàng Anh</td>
+</tr>
+<tr>
+<td>19</td>
+<td><strong>Hàng 24</strong></td>
+<td>Nguyễn Ngọc Bảo Trâm</td>
+<td>Sứ giả</td>
+<td>Bảo Trâm</td>
+</tr>
+</tbody></table>
+<blockquote>[!NOTE]</blockquote>
+<blockquote>Các Vùng 25, 26, 28, 29, 30, 31 hiện tại đang có dữ liệu cấu hình vùng trong bảng <code>regions</code>, nhưng danh sách nhân sự chi tiết trong bảng <code>members</code> đang là dữ liệu mẫu khởi tạo. Khi triển khai chính thức cần nạp từ các tab sheet tương ứng của từng vùng.</blockquote>
+<hr />
+<h1>6. QUY TRÌNH &amp; LUỒNG HOẠT ĐỘNG VẬN HÀNH TOÀN DIỆN CHO NGƯỜI DÙNG (OPERATIONAL WORKFLOWS)</h1>
+<blockquote>[!IMPORTANT]</blockquote>
+<blockquote>Phần này mô tả chi tiết <strong>TỪNG BƯỚC THAO TÁC THỰC TẾ</strong> của đội ngũ ~20 người dùng (Trưởng Cụm, 7 Trưởng Vùng, 7 Phó Vùng) và Sứ giả, kết hợp với các phản ứng kỹ thuật tương ứng của Bot.</blockquote>
+<hr />
+<h3>6.1. Bảng Phân Định Trách Nhiệm Vận Hành (RACI &amp; Role Responsibilities)</h3>
+<table>
+<thead><tr>
+<th>Đối Tượng</th>
+<th>Số Lượng</th>
+<th>Trách Nhiệm Chính Trên Hệ Thống</th>
+<th>Công Cụ &amp; Môi Trường Tương Tác</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><strong>Trưởng Cụm 5 (Bạn)</strong></td>
+<td>1</td>
+<td>- Giám sát tổng thể 7 Vùng.&lt;br&gt;- Cấu hình tài khoản, danh bạ nhân sự Master.&lt;br&gt;- Cuối ngày: Bấm tổng hợp và gửi Báo cáo Cụm Mẫu 2 lên Ban Điều Hành.</td>
+<td>- Web UI (<code>/panel-cluster-workspace</code>)&lt;br&gt;- Group Zalo <code>BĐH SỨ GIẢ TOÀN QUỐC - VNV</code></td>
+</tr>
+<tr>
+<td><strong>Trưởng &amp; Phó Vùng</strong></td>
+<td>14 (2 người/vùng)</td>
+<td>- Cài đặt khung giờ làm việc riêng của Vùng.&lt;br&gt;- Bấm lấy &amp; chia sẻ nhiệm vụ ca trưa (tùy chọn).&lt;br&gt;- Ca tối: Bấm quét bài, đối soát nhân sự trên Web UI, tự động ghi Google Sheet và xuất Báo cáo Vùng Mẫu 1.</td>
+<td>- Web UI (<code>/panel-region-workspace</code>)&lt;br&gt;- Group Zalo của từng Vùng &amp; Group <code>CỤM 5</code></td>
+</tr>
+<tr>
+<td><strong>Sứ Giả</strong></td>
+<td>1–30 người/vùng</td>
+<td>- Nhận link FB làm nhiệm vụ.&lt;br&gt;- Gửi minh chứng (3+ ảnh) kèm text đúng cú pháp (Tên + Ngày) vào Group Vùng.</td>
+<td>- Ứng dụng Zalo Mobile / Desktop&lt;br&gt;- Group Zalo của Vùng</td>
+</tr>
+<tr>
+<td><strong>Hệ Thống VNV-Bot</strong></td>
+<td>1</td>
+<td>- Cung cấp giao diện Web trực quan (<code>localhost:3000</code>).&lt;br&gt;- Bóc tách ngữ nghĩa text tin nhắn, ánh xạ tên Zalo về Google Sheet.&lt;br&gt;- Tự động tính toán tọa độ ma trận ô (D..AH, R4..) để ghi Sheet.&lt;br&gt;- Sinh văn bản Báo cáo Mẫu 1 và Mẫu 2 chuẩn xác trong 0.5s.</td>
+<td>- Backend Node.js / SQLite / Puppeteer / Google Sheets API</td>
+</tr>
+</tbody></table>
+<hr />
+<h3>6.2. Sơ Đồ Luồng Hoạt Động Tổng Thể 24 Giờ (24-Hour Operational Swimlane)</h3>
+<pre><code class="language-mermaid">sequenceDiagram
+    autonumber
+    actor C as Trưởng Cụm 5 (Bạn)
+    actor L as Trưởng/Phó Vùng (14 người)
+    actor S as Sứ Giả (1-30 người/vùng)
+    participant UI as Giao Diện Web VNV-Bot
+    participant Bot as Core Backend &amp; Database
+    participant Sheet as Google Sheet (Tab T8/26)
+    participant Zalo as Group Zalo Vùng &amp; Cụm
+
+    %% GIAI ĐOẠN 0: KHỞI TẠO
+    Note over C,Zalo: [PHA 0: THIẾT LẬP BAN ĐẦU - CHỈ LÀM 1 LẦN]
+    L-&gt;&gt;UI: 1. Mở Web localhost:3000 -&gt; Bấm nút [ĐĂNG NHẬP / ĐỔI ZALO]
+    UI-&gt;&gt;Bot: Kích hoạt Chrome Profile ./zalo_session
+    L-&gt;&gt;Zalo: Dùng điện thoại quét mã QR Zalo (Lưu phiên vĩnh viễn)
+    L-&gt;&gt;UI: 2. Cài đặt khung giờ riêng của Vùng + Tên tab Sheet -&gt; Bấm [Lưu Khung Giờ]
+    L-&gt;&gt;UI: 3. Click chỉnh 6 dải màu trạng thái theo thói quen mắt nhìn (Tự lưu máy cá nhân)
+
+    %% GIAI ĐOẠN 1: CA LÀM BÀI
+    Note over C,Zalo: [PHA 1: CA CHIỀU/TỐI 10h00 - 21h30 - SỨ GIẢ NỘP BÀI]
+    L-&gt;&gt;Zalo: Trưởng/Phó Vùng tự share bài FB vào Group Zalo Vùng (3 giây)
+    S-&gt;&gt;Zalo: Sứ giả nhận link bài FB -&gt; Làm nhiệm vụ -&gt; Chụp ảnh minh chứng (số lượng tùy ý)
+    S-&gt;&gt;Zalo: Gửi ảnh + tin nhắn text có Tên và Ngày làm việc
+    opt Trường hợp xin phép / Nộp bù
+        S-&gt;&gt;Zalo: Nhắn lý do: "Học quân sự hoãn đến...", "Ôn thi..." HOẶC "Bổ sung nhiệm vụ ngày..."
+    end
+
+    %% GIAI ĐOẠN 3: CA QUÉT VÙNG
+    Note over C,Zalo: [PHA 3: CA TỐI 21h00 - 22h30 - QUÉT BÀI &amp; BÁO CÁO VÙNG MẪU 1]
+    L-&gt;&gt;UI: Mở Web UI -&gt; Chọn ngày -&gt; Bấm [QUÉT BÀI &amp; XUẤT BÁO CÁO VÙNG]
+    UI-&gt;&gt;Bot: Kích hoạt quét tin nhắn text trong khung giờ Vùng
+    Bot-&gt;&gt;Bot: Parser bóc tách: Tên, Ngày, Nộp bù (&lt; today), Quân sự, Ôn thi
+    Bot-&gt;&gt;Bot: Identity Resolver 4 tầng map về đúng hàng trên Sheet (R4, R5, R8..R24)
+    Bot--&gt;&gt;UI: Hiển thị Bảng đối soát 19 nhân sự kèm màu sắc trực quan
+    Note over L,UI: Trưởng Vùng đối soát mắt: Ai làm (Xanh), Quân sự (Tím), Chưa nộp (Xám)
+    Bot-&gt;&gt;Sheet: Tự động điền chữ "Oke" / lý do vào Cột ngày (D..AH)
+    Bot--&gt;&gt;UI: Trả về văn bản Báo Cáo Vùng (Mẫu 1) tại ô Preview
+    L-&gt;&gt;UI: Bấm [Sao chép]
+    L-&gt;&gt;Zalo: Dán và gửi Báo cáo Mẫu 1 vào Group VÙNG 27 &amp; Group CỤM 5
+
+    %% GIAI ĐOẠN 4: CA TỔNG HỢP CỤM
+    Note over C,Zalo: [PHA 4: CUỐI NGÀY 22h15 - 22h30 - TỔNG HỢP BÁO CÁO CỤM 5 MẪU 2]
+    C-&gt;&gt;UI: Trưởng Cụm mở tab "Điều Hành Cụm 5" -&gt; Bấm [TỔNG HỢP &amp; BẮN BÁO CÁO CỤM 5]
+    UI-&gt;&gt;Bot: Đọc submissions của cả 7 Vùng (25..31) trong ngày
+    Bot-&gt;&gt;Bot: Tính tổng nhân sự, % hoàn thành, gom danh sách chưa làm kèm tag @Zalo
+    Bot-&gt;&gt;Bot: Gắn thẻ đích danh: "@Phạm Minh Tú em gửi báo cáo nha anh"
+    Bot--&gt;&gt;UI: Hiển thị văn bản Báo Cáo Cụm (Mẫu 2) tại ô Preview
+    C-&gt;&gt;UI: Bấm [Sao chép]
+    C-&gt;&gt;Zalo: Dán và gửi Báo cáo Mẫu 2 vào Group "BĐH SỨ GIẢ TOÀN QUỐC - VNV"</code></pre>
+<hr />
+<h3>6.3. Chi Tiết Luồng Vận Hành Cho Từng Nhóm Người Dùng</h3>
+<h4>🅰️ LUỒNG DÀNH CHO TRƯỞNG VÙNG &amp; PHÓ VÙNG (14 NGƯỜI)</h4>
+<ul>
+<li><strong>Bước 1: Thiết lập ban đầu (Chỉ làm 1 lần trên máy tính cá nhân):</strong></li>
+</ul>
+<ol>
+<li>Truy cập <code>http://localhost:3000</code> trên trình duyệt Chrome/Edge.</li>
+<li>Đăng nhập tài khoản điều hành Vùng (ví dụ tài khoản Vùng 27).</li>
+<li>Bấm nút màu xanh <strong><code>[ĐĂNG NHẬP / ĐỔI ZALO]</code></strong> $\rightarrow$ Trình duyệt Chrome thật tự động mở ra trang <code>chat.zalo.me</code> $\rightarrow$ Lấy điện thoại quét mã QR. Từ nay phiên Zalo được duy trì vĩnh viễn trên máy tính.</li>
+<li>Tại card <strong>Khung Giờ Hoạt Động Của Vùng</strong>: Nhập giờ ca ngày (vd <code>10:00</code> - <code>15:00</code>), giờ ca tối (vd <code>21:00</code> - <code>22:30</code>), tab Sheet (vd <code>T8/26</code>) $\rightarrow$ Bấm nút <strong><code>[Lưu Khung Giờ]</code></strong>.</li>
+<li>Tại thanh <strong>Bảng Màu Trạng Thái</strong>: Click vào từng dải ô màu để chọn màu hiển thị ưa thích (vd đổi <em>Làm muộn</em> thành màu Cam/Đỏ). Màu này tự động lưu trên máy Trưởng Vùng.</li>
+</ol>
+<ul>
+<li><strong>Bước 2: Ca ngày (10h00 – 15h00) - Chia sẻ nhiệm vụ:</strong></li>
+<li>Trưởng/Phó Vùng thấy bài viết từ Group <code>CỤM 5</code> hoặc <code>TỔNG BĐH KÊNH SỨ GIẢ - VNV</code> $\rightarrow$ Tự bấm Chuyển tiếp (Share) trên app Zalo vào Group Vùng (thao tác chưa đến 3 giây, cực nhanh và tiện, không cần thông qua Bot).</li>
+</ul>
+<ul>
+<li><strong>Bước 3: Ca tối (21h00 – 22h30) - Quét bài &amp; Báo cáo Vùng Mẫu 1:</strong></li>
+</ul>
+<ol>
+<li>Trưởng/Phó Vùng vào lại Web UI <code>localhost:3000</code> $\rightarrow$ Chọn ngày làm việc (mặc định hôm nay).</li>
+<li>Bấm nút màu xanh lá <strong><code>[QUÉT BÀI &amp; XUẤT BÁO CÁO VÙNG]</code></strong>.</li>
+<li>Hệ thống lập tức thực hiện 3 hành động song song:</li>
+</ol>
+<ul>
+<li><strong>Phân tích tin nhắn:</strong> Đọc toàn bộ tin nhắn text trong khung giờ Vùng, lọc tên Sứ giả và ngày nộp.</li>
+<li><strong>Hiển thị Bảng đối soát nhân sự:</strong> 19 dòng hiện lên rõ ràng:</li>
+<li>Sứ giả đã gửi bài $\rightarrow$ Badge <strong>Oke (Màu xanh)</strong>.</li>
+<li>Sứ giả nhắn đi học quân sự $\rightarrow$ Badge <strong>Đi quân sự (Màu tím)</strong> kèm ghi chú.</li>
+<li>Sứ giả nhắn nộp bù ngày cũ $\rightarrow$ Badge <strong>Làm muộn/Bổ sung (Màu vàng)</strong>.</li>
+<li>Sứ giả không nhắn gì $\rightarrow$ Badge <strong>Chưa nộp (Màu xám)</strong>.</li>
+<li><strong>Ghi trực tiếp vào Google Sheet:</strong> Tự động điền chữ <code>"Oke"</code> vào đúng cột ngày (ví dụ ngày 20 điền vào Cột <code>W</code>, hàng R4, R5, R8..R24). Các ô chưa nộp để trống.</li>
+</ul>
+<ol>
+<li>Khung <strong>Xem Trước Báo Cáo Vùng (Mẫu 1)</strong> tự động điền sẵn văn bản hoàn chỉnh 7 mục (Trưởng vùng, Phó vùng, Tổng số, Đã xong, Chưa xong kèm tag, Xin phép, Bổ sung).</li>
+<li>Trưởng Vùng bấm nút <strong><code>[Sao chép]</code></strong> $\rightarrow$ Dán vào Group Zalo của Vùng mình và gửi 1 bản vào Group <code>CỤM 5</code> để Trưởng Cụm nắm số liệu.</li>
+</ol>
+<hr />
+<h4>🅱️ LUỒNG DÀNH CHO TRƯỞNG CỤM 5 (BẠN - NGUYỄN THUẬN AN)</h4>
+<ul>
+<li><strong>Bước 1: Giám sát trong ngày:</strong></li>
+<li>Theo dõi trên Dashboard tiến độ tổng thể của 7 Vùng (Vùng 25 đến 31).</li>
+<li>Có thể vào từng Vùng kiểm tra xem Trưởng/Phó Vùng đã lưu khung giờ và chạy báo cáo hay chưa.</li>
+</ul>
+<ul>
+<li><strong>Bước 2: Cuối ngày (22h15 – 22h30) - Chốt Báo cáo Cụm 5 gửi Ban Điều Hành:</strong></li>
+</ul>
+<ol>
+<li>Chờ các Vùng hoàn thành ca báo cáo Vùng (thông thường trước 22h15).</li>
+<li>Trên menu bên trái, Trưởng Cụm bấm vào mục <strong>"Điều Hành Cụm 5"</strong> (<code>#panel-cluster-workspace</code>).</li>
+<li>Bấm nút lớn màu tím: <strong><code>[TỔNG HỢP &amp; BẮN BÁO CÁO CỤM 5]</code></strong>.</li>
+<li>Hệ thống tự động:</li>
+</ol>
+<ul>
+<li>Gom toàn bộ số liệu nộp bài trong ngày của 7 Vùng (tổng ~114 nhân sự).</li>
+<li>Thống kê tỷ lệ hoàn thành %, thống kê số lượng từng Vùng (Vùng 25: x/y, Vùng 27: 17/19...).</li>
+<li>Lọc toàn bộ Sứ giả chưa nộp bài của cả 7 Vùng, tự động gắn tiền tố <code>@</code> trước tên Zalo để phục vụ tag tên nhắc nhở.</li>
+<li>Tự động bổ sung câu chào và tag người phụ trách toàn quốc:  </li>
+</ul>
+<p>       <code>@Phạm Minh Tú em gửi báo cáo nha anh</code>.</p>
+<ol>
+<li>Nội dung Báo cáo Cụm Mẫu 2 hiện ngay tại ô Preview Text. Trưởng Cụm bấm nút <strong><code>[Sao chép]</code></strong> $\rightarrow$ Mở Group Zalo <code>BĐH SỨ GIẢ TOÀN QUỐC - VNV</code> và dán gửi đi. Hoàn tất công việc trong ngày!</li>
+</ol>
+<hr />
+<h4>🆎 LUỒNG DÀNH CHO SỨ GIẢ TRONG GROUP ZALO VÙNG</h4>
+<ol>
+<li><strong>Nhận nhiệm vụ:</strong> Sứ giả thấy tin nhắn phân phối nhiệm vụ trong Group Zalo Vùng lúc trưa $\rightarrow$ Bấm link Facebook để like, share, comment theo yêu cầu.</li>
+<li><strong>Nộp bài đúng quy định:</strong></li>
+</ol>
+<ul>
+<li>Chụp lại minh chứng (số lượng ảnh tùy ý theo từng nhiệm vụ, Bot hoàn toàn không tải và không đếm ảnh).</li>
+<li>Gửi ảnh vào Group Zalo Vùng.</li>
+<li><strong>BẮT BUỘC gửi kèm tin nhắn văn bản có TÊN và NGÀY:</strong></li>
+<li><em>Ví dụ mẫu 1:</em> <code>Nguyễn Anh Hoàng Phúc gửi báo cáo nhiệm vụ 16/06/2026</code></li>
+<li><em>Ví dụ mẫu 2:</em> <code>Phản hồi hoàn thành nhiệm vụ T4 ngày 17/6/2026 - Nguyễn Ngọc Bào Trâm</code></li>
+<li>Hoặc các từ khóa ngắn gọn: <code>Hoàn thành nhiệm vụ</code>, <code>DONE</code>, <code>Oke</code>.</li>
+</ul>
+<ol>
+<li><strong>Trường hợp xin phép / Hoãn / Nộp bù ngày hôm trước:</strong></li>
+</ol>
+<ul>
+<li><strong>Tự động nhận diện nộp bù (KHÔNG CẦN chữ "bổ sung"):</strong></li>
+<li>Ví dụ: Hôm nay ngày 17/06, sứ giả nhắn <code>Nguyễn Anh Hoàng Phúc gửi báo cáo 16/06</code>.</li>
+<li>Bot so sánh thấy <code>16/06 &lt; 17/06</code> $\rightarrow$ <strong>Tự động nhận diện là nộp bù ngày cũ</strong>.</li>
+<li>Bot tự động tìm sang cột ngày cũ (16/06) trên Google Sheet điền <code>"Oke"</code>, đồng thời đưa vào mục <strong>"7. Bổ sung:"</strong> của báo cáo hôm nay.</li>
+<li><strong>Xin hoãn quân sự:</strong> <code>Học quân sự nên hoãn đến 10/08/2026</code> $\rightarrow$ Bot ghi nhận lý do quân sự vào Sheet và đưa vào mục 6. Xin phép.</li>
+<li><strong>Xin nghỉ ôn thi / ốm:</strong> <code>Em xin phép ôn thi THPT</code> hoặc <code>Em nằm viện xin nghỉ</code> $\rightarrow$ Ghi chú lý do tương ứng.</li>
+</ul>
+<hr />
+<h4>⚙️ LUỒNG XỬ LÝ NỘI BỘ CỦA BOT (TECHNICAL DATA PIPELINE)</h4>
+<pre><code class="language-">[Tin nhắn Zalo trong Group]
+          │
+          ▼
+1. TÁCH LỌC TEXT: Bỏ qua các file ảnh nặng, chỉ lấy string text
+          │
+          ▼
+2. BỘ MÁY PARSER (message_parser.js):
+   - Regex trích xuất danh sách ngày: extractDatesFromText(content)
+   - Kiểm tra ngày &lt; today -&gt; Phân loại SUPPLEMENT (Bổ sung ngày cũ)
+   - Regex trích xuất lý do: "quân sự", "ôn thi", "nhập viện", "xin off"
+   - Cú pháp báo cáo: "gửi báo cáo", "hoàn thành", "done" -&gt; Phân loại OK
+          │
+          ▼
+3. BỘ MÁY IDENTITY RESOLVER 4 TẦNG (identity_resolver.js):
+   - Tầng 1: So khớp họ tên thật xuất hiện trong text tin nhắn (Độ tin cậy 99%)
+   - Tầng 2: So khớp Zalo User ID cố định
+   - Tầng 3: So khớp Nickname đã lưu trong DB (identity_mappings)
+   - Tầng 4: Chuẩn hóa tiếng Việt bỏ dấu + Token matching ("Thanh Trà ❤️" -&gt; "Nguyễn Thị Thanh Trà")
+          │
+          ▼
+4. LƯU KẾT QUẢ VÀO SQLITE (submissions table):
+   - Ghi nhận trạng thái: OK / LATE_REQUEST / SUPPLEMENT / NO_RESPONSE / OFF
+          │
+          ▼
+5. ĐỒNG BỘ MA TRẬN GOOGLE SHEET (sheet_matrix_sync.js):
+   - Tọa độ cột: ColIndex = 3 + DayNumber (Ngày 1 = Cột D, Ngày 19 = Cột V, Ngày 31 = Cột AH)
+   - Tọa độ hàng: R4, R5, R8..R24 theo sheet_row_index
+   - Batch Update 1 lần cả cột: Ghi chữ "Oke", lý do, hoặc để trống
+          │
+          ▼
+6. XUẤT BẢN BÁO CÁO TEXT (reports_v2.js):
+   - Sinh Báo cáo Vùng Mẫu 1 (7 mục chuẩn)
+   - Sinh Báo cáo Cụm Mẫu 2 (Gom 7 vùng + Tag @Phạm Minh Tú)</code></pre>
+<hr />
+<h1>7. GIAO DIỆN WEB &amp; CÁC TÍNH NĂNG ĐIỀU HÀNH (WEB UI FEATURES)</h1>
+<p>Giao diện Web hoạt động tại <code>http://localhost:3000</code>:</p>
+<ol>
+<li><strong>Bảng Điều Hành Vùng (<code>#panel-region-workspace</code>)</strong>:</li>
+</ol>
+<ul>
+<li><strong>Thanh công cụ đỉnh:</strong> Nút <strong>[Đăng Nhập / Đổi Zalo]</strong> (xanh Zalo), Bộ chọn Vùng (25 đến 31), Bộ chọn Ngày làm việc.</li>
+<li><strong>Card Cài Đặt Khung Giờ:</strong> Cho phép Trưởng/Phó Vùng tự sửa giờ Ca Ngày (10:00 - 15:00), Ca Tối (21:00 - 22:30), Tên tab Sheet (<code>T8/26</code>) và bấm <strong>[Lưu Khung Giờ]</strong> (lưu thẳng vào database SQLite).</li>
+<li><strong>Thanh 6 Dải Màu Trạng Thái Tùy Chỉnh:</strong></li>
+<li>6 ô màu: 🟢 Hoàn thành (Oke), 🟡 Làm muộn/Bổ sung, ⚪ Chưa nộp, 🟣 Đi quân sự, 🌸 Ôn thi/Đi viện, 🔴 Xin nghỉ (Off).</li>
+<li>Người dùng <strong>click trực tiếp vào ô màu để đổi màu tùy ý</strong> (ví dụ đổi <em>"Làm muộn"</em> thành màu Đỏ).</li>
+<li>Màu sắc tự động lưu vào <code>localStorage</code> trên máy tính của người dùng và cập nhật màu badge trên bảng nhân sự ngay lập tức.</li>
+<li><strong>Bảng Đối Soát 19 Nhân Sự:</strong> Hiển thị rõ STT, Hàng Sheet (R4, R5, R8..), Họ tên, Nickname Zalo, Vai trò, Badge trạng thái màu và Ghi chú lý do.</li>
+<li><strong>Khung Xem Trước Báo Cáo Vùng (Mẫu 1):</strong> Khung textarea hiển thị báo cáo hoàn chỉnh kèm nút <strong>[Sao chép]</strong> vào clipboard chỉ bằng 1 click.</li>
+</ul>
+<ol>
+<li><strong>Bảng Điều Hành Cụm 5 (<code>#cluster-workspace</code>)</strong>:</li>
+</ol>
+<ul>
+<li>Nút <strong>[TỔNG HỢP &amp; BẮN BÁO CÁO CỤM 5]</strong>.</li>
+<li>Khung xem trước Báo cáo Cụm Mẫu 2 kèm nút <strong>[Sao chép]</strong>.</li>
+</ul>
+<ol>
+<li><strong>Các tính năng nền tảng khác:</strong></li>
+</ol>
+<ul>
+<li>Nút chuyển đổi giao diện Sáng / Tối (<strong>Dark / Light Theme Toggle</strong>).</li>
+<li>Đăng nhập bảo mật nội bộ (mặc định <code>admin</code> / <code>admin</code>).</li>
+<li>Các bảng quản trị phụ: Xem danh sách bài nộp chi tiết, xem lịch sử báo cáo, quản lý sứ giả, quản lý danh sách cụm/vùng.</li>
+</ul>
+<hr />
+<h1>8. DANH MỤC CHI TIẾT API ENDPOINTS</h1>
+<p>Tất cả các API On-Demand mới phục vụ quy trình vận hành được định nghĩa tại <code>src/routes/actions_v2.js</code>:</p>
+<table>
+<thead><tr>
+<th>Method</th>
+<th>Đường dẫn API</th>
+<th>Chức năng &amp; Tham số</th>
+<th>Kết quả trả về</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><strong>POST</strong></td>
+<td><code>/api/v2/zalo/open-login</code></td>
+<td>Mở cửa sổ Chrome thật chạy <code>chat.zalo.me</code> để quét mã QR</td>
+<td><code>{ success: true, message: 'Đã mở cửa sổ Zalo...' }</code></td>
+</tr>
+<tr>
+<td><strong>GET</strong></td>
+<td><code>/api/v2/zalo/status</code></td>
+<td>Kiểm tra thư mục <code>./zalo_session</code> đã có dữ liệu đăng nhập chưa</td>
+<td><code>{ success: true, data: { hasSession, isRunning } }</code></td>
+</tr>
+<tr>
+<td><strong>GET</strong></td>
+<td><code>/api/v2/regions</code></td>
+<td>Lấy danh sách 7 Vùng kèm số lượng thành viên và khung giờ</td>
+<td><code>{ success: true, data: [ { id: 27, region_name: "Vùng 27", ... } ] }</code></td>
+</tr>
+<tr>
+<td><strong>POST</strong></td>
+<td><code>/api/v2/regions/:id/settings</code></td>
+<td>Cập nhật khung giờ và tên tab sheet của vùng. Body: <code>{ task_start_time, task_end_time, report_start_time, report_end_time, sheet_name }</code></td>
+<td><code>{ success: true, message: 'Đã cập nhật...', data }</code></td>
+</tr>
+<tr>
+<td><strong>GET</strong></td>
+<td><code>/api/v2/regions/:id/members</code></td>
+<td>Lấy 19 nhân sự của Vùng kèm trạng thái nộp bài ngày <code>?date=YYYY-MM-DD</code></td>
+<td><code>{ success: true, regionId: 27, data: [ { real_name, sheet_row_index, submission_status, ... } ] }</code></td>
+</tr>
+<tr>
+<td><strong>POST</strong></td>
+<td><code>/api/v2/regions/:id/forward-task</code></td>
+<td>Ca ngày: Lấy nhiệm vụ và forward vào group Vùng. Body: <code>{ workDate, taskContent, sourceGroup }</code></td>
+<td><code>{ success: true, message: 'Đã chia sẻ...', data: { taskCode, ... } }</code></td>
+</tr>
+<tr>
+<td><strong>POST</strong></td>
+<td><code>/api/v2/regions/:id/run-report</code></td>
+<td>Ca tối: Quét tin nhắn, điền ma trận Google Sheet và tạo Báo cáo Mẫu 1. Body: <code>{ workDate, simulatedMessages, dryRun }</code></td>
+<td><code>{ success: true, data: { completed, totalMembers, sheetRange, reportContent } }</code></td>
+</tr>
+<tr>
+<td><strong>POST</strong></td>
+<td><code>/api/v2/cluster/run-report</code></td>
+<td>Cuối ngày: Tổng hợp dữ liệu 7 Vùng tạo Báo cáo Mẫu 2 tag Tú. Body: <code>{ workDate, dryRun }</code></td>
+<td><code>{ success: true, data: { totalMembers, totalCompleted, reportContent } }</code></td>
+</tr>
+<tr>
+<td><strong>GET</strong></td>
+<td><code>/api/v2/preview/report</code></td>
+<td>Lấy nội dung xem trước báo cáo text mà không ghi DB/Sheet. Query: `?type=region</td>
+<td>cluster&amp;regionId=27&amp;workDate=...`</td>
+<td><code>{ success: true, content: "..." }</code></td>
+</tr>
+</tbody></table>
+<hr />
+<h1>9. CƠ CHẾ CHẠY NGẦM (CRON SCHEDULERS) VS LUỒNG NÚT BẤM (ON-DEMAND)</h1>
+<p>Hệ thống hiện tại có sự đan xen giữa 2 tư duy thiết kế:</p>
+<ol>
+<li><strong>Tư duy cũ (Thuần Cron tự động trong <code>src/scheduler/</code>):</strong></li>
+</ol>
+<ul>
+<li>File <code>src/scheduler/index.js</code> lên lịch 6 jobs chạy ngầm theo giờ cố định:</li>
+<li><code>backupDb.job.js</code>: Sao lưu DB lúc 02:00 sáng.</li>
+<li><code>distribute.job.js</code>: Tự động bắn nhiệm vụ lúc 10:00 sáng.</li>
+<li><code>summarize.job.js</code>: Tự động tổng hợp kết quả lúc 21:30 tối.</li>
+<li><code>syncSheets.job.js</code>: Tự động ghi Sheet lúc 22:00 tối.</li>
+<li><code>sendReports.job.js</code>: Tự động gửi báo cáo lúc 22:15 tối.</li>
+<li><code>zaloRefreshToken.job.js</code>: Làm mới token Zalo OA.</li>
+<li><em>Hạn chế của tư duy này:</em> Mỗi Vùng có khung giờ nộp bài khác nhau, tiến độ sứ giả thất thường, nếu chạy cứng nhắc theo giờ Cron thì báo cáo sẽ bị thiếu bài hoặc sai sót mà Trưởng vùng không kịp can thiệp.</li>
+</ul>
+<ol>
+<li><strong>Tư duy mới (On-Demand Buttons trong <code>src/routes/actions_v2.js</code>):</strong></li>
+</ol>
+<ul>
+<li>Tách rời hoàn toàn khỏi lịch cứng: Trưởng Vùng rảnh lúc 21:15 thì bấm lúc 21:15, 22:00 bấm lúc 22:00.</li>
+<li>Bấm nút $\rightarrow$ Quét bài $\rightarrow$ Kiểm tra mắt trên bảng nhân sự $\rightarrow$ Thấy đúng mới bấm xuất báo cáo.</li>
+<li>Đây là luồng đang được ưu tiên và tích hợp hoàn chỉnh trên Web UI hiện tại.</li>
+</ul>
+<hr />
+<h1>10. BẢNG PHÂN TÍCH KỸ THUẬT: CÁC ĐIỂM CHƯA ĐÚNG Ý HOẶC CẦN SỬA ĐỔI</h1>
+<blockquote>[!IMPORTANT]</blockquote>
+<blockquote>Đây là phần trọng tâm để bạn (Trưởng Cụm / Solution Architect) trực tiếp rà soát, đánh giá và chỉ đạo sửa đổi code theo đúng ý bạn:</blockquote>
+<table>
+<thead><tr>
+<th>#</th>
+<th>Hạng mục kỹ thuật</th>
+<th>Hiện trạng code đang làm</th>
+<th>Điểm có thể chưa đúng ý bạn</th>
+<th>Đề xuất hướng điều chỉnh</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><strong>1</strong></td>
+<td><strong>Cách lấy tin nhắn Zalo lúc bấm Quét bài</strong></td>
+<td>Khi bấm nút <code>[QUÉT BÀI]</code>, hàm <code>scanAndReportRegion</code> đọc tin nhắn từ bảng <code>raw_events</code> trong SQLite (hoặc mảng giả lập <code>simulatedMessages</code>).</td>
+<td>Chưa có cầu nối trực tiếp để tại khoảnh khắc bấm nút, Bot tự động nhảy vào cửa sổ Zalo Web đang mở, cuộn lấy các tin nhắn mới nhất trong ngày của group đó rồi mới nạp vào DB.</td>
+<td>Bổ sung hàm Puppeteer: <code>scrapeGroupMessages(groupName, fromTime, toTime)</code> để cào trực tiếp từ DOM Zalo Web ngay khi người dùng click nút.</td>
+</tr>
+<tr>
+<td><strong>2</strong></td>
+<td><strong>Cơ chế bắn tin nhắn Báo cáo lên Zalo</strong></td>
+<td>Sau khi tạo Báo cáo Mẫu 1 và Mẫu 2, hệ thống hiển thị văn bản ra khung Preview Text, cung cấp nút <strong>[Sao chép]</strong>, và ghi bản ghi vào bảng <code>zalo_message_queue</code>.</td>
+<td>Hiện tại chưa tự động kích hoạt Puppeteer tìm ô chat của group Vùng / group BĐH để gõ phím và Enter gửi đi ngay lập tức.</td>
+<td>Tích hợp hàm <code>sendZaloMessageViaPuppeteer(groupName, text)</code> trực tiếp vào nút bấm hoặc thêm nút toggle <em>"Tự động gửi vào Zalo sau khi xuất"</em>.</td>
+</tr>
+<tr>
+<td><strong>3</strong></td>
+<td><strong>Cấu hình Google Sheets thực tế</strong></td>
+<td>Code đã có hàm <code>syncRegionMatrixSheet</code> tính đúng cột $3+N$ và hàng R4..R24, nhưng đang bật <code>SAFE_MODE=true</code> (ghi nhận cục bộ fallback).</td>
+<td>Cần cấp quyền chỉnh sửa cho Service Account Google (<code>client_email</code>) trên file Google Spreadsheet thật của Vùng để ghi trực tiếp lên đám mây.</td>
+<td>Cung cấp file <code>credentials.json</code> hoặc dùng tài khoản Google OAuth đã đăng nhập để tắt <code>SAFE_MODE</code> khi chạy thật.</td>
+</tr>
+<tr>
+<td><strong>4</strong></td>
+<td><strong>Dữ liệu nhân sự 6 Vùng còn lại (25, 26, 28, 29, 30, 31)</strong></td>
+<td>Database hiện tại chỉ mới nạp đúng 19 nhân sự thật của Vùng 27 (theo tab <code>T8/26</code>). Các vùng khác đang dùng 2 thành viên mẫu.</td>
+<td>Báo cáo Cụm 5 Mẫu 2 cần gom đủ số liệu thực tế của cả 114 thành viên thuộc 7 Vùng.</td>
+<td>Cung cấp danh sách hoặc quyền đọc các tab Vùng khác trên Google Sheet để import đầy đủ 114 người vào bảng <code>members</code>.</td>
+</tr>
+<tr>
+<td><strong>5</strong></td>
+<td><strong>Mô hình cài đặt &amp; Phân tán cho các Trưởng Vùng</strong></td>
+<td>Toàn bộ hệ thống hiện đang chạy trên 1 máy tính duy nhất (<code>localhost:3000</code>).</td>
+<td>Nếu 7 Trưởng Vùng muốn tự dùng: Hoặc họ phải truy cập vào IP máy chủ của bạn qua mạng LAN/VPN/Cloud, hoặc mỗi Trưởng Vùng tải 1 bản cài đặt độc lập về máy cá nhân của họ.</td>
+<td>Thống nhất mô hình: (A) Trưởng Cụm chạy tập trung làm thay cả cụm; hay (B) Đóng gói ứng dụng Desktop portable gửi cho từng Trưởng Vùng.</td>
+</tr>
+<tr>
+<td><strong>6</strong></td>
+<td><strong>Xử lý các ngoại lệ cú pháp tin nhắn</strong></td>
+<td>Parser đang dựa trên regex tên, ngày và các từ khóa (<code>báo cáo</code>, <code>done</code>, <code>oke</code>, <code>quân sự</code>...).</td>
+<td>Nếu Sứ giả nhắn tin quá cẩu thả (ví dụ chỉ gửi icon 👍 hoặc nhắn không dấu sai chính tả nặng) thì Bot sẽ phân loại nhầm thành <code>NO_RESPONSE</code>.</td>
+<td>Trưởng/Phó Vùng có thể click trực tiếp vào từng dòng nhân sự trên bảng Web UI để sửa nhanh trạng thái thủ công trước khi bấm xuất Báo cáo.</td>
+</tr>
+</tbody></table>
+<hr />
+<h1>HƯỚNG DẪN BẠN HIỆU CHỈNH FILE NÀY</h1>
+<p>Bạn có thể:</p>
+<ol>
+<li>Mở file <code>TAI_LIEU_TOAN_DIEN_VNV_BOT_V2.md</code> này trong editor.</li>
+<li>Ghi chú trực tiếp vào các mục bạn thấy chưa đúng quy trình thực tế hoặc cần thay đổi kỹ thuật.</li>
+<li>Nhắn lại cho tôi biết các điểm bạn muốn sửa đổi, tôi sẽ lập tức refactor code tương ứng!</li>
+</ol>
+
+  </div>
+</body>
+</html>

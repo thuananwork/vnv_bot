@@ -1,0 +1,17 @@
+{
+  "secretsAudit": "PASS",
+  "dependencyAudit": "PASS",
+  "unit": "FAIL",
+  "integration": "FAIL",
+  "e2e": "FAIL",
+  "oracle": "FAIL",
+  "snapshot": "FAIL",
+  "fault": "FAIL",
+  "chaos": "FAIL",
+  "coverage": "92.4%",
+  "pipelineAvg": 0,
+  "queueMax": 0,
+  "memoryLeak": "PASS",
+  "duration": "12.7s",
+  "overall": "FAIL"
+}

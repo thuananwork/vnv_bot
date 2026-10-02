@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VNV-Bot v2.0 - Hướng Dẫn Sử Dụng Chi Tiết</title>
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --primary-light: #eff6ff;
+      --success: #16a34a;
+      --success-light: #f0fdf4;
+      --warning: #d97706;
+      --warning-light: #fffbeb;
+      --danger: #dc2626;
+      --danger-light: #fef2f2;
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --bg-body: #f8fafc;
+      --bg-card: #ffffff;
+      --sidebar-w: 300px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      color: var(--text-main);
+      background-color: var(--bg-body);
+      line-height: 1.6;
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* SIDEBAR */
+    .sidebar {
+      width: var(--sidebar-w);
+      background-color: #ffffff;
+      border-right: 1px solid var(--border);
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      z-index: 100;
+      box-shadow: 2px 0 8px rgba(0,0,0,0.03);
+    }
+
+    .brand {
+      padding: 20px;
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(135deg, #1e3a8a, #2563eb);
+      color: white;
+    }
+
+    .brand h1 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .brand p {
+      font-size: 0.8rem;
+      color: #bfdbfe;
+      margin-top: 4px;
+    }
+
+    .nav-list {
+      list-style: none;
+      padding: 12px 8px;
+      flex: 1;
+    }
+
+    .nav-item {
+      margin-bottom: 4px;
+    }
+
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      border-radius: 8px;
+      color: #475569;
+      text-decoration: none;
+      font-size: 0.88rem;
+      font-weight: 500;
+      transition: all 0.15s ease;
+    }
+
+    .nav-link:hover {
+      background-color: var(--primary-light);
+      color: var(--primary);
+    }
+
+    .nav-link.active {
+      background-color: var(--primary);
+      color: white;
+      font-weight: 600;
+    }
+
+    .nav-link .icon {
+      font-size: 1.1rem;
+      width: 22px;
+      text-align: center;
+    }
+
+    .sidebar-footer {
+      padding: 16px;
+      border-top: 1px solid var(--border);
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      background: #f8fafc;
+      text-align: center;
+    }
+
+    /* MAIN CONTENT */
+    .content-area {
+      margin-left: var(--sidebar-w);
+      flex: 1;
+      padding: 36px 48px;
+      max-width: 1080px;
+    }
+
+    header.doc-header {
+      margin-bottom: 32px;
+      padding-bottom: 24px;
+      border-bottom: 2px solid var(--border);
+    }
+
+    .doc-header h2 {
+      font-size: 1.85rem;
+      color: #0f172a;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    .doc-header p {
+      color: var(--text-muted);
+      margin-top: 6px;
+      font-size: 0.98rem;
+    }
+
+    /* ARTICLE CARDS */
+    .guide-article {
+      display: none;
+      animation: fadeIn 0.25s ease-out;
+    }
+
+    .guide-article.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .section-block {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 28px;
+      margin-bottom: 24px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+    }
+
+    .section-block h3 {
+      font-size: 1.25rem;
+      color: #0f172a;
+      margin-bottom: 16px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .section-block h4 {
+      font-size: 1.05rem;
+      color: #1e293b;
+      margin: 18px 0 10px 0;
+      font-weight: 600;
+    }
+
+    p, li {
+      font-size: 0.94rem;
+      color: #334155;
+      margin-bottom: 10px;
+    }
+
+    ul, ol {
+      margin-left: 24px;
+      margin-bottom: 16px;
+    }
+
+    li {
+      margin-bottom: 6px;
+    }
+
+    strong {
+      color: #0f172a;
+    }
+
+    /* BADGES & CALLOUTS */
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-weight: 600;
+    }
+    .badge-primary { background: #dbeafe; color: #1e40af; }
+    .badge-success { background: #dcfce7; color: #166534; }
+    .badge-warning { background: #fef3c7; color: #92400e; }
+    .badge-danger { background: #fee2e2; color: #991b1b; }
+
+    .callout {
+      padding: 14px 18px;
+      border-radius: 8px;
+      border-left: 4px solid;
+      margin: 16px 0;
+      font-size: 0.92rem;
+    }
+    .callout-info {
+      background-color: var(--primary-light);
+      border-color: var(--primary);
+      color: #1e40af;
+    }
+    .callout-success {
+      background-color: var(--success-light);
+      border-color: var(--success);
+      color: #166534;
+    }
+    .callout-warning {
+      background-color: var(--warning-light);
+      border-color: var(--warning);
+      color: #854d0e;
+    }
+    .callout-danger {
+      background-color: var(--danger-light);
+      border-color: var(--danger);
+      color: #991b1b;
+    }
+
+    /* STEP CIRCLE */
+    .step-list {
+      list-style: none;
+      margin: 16px 0;
+      padding: 0;
+    }
+
+    .step-item {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .step-num {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--primary);
+      color: white;
+      font-weight: 700;
+      font-size: 0.95rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      box-shadow: 0 2px 4px rgba(37,99,235,0.3);
+    }
+
+    .step-content {
+      flex: 1;
+    }
+
+    .step-title {
+      font-weight: 700;
+      font-size: 1rem;
+      color: #0f172a;
+      margin-bottom: 4px;
+    }
+
+    /* IMAGE CONTAINERS */
+    .img-box {
+      margin: 18px 0;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      background: #f8fafc;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.06);
+      text-align: center;
+    }
+
+    .img-box img {
+      max-width: 100%;
+      height: auto;
+      display: block;
+      margin: 0 auto;
+      image-rendering: -webkit-optimize-contrast;
+    }
+
+    .img-caption {
+      padding: 8px 14px;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      background: #ffffff;
+      border-top: 1px solid var(--border);
+      font-style: italic;
+      text-align: center;
+    }
+
+    /* TABLES */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 16px 0;
+      font-size: 0.9rem;
+    }
+
+    th, td {
+      padding: 10px 14px;
+      border: 1px solid var(--border);
+      text-align: left;
+    }
+
+    th {
+      background-color: #f1f5f9;
+      color: #334155;
+      font-weight: 600;
+    }
+
+    tr:nth-child(even) td {
+      background-color: #f8fafc;
+    }
+
+    /* CODE SNIPPET */
+    code {
+      font-family: Consolas, Monaco, "Courier New", monospace;
+      background: #e2e8f0;
+      color: #0f172a;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.88rem;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 860px) {
+      body {
+        flex-direction: column;
+      }
+      .sidebar {
+        width: 100%;
+        position: relative;
+        height: auto;
+      }
+      .content-area {
+        margin-left: 0;
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- SIDEBAR NAVIGATION -->
+  <aside class="sidebar">
+    <div class="brand">
+      <h1>🤖 VNV-Bot v2.0</h1>
+      <p>Cẩm Nang Dành Cho Trưởng Vùng Mới</p>
+    </div>
+
+    <ul class="nav-list">
+      <li class="nav-item">
+        <a href="#art-1" class="nav-link active" onclick="switchTab('art-1', event)">
+          <span class="icon">🚀</span> Bài 1: Khởi Động & Mở Zalo
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="#art-2" class="nav-link" onclick="switchTab('art-2', event)">
+          <span class="icon">🔗</span> Bài 2: Khớp Tên Sứ Giả (1-Click)
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="#art-3" class="nav-link" onclick="switchTab('art-3', event)">
+          <span class="icon">⚡</span> Bài 3: Quét & Báo Cáo Hàng Ngày
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="#art-4" class="nav-link" onclick="switchTab('art-4', event)">
+          <span class="icon">🎨</span> Bài 4: Cài Đặt & 80 Màu Sheet
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="#art-5" class="nav-link" onclick="switchTab('art-5', event)">
+          <span class="icon">📝</span> Bài 5: Xin Hoãn & Quân Sự
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="#art-6" class="nav-link" onclick="switchTab('art-6', event)">
+          <span class="icon">🛑</span> Bài 6: Dừng Quét & Tắt Bot
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="#art-7" class="nav-link" onclick="switchTab('art-7', event)">
+          <span class="icon">🏢</span> Bài 7: Trưởng Cụm 5
+        </a>
+      </li>
+      <li style="margin: 14px 0 6px 14px; font-size: 0.75rem; text-transform: uppercase; font-weight: 700; color: #94a3b8; letter-spacing: 0.05em;">
+        Tài Liệu Chi Tiết
+      </li>
+      <li class="nav-item">
+        <a href="docs/HUONG_DAN_SU_DUNG_NHANH.html" class="nav-link" target="_blank">
+          <span class="icon">📖</span> Hướng Dẫn Nhanh (Cheatsheet)
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="docs/HUONG_DAN_CHO_TRUONG_VUNG_MOI.html" class="nav-link" target="_blank">
+          <span class="icon">📋</span> Trưởng Vùng Mới (Đầy đủ)
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="docs/GOOGLE_OAUTH_CONFIGURATION_GUIDE.html" class="nav-link" target="_blank">
+          <span class="icon">🔐</span> Cấu Hình Google OAuth
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="docs/TAI_LIEU_TOAN_DIEN_VNV_BOT_V2.html" class="nav-link" target="_blank">
+          <span class="icon">📚</span> Tài Liệu Kỹ Thuật Toàn Diện
+        </a>
+      </li>
+    </ul>
+
+    <div class="sidebar-footer">
+      <strong>VNV-Bot v2.0.0</strong><br>
+      Bộ công cụ tự động hóa báo cáo Zalo & Google Sheets
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT AREA -->
+  <main class="content-area">
+
+    <!-- ARTICLE 1: KHỞI ĐỘNG & MỞ ZALO -->
+    <article id="art-1" class="guide-article active">
+      <header class="doc-header">
+        <h2>🚀 Bài 1: Khởi Động Bot & Đăng Nhập Zalo Web</h2>
+        <p>Hướng dẫn bước đầu tiên khi nhận thư mục bot trên máy tính mới.</p>
+      </header>
+
+      <div class="section-block">
+        <h3>1. Khởi động phần mềm</h3>
+        <ol class="step-list">
+          <li class="step-item">
+            <div class="step-num">1</div>
+            <div class="step-content">
+              <div class="step-title">Mở thư mục bot</div>
+              <p>Mở thư mục <code>VNV-Bot-v2.0.0</code> bạn vừa tải về (nếu là file zip thì chuột phải chọn <strong>Extract All</strong> để giải nén).</p>
+            </div>
+          </li>
+          <li class="step-item">
+            <div class="step-num">2</div>
+            <div class="step-content">
+              <div class="step-title">Chạy file VNV-Bot.exe</div>
+              <p>Nhấp đúp chuột vào file <strong><code>VNV-Bot.exe</code></strong> (hoặc <code>VNV-Bot.bat</code>). Một cửa sổ nền đen mở ra, bot sẽ tự động khởi tạo môi trường và tự mở trình duyệt web.</p>
+            </div>
+          </li>
+          <li class="step-item">
+            <div class="step-num">3</div>
+            <div class="step-content">
+              <div class="step-title">Đăng nhập tài khoản Vùng</div>
+              <p>Trình duyệt web hiển thị trang đăng nhập <code>http://localhost:3000</code>. Nhập tài khoản Vùng của bạn:</p>
+            </div>
+          </li>
+        </ol>
+
+        <div class="img-box">
+          <img src="src/web/img/guide/guide_step1_login.png" alt="Màn hình đăng nhập VNV-Bot">
+          <div class="img-caption">Hình 1.1: Giao diện đăng nhập tài khoản Trưởng Vùng / Phó Vùng / Trưởng Cụm</div>
+        </div>
+
+        <h4>Bảng danh sách tài khoản mặc định:</h4>
+        <table>
+          <thead>
+            <tr>
+              <th>Vai trò</th>
+              <th>Tên đăng nhập</th>
+              <th>Mật khẩu</th>
+              <th>Phạm vi quyền hạn</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Trưởng Vùng 25 → 31</strong></td>
+              <td>Tài khoản Trưởng Vùng được cấp</td>
+              <td>Mật khẩu riêng được bàn giao</td>
+              <td>Quản lý Vùng, quét bài, duyệt báo cáo</td>
+            </tr>
+            <tr>
+              <td><strong>Phó Vùng 25 → 31</strong></td>
+              <td>Tài khoản Phó Vùng được cấp</td>
+              <td>Mật khẩu riêng được bàn giao</td>
+              <td>Quản lý Vùng, quét bài, duyệt báo cáo</td>
+            </tr>
+            <tr>
+              <td><strong>Trưởng Cụm 5</strong></td>
+              <td>Tài khoản Trưởng Cụm được cấp</td>
+              <td>Mật khẩu riêng được bàn giao</td>
+              <td>Giám sát cả 7 Vùng, xuất báo cáo Cụm 5</td>
+            </tr>
+          </tbody>
+        </table>
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 8px;">
+          <em>* Lưu ý: Mỗi Vùng và Cụm được Quản trị viên cấp tài khoản riêng biệt nhằm bảo mật dữ liệu và phân quyền đúng phạm vi quản lý.</em>
+        </p>
+      </div>
+
+      <div class="section-block">
+        <h3>2. Mở & Đăng nhập Zalo Web (Chỉ cần làm 1 lần)</h3>
+        <p>Để bot có thể đọc tin nhắn và gửi bản nháp báo cáo, bạn cần kết nối tài khoản Zalo của mình:</p>
+        <ol>
+          <li>Nhìn lên góc trên bên phải màn hình làm việc của Bot, bấm nút <strong>[📱 Mở Zalo]</strong> màu xanh dương.</li>
+          <li>Một cửa sổ trình duyệt Chrome riêng biệt sẽ mở ra trang web <code>chat.zalo.me</code>.</li>
+          <li>Mở app Zalo trên điện thoại của bạn, chọn biểu tượng <strong>Quét mã QR</strong> ở góc trên và quét mã hiển thị trên màn hình máy tính để đăng nhập.</li>
+        </ol>
+
+        <div class="img-box">
+          <img src="src/web/img/guide/guide_step1_open_zalo.png" alt="Nút Mở Zalo trên thanh tiêu đề">
+          <div class="img-caption">Hình 1.2: Vị trí nút [Mở Zalo] trên góc phải thanh điều hướng</div>
+        </div>
+
+        <div class="callout callout-success">
+          <strong>✅ Lưu ý quan trọng:</strong> Bạn chỉ cần quét mã QR Zalo <strong>đúng 1 lần đầu tiên</strong>. Phiên đăng nhập được lưu vĩnh viễn trong thư mục máy tính của bạn, các ngày tiếp theo bot sẽ tự động nhớ đăng nhập mà không cần quét lại.
+        </div>
+      </div>
+    </article>
+
+    <!-- ARTICLE 2: KHỚP TÊN SỨ GIẢ -->
+    <article id="art-2" class="guide-article">
+      <header class="doc-header">
+        <h2>🔗 Bài 2: Khớp Tên Zalo Với Sứ Giả (1-Click Tự Động)</h2>
+        <p>Cách đảm bảo 100% Sứ giả trong Sheet được bot nhận diện chính xác khi nộp bài trong nhóm Zalo.</p>
+      </header>
+
+      <div class="section-block">
+        <h3>Tại sao cần khớp tên Zalo?</h3>
+        <p>Tên trên danh sách Google Sheet thường là họ tên đầy đủ (ví dụ: <em>Nguyễn Thị Kim Chi</em>), nhưng tài khoản Zalo của bạn đó có thể đặt là biệt danh (ví dụ: <em>Kim Chi</em>, <em>Chi Chi</em>, <em>Nguyễn Chi</em>). Bot trang bị tính năng so khớp AI thông minh giúp tự động liên kết tài khoản.</p>
+
+        <ol class="step-list">
+          <li class="step-item">
+            <div class="step-num">1</div>
+            <div class="step-content">
+              <div class="step-title">Vào Không Gian Vùng</div>
+              <p>Sau khi đăng nhập tài khoản Trưởng Vùng hoặc Phó Vùng, bạn đang ở màn hình <strong>Không Gian Vùng</strong>.</p>
+            </div>
+          </li>
+          <li class="step-item">
+            <div class="step-num">2</div>
+            <div class="step-content">
+              <div class="step-title">Bấm nút [✨ Mapping tên Zalo]</div>
+              <p>Nhìn vào cụm nút thao tác ở thanh trên cùng của bảng danh sách Sứ giả (khung bên trái, nằm cạnh các nút <code>[Mở Sheet]</code>, <code>[Đồng bộ Sheet]</code>, <code>[Excel]</code>, <code>[Lưu]</code>): Nhấp vào nút <strong>[✨ Mapping tên Zalo]</strong> &rarr; Bấm <strong>Đồng ý</strong> trên hộp thoại.</p>
+            </div>
+          </li>
+          <li class="step-item">
+            <div class="step-num">3</div>
+            <div class="step-content">
+              <div class="step-title">Bot tự động phân tích & mapping tên</div>
+              <p>Bot sẽ tự động kết nối nhóm Zalo của Vùng, quét danh sách người gửi/thành viên gần đây và tự động điền nick Zalo tương ứng cho từng Sứ giả trên Google Sheet (kèm tỷ lệ phần trăm tin cậy).</p>
+            </div>
+          </li>
+          <li class="step-item">
+            <div class="step-num">4</div>
+            <div class="step-content">
+              <div class="step-title">Bấm nút [💾 Lưu] để xác nhận</div>
+              <p>Bạn xem lướt qua các ô Tên Zalo vừa được điền và nhấp nút <strong>[💾 Lưu]</strong> màu xanh dương (nằm ngay cạnh nút Mapping) để lưu vào hệ thống vĩnh viễn.</p>
+            </div>
+          </li>
+        </ol>
+
+        <div class="img-box">
+          <img src="src/web/img/guide/guide_step2_mapping_buttons.png" alt="Cụm nút Mapping tên Zalo và bảng Sứ giả">
+          <div class="img-caption">Hình 2.1: Cụm nút thao tác trên bảng Sứ giả: [Mở Sheet], [Đồng bộ Sheet], [Excel], [Lưu], [Mapping tên Zalo]</div>
+        </div>
+
+        <div class="callout callout-info">
+          <strong>💡 Mẹo nhập tay khi cần:</strong> Nếu có thành viên đặt tên Zalo quá khác biệt (ví dụ tên Sheet là <em>Trần Văn Nam</em> nhưng nick Zalo là ký hiệu lạ), bạn chỉ cần nhấp trực tiếp vào ô <strong>Tên Zalo</strong> của bạn đó, gõ tên hiển thị Zalo vào rồi bấm nút <strong>[💾 Lưu]</strong> là xong!
+        </div>
+      </div>
+    </article>
+
+    <!-- ARTICLE 3: QUÉT & BÁO CÁO HÀNG NGÀY -->
+    <article id="art-3" class="guide-article">
+      <header class="doc-header">
+        <h2>⚡ Bài 3: Quy Trình Quét Bài & Báo Cáo Hàng Ngày</h2>
+        <p>Thực hiện mỗi tối (khung giờ 21h00 - 22h30). Chỉ cần 1 cú nhấp chuột và chưa đầy 1 phút!</p>
+      </header>
+
+      <div class="section-block">
+        <h3>Quy trình 3 bước chuẩn</h3>
+        
+        <ol class="step-list">
+          <li class="step-item">
+            <div class="step-num">1</div>
+            <div class="step-content">
+              <div class="step-title">Vào Không Gian Vùng</div>
+              <p>Sau khi đăng nhập, bạn đang ở màn hình <strong>Không Gian Vùng</strong>. Hãy kiểm tra ngày báo cáo hiển thị trên thanh công cụ (mặc định là ngày hôm nay, bạn có thể chọn ngày khác nếu muốn quét bù ngày cũ).</p>
+            </div>
+          </li>
+          <li class="step-item">
+            <div class="step-num">2</div>
+            <div class="step-content">
+              <div class="step-title">Bấm nút [⚡ Quét Bài & Báo Cáo]</div>
+              <p>Bấm nút màu xanh lá nổi bật <strong>[⚡ Quét Bài & Báo Cáo]</strong> -> Một hộp thoại xác nhận hiện ra, bạn bấm <strong>Đồng ý</strong>.</p>
+            </div>
+          </li>
+        </ol>
+
+        <div class="img-box">
+          <img src="src/web/img/guide/guide_step3_toolbar.png" alt="Thanh công cụ Quét Bài và Báo Cáo">
+          <div class="img-caption">Hình 3.1: Nút Quét Bài & Báo Cáo, chọn ngày và các công cụ đồng bộ</div>
+        </div>
+
+        <div class="callout callout-success">
+          <strong>🤖 Bot sẽ tự động thực hiện 4 bước không cần bạn can thiệp:</strong>
+          <ol style="margin-top: 8px; margin-bottom: 0;">
+            <li>Tự mở Zalo và tìm đúng nhóm <code>SỨ GIẢ VÙNG [XX]</code>.</li>
+            <li>Định vị mốc báo cáo hôm trước hoặc nhiệm vụ đầu ngày của ngày cần quét.</li>
+            <li>Cuộn xuôi dòng quét toàn bộ các bài nộp và ảnh minh chứng thật (chống nhận nhầm icon like/thả tim). Tự động nhận diện cả các bài nộp bù ngày cũ!</li>
+            <li>Cập nhật trạng thái và màu chuẩn lên Google Sheet, sau đó tự soạn Báo Cáo Vùng (Mẫu 1) vào ô chat Zalo dưới dạng <strong>Bản Nháp</strong>.</li>
+          </ol>
+        </div>
+
+        <div class="img-box">
+          <img src="src/web/img/guide/guide_step3_workspace.png" alt="Bảng kết quả quét Không Gian Vùng">
+          <div class="img-caption">Hình 3.2: Bảng kết quả điểm danh, số lượng hoàn thành và bản xem trước Báo Cáo Vùng</div>
+        </div>
+
+        <ol class="step-list" start="3">
+          <li class="step-item">
+            <div class="step-num">3</div>
+            <div class="step-content">
+              <div class="step-title">Kiểm duyệt & Bấm Gửi trên Zalo</div>
+              <p>Chuyển sang cửa sổ chat Zalo, bạn sẽ thấy nội dung báo cáo hoàn chỉnh đã được điền sẵn trong ô soạn tin. Bạn đọc lại một lượt và bấm <strong>Gửi</strong> (hoặc nhấn <code>Enter</code>).</p>
+            </div>
+          </li>
+        </ol>
+
+        <div class="callout callout-warning">
+          <strong>🛡️ An Toàn Tuyệt Đối:</strong> Bot <strong>KHÔNG BAO GIỜ TỰ ĐỘNG GỬI TIN NHẮN</strong>. Bạn luôn là người kiểm duyệt cuối cùng trước khi báo cáo được gửi đi vào nhóm.
+        </div>
+      </div>
+    </article>
+
+    <!-- ARTICLE 4: CÀI ĐẶT & BẢNG MÀU -->
+    <article id="art-4" class="guide-article">
+      <header class="doc-header">
+        <h2>🎨 Bài 4: Cài Đặt Văn Bản & Bảng Màu Google Sheets (80 Ô Màu)</h2>
+        <p>Tùy biến chữ hiển thị (Oke / Hoàn thành) và màu nền tô lên Google Sheets theo đúng quy định của Vùng.</p>
+      </header>
+
+      <div class="section-block">
+        <h3>1. Cài đặt Trạng Thái Google Sheets (Hợp nhất Văn bản & Màu sắc)</h3>
+        <p>Tại menu <strong>Cài Đặt</strong> (<code>#settings</code>), bạn có thể thiết lập chính xác các chữ và màu sắc bot sẽ ghi vào Google Sheet khi điểm danh:</p>
+
+        <div class="img-box">
+          <img src="src/web/img/guide/guide_step4_settings_unified.png" alt="Màn hình Cài Đặt Trạng Thái Google Sheets">
+          <div class="img-caption">Hình 4.1: Giao diện Cài Đặt Trạng Thái Google Sheets (Hợp nhất văn bản, màu sắc, thêm/xóa trạng thái tự do)</div>
+        </div>
+
+        <h4>A. Quản lý trạng thái theo thẻ card trực quan:</h4>
+        <p>Mỗi trạng thái bao gồm Tên trạng thái, Ký hiệu ghi Sheet, và Màu sắc ô:</p>
+        <ul>
+          <li><strong>Khi Hoàn Thành:</strong> Mặc định là <code>Oke</code> (bạn có thể đổi thành <code>OK</code>, <code>Hoàn thành</code>, <code>X</code> tùy theo quy định của Vùng).</li>
+          <li><strong>Khi Chưa Làm (Chưa nộp):</strong> Mặc định để trống (chuỗi rỗng) để bảng tính sạch sẽ.</li>
+          <li><strong>Bảng màu 80 ô chuẩn Google Sheets:</strong> Bấm nút <code>[🎨 Đổi màu]</code> trên thẻ để chọn mã màu từ 8 dải màu chuẩn Google Sheets.</li>
+          <li><strong>Thêm / Xóa trạng thái linh hoạt:</strong> Bấm <code>[+ Thêm trạng thái mới]</code> để tạo thêm trạng thái riêng, hoặc bấm <code>[🗑️ Xóa]</code> để loại bỏ trạng thái không dùng.</li>
+        </ul>
+
+        <h4>B. Công tắc Bật / Tắt tô màu ô:</h4>
+        <p>Công tắc <strong>"Tô màu ô khi ghi dữ liệu lên Google Sheets"</strong>:</p>
+        <ul>
+          <li><strong>TẮT (Mặc định):</strong> Bot chỉ điền chữ (<code>Oke</code>) vào ô, giữ nguyên 100% màu nền ban đầu của bảng tính.</li>
+          <li><strong>BẬT:</strong> Bot sẽ vừa điền chữ vừa tô màu nền ô theo đúng mã màu bạn đã chọn.</li>
+        </ul>
+      </div>
+    </article>
+
+    <!-- ARTICLE 5: XIN HOÃN & QUÂN SỰ -->
+    <article id="art-5" class="guide-article">
+      <header class="doc-header">
+        <h2>📝 Bài 5: Ghi Chú Xin Hoãn, Nghỉ Phép & Quân Sự</h2>
+        <p>Cách ghi chú trên Google Sheet để Bot tự động nhận diện và đưa vào danh sách hợp lệ.</p>
+      </header>
+
+      <div class="section-block">
+        <h3>Ghi chú trực tiếp trên Google Sheet (Không cần cấu hình phức tạp)</h3>
+        <p>Khi có Sứ giả trong Vùng xin phép nghỉ, đi học quân sự, hoặc làm việc muộn, bạn chỉ cần ghi chú trực tiếp vào file Google Sheet của Vùng:</p>
+
+        <h4>1. Vị trí ghi chú trên Sheet:</h4>
+        <ul>
+          <li><strong>Cách 1:</strong> Ghi trực tiếp vào ô ngày của bạn đó (ví dụ ô ngày <code>18</code> ghi: <em>học quân sự đến 25/09</em>).</li>
+          <li><strong>Cách 2:</strong> Ghi vào cột <strong>Ghi chú</strong> ở cuối bảng danh sách thành viên.</li>
+        </ul>
+
+        <h4>2. Các cú pháp bot tự nhận diện thông minh:</h4>
+        <table>
+          <thead>
+            <tr>
+              <th>Trường hợp</th>
+              <th>Mẫu ghi chú khuyến nghị</th>
+              <th>Cách bot xử lý</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Học Quân Sự</strong></td>
+              <td><code>học quân sự xin hoãn đến 25/09</code></td>
+              <td>Ghi nhận vào mục <em>6. Lý do -> Quân sự</em>, không tính là vi phạm.</td>
+            </tr>
+            <tr>
+              <td><strong>Việc bận gia đình</strong></td>
+              <td><code>Bận việc gia đình xin phép đến hết 22/09</code></td>
+              <td>Kiểm tra nếu còn hạn so với ngày quét sẽ đưa vào mục <em>Xin làm muộn</em>.</td>
+            </tr>
+            <tr>
+              <td><strong>Ôn thi / Thi cử</strong></td>
+              <td><code>Thi học kỳ đến 28/09</code></td>
+              <td>Tự động nhận diện thời hạn và xếp vào nhóm xin hoãn hợp lệ.</td>
+            </tr>
+            <tr>
+              <td><strong>Ốm đau / Đi viện</strong></td>
+              <td><code>nhập viện</code>, <code>đi viện</code>, <code>ốm sốt</code></td>
+              <td>Tự động đưa vào mục lý do đặc biệt của Báo Cáo Vùng.</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="callout callout-success">
+          <strong>🎯 Tự Động Đổi Tên Người Ký Báo Cáo:</strong> Nếu chính Trưởng Vùng có ghi chú xin hoãn/nghỉ phép trong ngày quét, bot sẽ <strong>tự động đổi tên người ký báo cáo</strong> ở cuối tin nhắn sang Phó Vùng phụ trách!
+        </div>
+      </div>
+    </article>
+
+    <!-- ARTICLE 6: DỪNG QUÉT & TẮT BOT -->
+    <article id="art-6" class="guide-article">
+      <header class="doc-header">
+        <h2>🛑 Bài 6: Cơ Chế Dừng Quét Tức Thì & Tắt Bot An Toàn</h2>
+        <p>Cách dừng bot khẩn cấp khi đang quét và cách tắt bot khi không còn sử dụng.</p>
+      </header>
+
+      <div class="section-block">
+        <h3>1. Cơ chế Dừng Quét Tức Thì (Bấm Lần 2)</h3>
+        <p>Khi bot đang trong quá trình cuộn và quét tin nhắn Zalo, nếu bạn muốn hủy quét ngay lập tức:</p>
+        <ul>
+          <li>Nút <strong>[⚡ Quét Bài & Báo Cáo]</strong> lúc này sẽ tự động chuyển thành nút màu đỏ: <strong>[🛑 Dừng quét (Bấm để dừng)]</strong>.</li>
+          <li>Bạn chỉ cần <strong>nhấp chuột thêm 1 lần nữa vào nút màu đỏ đó</strong>.</li>
+          <li>Bot sẽ gửi lệnh dừng ngay lập tức, ngắt tiến trình cuộn trang an toàn và <strong>tự động đóng luôn tab Zalo vừa mở lên để quét</strong>, trả lại màn hình làm việc thông thoáng cho bạn.</li>
+        </ul>
+
+        <div class="img-box">
+          <img src="src/web/img/guide/guide_step6_stop_button.png" alt="Nút Dừng quét màu đỏ trên thanh công cụ">
+          <div class="img-caption">Hình 6.1: Nút [Quét Bài & Báo Cáo] tự động đổi sang màu đỏ [🛑 Dừng quét (Bấm để dừng)] khi bot đang hoạt động</div>
+        </div>
+
+        <div class="callout callout-info">
+          Sau khi dừng quét, bot vẫn giữ nguyên các bài nộp đã kịp thu thập từ trước đó để bạn có thể xem lại hoặc quét lại bất cứ khi nào.
+        </div>
+      </div>
+
+      <div class="section-block">
+        <h3>2. Tắt Bot Khi Hoàn Thành Báo Cáo</h3>
+        <p>Sau khi đã duyệt xong báo cáo và gửi lên nhóm Zalo:</p>
+        <ol>
+          <li>Chuyển về cửa sổ dòng lệnh đen (Command Prompt) đã mở khi bạn chạy <code>VNV-Bot.exe</code>.</li>
+          <li>Nhấn tổ hợp phím <strong><code>Ctrl + C</code></strong> trên bàn phím, hoặc bấm nút dấu nhân đỏ <strong>[X]</strong> ở góc trên bên phải để đóng cửa sổ.</li>
+          <li>Đóng tab trình duyệt web.</li>
+        </ol>
+
+        <div class="img-box">
+          <img src="src/web/img/guide/guide_step6_terminal_exit.png" alt="Cửa sổ dòng lệnh đen để tắt bot an toàn">
+          <div class="img-caption">Hình 6.2: Cửa sổ Console của VNV-Bot — Nhấn Ctrl + C hoặc bấm nút [✕] màu đỏ ở góc trên bên phải để tắt bot an toàn</div>
+        </div>
+
+        <div class="callout callout-success">
+          <strong>Đảm bảo hiệu năng:</strong> Khi cửa sổ đen được đóng, toàn bộ các tiến trình bot và web server sẽ kết thúc hoàn toàn, 100% không chạy ngầm gây tốn RAM hay CPU của máy tính.
+        </div>
+      </div>
+    </article>
+
+    <!-- ARTICLE 7: TRƯỞNG CỤM -->
+    <article id="art-7" class="guide-article">
+      <header class="doc-header">
+        <h2>🏢 Bài 7: Quy Trình Tổng Hợp Dành Cho Trưởng Cụm 5</h2>
+        <p>Hướng dẫn tổng hợp số liệu 7 Vùng và xuất Báo Cáo Cụm (Mẫu 2).</p>
+      </header>
+
+      <div class="section-block">
+        <h3>Quy trình tổng hợp Báo Cáo Cụm 5</h3>
+        <ol class="step-list">
+          <li class="step-item">
+            <div class="step-num">1</div>
+            <div class="step-content">
+              <div class="step-title">Đăng nhập tài khoản Cụm</div>
+              <p>Đăng nhập bằng tài khoản Trưởng Cụm được cấp. Truy cập vào mục <strong>Không Gian Cụm</strong>.</p>
+            </div>
+          </li>
+          <li class="step-item">
+            <div class="step-num">2</div>
+            <div class="step-content">
+              <div class="step-title">Tổng hợp số liệu 7 Vùng</div>
+              <p>Bấm nút <strong>[🚀 Tổng Hợp & Bắn Báo Cáo Cụm 5]</strong>. Hệ thống sẽ tự động quét số liệu nộp bài của cả 7 Vùng (Vùng 25 → 31), tính toán tỷ lệ % hoàn thành toàn Cụm.</p>
+            </div>
+          </li>
+          <li class="step-item">
+            <div class="step-num">3</div>
+            <div class="step-content">
+              <div class="step-title">Xuất Báo Cáo Cụm & Tag Trưởng Ban</div>
+              <p>Bot sẽ soạn sẵn Báo Cáo Mẫu 2 vào khung chat nhóm <code>CỤM 5</code> trên Zalo, tự động gắn tag <code>@Phạm Minh Tú</code> ở cuối báo cáo theo quy chuẩn.</p>
+            </div>
+          </li>
+        </ol>
+      </div>
+    </article>
+
+  </main>
+
+  <script>
+    function switchTab(artId, event) {
+      if (event) event.preventDefault();
+
+      // Update nav active
+      const links = document.querySelectorAll('.nav-link');
+      links.forEach(l => l.classList.remove('active'));
+      if (event && event.currentTarget) {
+        event.currentTarget.classList.add('active');
+      }
+
+      // Update articles visibility
+      const articles = document.querySelectorAll('.guide-article');
+      articles.forEach(a => a.classList.remove('active'));
+
+      const target = document.getElementById(artId);
+      if (target) {
+        target.classList.add('active');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }
+  </script>
+</body>
+</html>

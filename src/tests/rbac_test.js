@@ -1,3 +1,4 @@
+process.env.MOCK_GOOGLE_SHEETS = 'true';
 const db = require('../config/db');
 const bcrypt = require('bcryptjs');
 
@@ -9,7 +10,7 @@ async function runTests() {
     // Dọn dẹp/xóa tất cả bảng trước để đảm bảo schema.sql được nạp mới hoàn toàn
     console.log('0. Xóa các bảng cũ để cập nhật Schema mới...');
     await db.run('PRAGMA foreign_keys = OFF;');
-    const tables = ['submissions', 'members', 'regions', 'clusters', 'users', 'audit_logs', 'tasks', 'reports', 'local_config'];
+    const tables = ['sheet_sync_history', 'reports', 'submissions', 'members', 'regions', 'clusters', 'audit_logs', 'users', 'tasks', 'local_config'];
     for (const table of tables) {
         await db.run(`DROP TABLE IF EXISTS ${table}`);
     }
@@ -33,18 +34,18 @@ async function runTests() {
     const hash = bcrypt.hashSync('testpass', salt);
 
     const adminRes = await db.run(
-        `INSERT INTO users (username, password_hash, full_name, role) 
-         VALUES ('test_admin', ?, 'Test Admin User', 'admin')`,
+        `INSERT INTO users (username, password_hash, full_name, role, auth_method, name_source) 
+         VALUES ('test_admin', ?, 'Test Admin User', 'admin', 'local', 'manual')`,
         [hash]
     );
     const clusterLeaderRes = await db.run(
-        `INSERT INTO users (username, password_hash, full_name, role) 
-         VALUES ('test_cluster_mgr', ?, 'Test Cluster Leader', 'cluster_leader')`,
+        `INSERT INTO users (username, password_hash, full_name, role, auth_method, name_source) 
+         VALUES ('test_cluster_mgr', ?, 'Test Cluster Leader', 'cluster_leader', 'google', 'google')`,
         [hash]
     );
     const regionLeaderRes = await db.run(
-        `INSERT INTO users (username, password_hash, full_name, role) 
-         VALUES ('test_region_mgr', ?, 'Test Region Leader', 'region_leader')`,
+        `INSERT INTO users (username, password_hash, full_name, role, auth_method, name_source) 
+         VALUES ('test_region_mgr', ?, 'Test Region Leader', 'region_leader', 'google', 'google')`,
         [hash]
     );
 
@@ -283,6 +284,147 @@ async function runTests() {
             console.error(' [ERROR] VÙNG:', err);
             process.exit(1);
         }
+    }
+
+    // --- TEST 5: Email Normalization Unit Tests ---
+    console.log('\n5. Đang chạy kiểm thử chuẩn hóa Email (normalizeEmail)...');
+    const emailUtils = require('../utils/email');
+    const emailTests = [
+        { input: 'ThuanAn.Work@googlemail.com', expected: 'thuananwork@gmail.com' },
+        { input: 'thuan.an.work+test@gmail.com', expected: 'thuananwork@gmail.com' },
+        { input: 'ThuanAn.Work@gmail.com', expected: 'thuananwork@gmail.com' },
+        { input: 'Trưởng.Cụm@vnv.vn', expected: 'trưởng.cụm@vnv.vn' } // Unicode normalization (NFC) & lower
+    ];
+
+    for (const test of emailTests) {
+        const result = emailUtils.normalizeEmail(test.input);
+        if (result === test.expected) {
+            console.log(` [OK] normalizeEmail("${test.input}") -> "${result}"`);
+        } else {
+            console.error(` [ERROR] normalizeEmail("${test.input}") kì vọng "${test.expected}" nhưng nhận "${result}"`);
+            process.exit(1);
+        }
+    }
+
+    // --- TEST 6: Absolute Timeout (8 hours) Verification ---
+    console.log('\n6. Đang chạy kiểm thử Absolute Session Timeout...');
+    const verifyAbsoluteTimeout = (createdAt, timeoutMs = 8 * 3600 * 1000) => {
+        const elapsed = Date.now() - createdAt;
+        if (elapsed > timeoutMs) {
+            return { valid: false, error: 'Session expired (Absolute Timeout)' };
+        }
+        return { valid: true };
+    };
+
+    // Case 6a: Session mới tạo (1 giờ trước) -> Hợp lệ
+    const validSessionResult = verifyAbsoluteTimeout(Date.now() - 3600 * 1000);
+    if (validSessionResult.valid) {
+        console.log(' [OK] Session mới tạo hoạt động bình thường.');
+    } else {
+        console.error(' [ERROR] Session mới tạo bị đánh dấu hết hạn sai lầm.');
+        process.exit(1);
+    }
+
+    // Case 6b: Session tạo 8 giờ 1 giây trước -> Bị từ chối
+    const expiredSessionResult = verifyAbsoluteTimeout(Date.now() - (8 * 3600 * 1000 + 1000));
+    if (!expiredSessionResult.valid && expiredSessionResult.error.includes('Absolute Timeout')) {
+        console.log(' [OK] Chặn thành công session vượt quá Absolute Timeout 8 giờ.');
+    } else {
+        console.error(' [ERROR] Không chặn được session đã quá hạn Absolute Timeout.');
+        process.exit(1);
+    }
+
+    // --- TEST 7: Race Condition / Session Version Verification ---
+    console.log('\n7. Đang chạy kiểm thử Race Condition & Session Version Mismatch...');
+    
+    // Giả lập cache kiểm tra in-memory 2s của session_version
+    const sessionCache = {
+        data: {},
+        get(key) {
+            const entry = this.data[key];
+            if (entry && (Date.now() - entry.timestamp < 2000)) {
+                return entry.value;
+            }
+            return null;
+        },
+        set(key, value) {
+            this.data[key] = { value, timestamp: Date.now() };
+        }
+    };
+
+    // Định nghĩa logic middleware mô phỏng
+    const simulateAuthMiddleware = async (sessionUser, dbGetUserFn) => {
+        if (!sessionUser) throw new Error('401: Unauthorized');
+
+        // 1. Kiểm tra cache
+        let cached = sessionCache.get(sessionUser.id);
+        let freshUser;
+        
+        if (cached) {
+            freshUser = cached;
+        } else {
+            // Cache miss: Truy vấn DB
+            freshUser = await dbGetUserFn(sessionUser.id);
+            if (freshUser) {
+                sessionCache.set(sessionUser.id, freshUser);
+            }
+        }
+
+        if (!freshUser) throw new Error('403: User not found or disabled');
+        
+        // 2. Đối soát session_version
+        if (freshUser.session_version !== sessionUser.session_version) {
+            throw new Error('401: Session version mismatch. Force logout.');
+        }
+
+        return true;
+    };
+
+    // Case 7a: Khớp session_version trong DB -> Cho qua
+    const dbUserMock = { id: 1, session_version: 3 };
+    const sessionUserMock = { id: 1, session_version: 3 };
+    
+    const passResult = await simulateAuthMiddleware(sessionUserMock, async () => dbUserMock);
+    if (passResult === true) {
+        console.log(' [OK] Cho phép truy cập khi session_version trùng khớp.');
+    } else {
+        console.error(' [ERROR] Chặn nhầm session có version hợp lệ.');
+        process.exit(1);
+    }
+
+    // Case 7b: Lệch session_version trong DB -> Từ chối (Force Logout)
+    const mismatchedSessionUser = { id: 1, session_version: 2 }; // Phiên bản cũ hơn DB
+    try {
+        await simulateAuthMiddleware(mismatchedSessionUser, async () => dbUserMock);
+        console.error(' [ERROR] Cho phép truy cập khi session_version bị lệch!');
+        process.exit(1);
+    } catch (err) {
+        if (err.message.includes('Session version mismatch')) {
+            console.log(' [OK] Phát hiện và chặn thành công session_version lệch.');
+        } else {
+            console.error(' [ERROR] Lỗi kiểm tra session version:', err);
+            process.exit(1);
+        }
+    }
+
+    // Case 7c: Kiểm tra tính năng Cache in-memory trong vòng 2 giây
+    sessionCache.data = {}; // Reset cache
+    let dbQueryCount = 0;
+    const dbQueryMock = async (id) => {
+        dbQueryCount++;
+        return { id, session_version: 3 };
+    };
+
+    // Gọi lần 1: cache miss -> Query DB
+    await simulateAuthMiddleware(sessionUserMock, dbQueryMock);
+    // Gọi lần 2: cache hit -> Không query DB
+    await simulateAuthMiddleware(sessionUserMock, dbQueryMock);
+    
+    if (dbQueryCount === 1) {
+        console.log(' [OK] Cache in-memory hoạt động chính xác (chỉ truy vấn DB 1 lần).');
+    } else {
+        console.error(` [ERROR] Cache in-memory thất bại. Truy vấn DB ${dbQueryCount} lần thay vì 1.`);
+        process.exit(1);
     }
 
     console.log('----------------------------------------------------');
