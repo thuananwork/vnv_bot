@@ -83,6 +83,14 @@ function isValidMemberName(name) {
     return true;
 }
 
+let syncMutexQueue = Promise.resolve();
+
+function runWithSyncLock(fn) {
+    const next = syncMutexQueue.then(fn, fn);
+    syncMutexQueue = next.catch(() => {});
+    return next;
+}
+
 /**
  * Đồng bộ danh sách Sứ giả từ Google Sheet vào cơ sở dữ liệu cho 1 Vùng
  * @param {number} regionId 
@@ -92,6 +100,10 @@ function isValidMemberName(name) {
  * @returns {Promise<Object>}
  */
 async function syncMembersFromSheet(regionId, options = {}) {
+    return runWithSyncLock(() => _doSyncMembersFromSheet(regionId, options));
+}
+
+async function _doSyncMembersFromSheet(regionId, options = {}) {
     const region = await db.get('SELECT * FROM regions WHERE id = ?', [regionId]);
     if (!region) {
         throw new Error(`Không tìm thấy Vùng với ID ${regionId}`);
@@ -165,8 +177,10 @@ async function syncMembersFromSheet(regionId, options = {}) {
     const deactivated = [];
     let validCountOnSheet = 0;
 
-    await db.run('BEGIN IMMEDIATE');
+    let inTransaction = false;
     try {
+        await db.run('BEGIN IMMEDIATE');
+        inTransaction = true;
         for (const item of gridData) {
             const rawName = (item.value || '').trim();
             if (!isValidMemberName(rawName)) continue;
@@ -255,8 +269,15 @@ async function syncMembersFromSheet(regionId, options = {}) {
         }
 
         await db.run('COMMIT');
+        inTransaction = false;
     } catch (err) {
-        await db.run('ROLLBACK');
+        if (inTransaction) {
+            try {
+                await db.run('ROLLBACK');
+            } catch (rbErr) {
+                console.warn('[SHEET MEMBER SYNC] Lỗi rollback:', rbErr.message);
+            }
+        }
         throw err;
     }
 

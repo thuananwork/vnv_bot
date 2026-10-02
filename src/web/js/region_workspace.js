@@ -699,6 +699,7 @@ async function loadRegionSheetTabs(regionId, currentSavedTab) {
 
     try {
         const res = await fetch(`/api/v2/regions/${regionId}/sheet-tabs`);
+        if (!res.ok) return;
         const data = await res.json();
         const sheetTabs = (data.success && Array.isArray(data.tabs) && data.tabs.length > 0)
             ? data.tabs
@@ -706,45 +707,13 @@ async function loadRegionSheetTabs(regionId, currentSavedTab) {
 
         cachedRegionSheetTabs = sheetTabs;
 
-        // Phân loại: Các Tab Tháng làm việc (T{tháng}/{năm}) và Các Tab khác
-        const monthTabs = sheetTabs.filter(t => t.match(/^T\d+\/\d+$/i));
-        const otherTabs = sheetTabs.filter(t => !t.match(/^T\d+\/\d+$/i));
-
-        // Đảm bảo activeTab và autoTab có trong danh sách hiển thị
-        const allMonthTabs = Array.from(new Set([activeTab, autoTab, ...monthTabs].filter(t => t && t.match(/^T\d+\/\d+$/i))));
-
-        let html = '';
-        if (allMonthTabs.length > 0) {
-            html += `<optgroup label="── Tab Tháng Làm Việc ──">`;
-            allMonthTabs.forEach(t => {
-                html += `<option value="${escapeHtml(t)}" ${t === activeTab ? 'selected' : ''}>${escapeHtml(t)}</option>`;
-            });
-            html += `</optgroup>`;
+        const openSheetModalLink = document.getElementById('rw-modal-sheet-link');
+        const sheetUrl = data.sheetUrl || (data.data && data.data.sheetUrl) || (window.currentRegionData && (window.currentRegionData.sheet_url || (window.currentRegionData.sheet_id ? `https://docs.google.com/spreadsheets/d/${window.currentRegionData.sheet_id}/edit` : null)));
+        if (openSheetModalLink && sheetUrl) {
+            openSheetModalLink.href = sheetUrl;
         }
-
-        if (otherTabs.length > 0) {
-            html += `<optgroup label="── Tab khác trong Sheet ──">`;
-            otherTabs.forEach(t => {
-                html += `<option value="${escapeHtml(t)}" ${t === activeTab ? 'selected' : ''}>${escapeHtml(t)}</option>`;
-            });
-            html += `</optgroup>`;
-        }
-
-        if (!html) {
-            html = `<option value="${escapeHtml(activeTab)}" selected>${escapeHtml(activeTab)}</option>`;
-        }
-
-        select.innerHTML = html;
-        select.value = activeTab;
     } catch (e) {
         console.warn('Không thể tải danh sách tab sheet:', e);
-        select.innerHTML = `
-            <option value="${escapeHtml(activeTab)}" selected>${escapeHtml(activeTab)}</option>
-            <option value="T11/26">T11/26</option>
-            <option value="T10/26">T10/26</option>
-            <option value="T9/26">T9/26</option>
-        `;
-        select.value = activeTab;
     }
 }
 
@@ -1152,18 +1121,23 @@ async function triggerOpenZaloLogin() {
     }
 }
 
+let isSyncingMembers = false;
+
 async function handleSyncMembersFromSheet() {
+    if (isSyncingMembers) {
+        console.warn('Đang đồng bộ sheet, vui lòng chờ...');
+        return;
+    }
+    isSyncingMembers = true;
+
     const regionId = getActiveRegionId();
-    const btns = [
-        document.getElementById('btn-rw-sync-sheet'),
-        document.getElementById('btn-rw-sync-sheet-top')
-    ].filter(Boolean);
-    const originalHtmls = btns.map(b => b.innerHTML);
+    const btn = document.getElementById('btn-rw-sync-sheet-top') || document.getElementById('btn-rw-sync-sheet');
+    const originalHtml = btn ? btn.innerHTML : '';
     
-    btns.forEach(b => {
-        b.disabled = true;
-        b.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang đồng bộ...';
-    });
+    if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang đồng bộ...';
+    }
 
     try {
         const res = await fetch(`/api/v2/regions/${regionId}/sync-sheet-members`, {
@@ -1202,10 +1176,11 @@ async function handleSyncMembersFromSheet() {
     } catch (err) {
         alert('Lỗi kết nối: ' + err.message);
     } finally {
-        btns.forEach((b, i) => {
-            b.disabled = false;
-            b.innerHTML = originalHtmls[i];
-        });
+        isSyncingMembers = false;
+        if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = originalHtml;
+        }
     }
 }
 
@@ -1284,15 +1259,6 @@ function initRegionWorkspace() {
         });
     }
 
-    // Nút đồng bộ Sheet
-    const btnSyncSheet = document.getElementById('btn-rw-sync-sheet');
-    if (btnSyncSheet) {
-        btnSyncSheet.addEventListener('click', handleSyncMembersFromSheet);
-    }
-    const btnSyncSheetTop = document.getElementById('btn-rw-sync-sheet-top');
-    if (btnSyncSheetTop) {
-        btnSyncSheetTop.addEventListener('click', handleSyncMembersFromSheet);
-    }
 
     // Nút Tự động đoán Zalo Mapping
     const btnAutoGuessZalo = document.getElementById('btn-rw-auto-guess-zalo');
