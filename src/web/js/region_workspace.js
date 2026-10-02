@@ -138,21 +138,20 @@ async function loadRegionWorkspaceData() {
                 if (pageTitle) {
                     pageTitle.innerHTML = `<i class="fa-solid fa-map-location-dot" style="color: var(--color-primary);"></i> VÙNG ${regionId}`;
                 }
-                const workDate = getRegionWorkDate();
-                const autoTab = getDynamicMonthTab(workDate);
-                const targetTab = region.sheet_name || region.current_month_tab || autoTab || 'T10/26';
-                await loadRegionSheetTabs(regionId, targetTab);
-
-                const openSheetButtons = document.querySelectorAll('#link-rw-open-sheet, #link-rw-open-sheet-header, .rw-open-sheet-btn');
+                // Cập nhật ngay link Mở Google Sheet cho tất cả các nút Mở Sheet (không chờ tải tabs)
                 const url = region.sheet_url || (region.sheet_id ? `https://docs.google.com/spreadsheets/d/${region.sheet_id}/edit` : null);
+                const openSheetButtons = document.querySelectorAll('#link-rw-open-sheet, #link-rw-open-sheet-header, .rw-open-sheet-btn, #rw-modal-sheet-link');
                 openSheetButtons.forEach(btn => {
                     if (url) {
                         btn.href = url;
                         btn.style.display = 'inline-flex';
-                    } else {
-                        btn.style.display = 'none';
                     }
                 });
+
+                const workDate = getRegionWorkDate();
+                const autoTab = getDynamicMonthTab(workDate);
+                const targetTab = region.sheet_name || region.current_month_tab || autoTab || 'T10/26';
+                await loadRegionSheetTabs(regionId, targetTab);
             }
         }
         await loadRegionMembers();
@@ -827,11 +826,10 @@ async function reloadModalSheetTabs(forceSelectedTab = null) {
             selectEl.value = currentTab;
         }
 
-        // Đồng thời cập nhật luôn select trên thanh công cụ
-        const toolbarSelect = document.getElementById('rw-sheet-tab');
-        if (toolbarSelect && toolbarSelect.innerHTML !== html) {
-            toolbarSelect.innerHTML = html;
-            toolbarSelect.value = currentTab;
+        const sheetUrl = data.sheetUrl || (data.data && data.data.sheetUrl) || (window.currentRegionData && (window.currentRegionData.sheet_url || (window.currentRegionData.sheet_id ? `https://docs.google.com/spreadsheets/d/${window.currentRegionData.sheet_id}/edit` : null)));
+        const modalLink = document.getElementById('rw-modal-sheet-link');
+        if (modalLink && sheetUrl) {
+            modalLink.href = sheetUrl;
         }
     } catch (err) {
         console.error('Lỗi nạp tab sheet con:', err);
@@ -1463,3 +1461,21 @@ window.triggerOpenZaloLogin = triggerOpenZaloLogin;
 window.openSelectSheetTabModal = openSelectSheetTabModal;
 window.reloadModalSheetTabs = reloadModalSheetTabs;
 window.confirmSelectSheetTab = confirmSelectSheetTab;
+
+function handleOpenRegionSheet(e) {
+    const region = window.currentRegionData;
+    const url = region && (region.sheet_url || (region.sheet_id ? `https://docs.google.com/spreadsheets/d/${region.sheet_id}/edit` : null));
+    if (url) {
+        window.open(url, '_blank');
+        if (e) e.preventDefault();
+    } else {
+        const regionId = getActiveRegionId();
+        if (typeof window.showToast === 'function') {
+            window.showToast(`Chưa có liên kết Google Sheet cho Vùng ${regionId}!`, 'warning');
+        } else {
+            alert(`Chưa có liên kết Google Sheet cho Vùng ${regionId}!`);
+        }
+        if (e) e.preventDefault();
+    }
+}
+window.handleOpenRegionSheet = handleOpenRegionSheet;

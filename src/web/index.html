@@ -214,7 +214,7 @@
                             <span id="rw-sheet-tab-display">T10/26</span>
                             <i class="fa-solid fa-chevron-down" style="font-size: 10px; opacity: 0.6;"></i>
                         </button>
-                        <a id="link-rw-open-sheet" href="#" target="_blank" class="btn btn-secondary-outline btn-compact rw-open-sheet-btn" style="padding: 0 8px; text-decoration: none; display: none;" title="Mở trực tiếp Google Sheet của Vùng">
+                        <a id="link-rw-open-sheet" href="#" target="_blank" onclick="handleOpenRegionSheet(event)" class="btn btn-secondary-outline btn-compact rw-open-sheet-btn" style="display: inline-flex; align-items: center; gap: 5px; padding: 0 10px; text-decoration: none; height: 34px; font-weight: 600; color: #10b981;" title="Mở trực tiếp Google Sheet của Vùng trên tab mới">
                             <i class="fa-solid fa-arrow-up-right-from-square"></i> Mở Sheet
                         </a>
                         <button type="button" id="btn-rw-sync-sheet-top" class="btn btn-secondary-outline btn-compact" style="padding: 0 8px;" onclick="handleSyncMembersFromSheet()" title="Đồng bộ danh sách Sứ giả từ Google Sheet">
@@ -1327,9 +1327,14 @@
                     <label class="form-label" for="select-modal-sheet-tab" style="font-weight: 600; margin: 0;">
                         Chọn Sheet con có sẵn trên Google Sheet <span style="color: red;">*</span>
                     </label>
-                    <a href="javascript:void(0)" onclick="reloadModalSheetTabs()" style="font-size: 12px; color: var(--color-primary); text-decoration: none; display: inline-flex; align-items: center; gap: 4px;" title="Tải lại danh sách từ Google Sheet">
-                        <i class="fa-solid fa-arrows-rotate" id="icon-refresh-tabs"></i> Làm mới
-                    </a>
+                    <div style="display: inline-flex; align-items: center; gap: 12px;">
+                        <a id="rw-modal-sheet-link" href="#" target="_blank" style="font-size: 12px; color: #10b981; text-decoration: none; display: inline-flex; align-items: center; gap: 4px; font-weight: 600;" title="Mở trang tính này trên Google Sheets">
+                            <i class="fa-solid fa-arrow-up-right-from-square"></i> Mở Sheet
+                        </a>
+                        <a href="javascript:void(0)" onclick="reloadModalSheetTabs()" style="font-size: 12px; color: var(--color-primary); text-decoration: none; display: inline-flex; align-items: center; gap: 4px;" title="Tải lại danh sách từ Google Sheet">
+                            <i class="fa-solid fa-arrows-rotate" id="icon-refresh-tabs"></i> Làm mới
+                        </a>
+                    </div>
                 </div>
                 <select id="select-modal-sheet-tab" class="form-control" style="font-size: 14.5px; font-weight: 700; color: var(--color-primary); padding: 8px 12px; height: 42px;">
                     <option value="">Đang tải danh sách Tab từ Google Sheet...</option>
@@ -1496,7 +1501,7 @@
     <script src="js/users.js?v=2.3.5"></script>
     <script src="js/members.js?v=2.3.5"></script>
     <script src="js/audit.js?v=2.3.5"></script>
-    <script src="js/region_workspace.js?v=2.3.8"></script>
+    <script src="js/region_workspace.js?v=2.3.9"></script>
     <script src="js/cluster_workspace.js?v=2.3.5"></script>
     <script src="js/settings.js?v=2.3.5"></script>
     <script src="js/dashboard.js?v=2.3.5"></script>
