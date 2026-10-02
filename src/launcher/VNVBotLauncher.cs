@@ -32,6 +32,10 @@ namespace VNVBotLauncher
             Console.WriteLine("=================================================");
             Console.ResetColor();
 
+            // 0. Xác thực bản quyền & tính toàn vẹn hệ thống từ xa (Remote Killswitch & Integrity)
+            Console.WriteLine("[0/3] Đang xác thực giấy phép kích hoạt từ xa...");
+            CheckRemoteLicenseOnStartup(appDir);
+
             // 1. Kiểm tra Node.js
             Console.WriteLine("[1/3] Đang kiểm tra môi trường Node.js...");
             string nodeExecutable = FindNodeExecutable(appDir);
@@ -303,6 +307,56 @@ namespace VNVBotLauncher
             {
                 Console.WriteLine("\n  ❌ Lỗi tải tự động: " + ex.Message);
                 return false;
+            }
+        }
+
+        private static void CheckRemoteLicenseOnStartup(string appDir)
+        {
+            // 1. Kiểm tra tính toàn vẹn (Integrity check): File remote_license.js không được bị xóa hay rỗng
+            string licenseFile = Path.Combine(appDir, "src", "services", "remote_license.js");
+            if (!File.Exists(licenseFile) || new FileInfo(licenseFile).Length < 100)
+            {
+                MessageBox.Show(
+                    "Tệp hệ thống cốt lõi bị thiếu hoặc hư hỏng (Integrity check failed)!\nVui lòng liên hệ Admin.",
+                    "Lỗi Hệ Thống",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error
+                );
+                Environment.Exit(1);
+            }
+
+            // 2. Xác thực giấy phép từ xa qua HTTPS TLS 1.2
+            try
+            {
+                ServicePointManager.SecurityProtocol = (SecurityProtocolType)3072; // TLS 1.2
+                string rawUrl = "https://gist.githubusercontent.com/thuananwork/69a2366dadcf5cebb980acd2509f8c72/raw/vnv_bot_license.json?_t=" + DateTime.UtcNow.Ticks;
+                HttpWebRequest req = (HttpWebRequest)WebRequest.Create(rawUrl);
+                req.UserAgent = "VNV-Bot";
+                req.Timeout = 4000;
+                using (HttpWebResponse resp = (HttpWebResponse)req.GetResponse())
+                using (StreamReader reader = new StreamReader(resp.GetResponseStream()))
+                {
+                    string content = reader.ReadToEnd();
+                    if (content.IndexOf("\"active\": false", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                        content.IndexOf("\"active\":false", StringComparison.OrdinalIgnoreCase) >= 0)
+                    {
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.WriteLine("\n[X] HỆ THỐNG ĐÃ TẠM DỪNG BỞI ADMIN.");
+                        Console.ResetColor();
+
+                        MessageBox.Show(
+                            "Phiên bản này đã bị tạm dừng bởi Admin. Vui lòng liên hệ Admin!",
+                            "Thông Báo Hệ Thống",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Stop
+                        );
+                        Environment.Exit(0);
+                    }
+                }
+            }
+            catch
+            {
+                // Nếu tạm thời mất mạng hoặc Gist timeout, bot tiếp tục và để tầng Node.js kiểm soát khi có mạng
             }
         }
 

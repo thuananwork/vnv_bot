@@ -155,6 +155,34 @@ function build() {
         }
     }
 
+    // 2.5 Bảo vệ bản quyền & Chống dịch ngược / Chống AI can thiệp (Security Obfuscation)
+    console.log('\n[2.5/5] Mã hóa bảo vệ bản quyền chống can thiệp (Anti-Tamper & Obfuscation)...');
+    try {
+        const JavaScriptObfuscator = require('javascript-obfuscator');
+        const targetFile = path.join(DIST_DIR, 'src', 'services', 'remote_license.js');
+        if (fs.existsSync(targetFile)) {
+            const rawCode = fs.readFileSync(targetFile, 'utf8');
+            const obfResult = JavaScriptObfuscator.obfuscate(rawCode, {
+                target: 'node',
+                compact: true,
+                controlFlowFlattening: true,
+                controlFlowFlatteningThreshold: 0.8,
+                deadCodeInjection: false,
+                identifierNamesGenerator: 'hexadecimal',
+                selfDefending: true,
+                stringArray: true,
+                stringArrayEncoding: ['rc4'],
+                stringArrayThreshold: 0.8,
+                splitStrings: true,
+                splitStringsChunkLength: 4
+            });
+            fs.writeFileSync(targetFile, obfResult.getObfuscatedCode(), 'utf8');
+            console.log('  🛡️ Đã mã hóa bảo vệ remote_license.js (Self-Defending + RC4 String Array + Control Flow Flattening).');
+        }
+    } catch (obfErr) {
+        console.warn('  ⚠️ Lưu ý khi làm mờ code:', obfErr.message);
+    }
+
     // 3. Cài đặt production dependencies
     console.log('\n[3/5] Cài đặt production dependencies...');
     try {
