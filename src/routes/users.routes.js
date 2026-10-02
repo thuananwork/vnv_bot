@@ -252,6 +252,60 @@ async function handleUserDisable(req, res, userId) {
     }
 }
 
+// DELETE /api/users/:id/permanent: Xóa tài khoản vĩnh viễn
+router.delete('/:id/permanent', auth.requireAuth, auth.isClusterOrAdmin, async (req, res) => {
+    const userId = parseInt(req.params.id, 10);
+    if (isNaN(userId)) {
+        return res.status(400).json({ error: 'ID người dùng không hợp lệ.' });
+    }
+
+    if (userId === req.session.user.id) {
+        return res.status(400).json({ error: 'SELF_DELETE_PROTECTED' });
+    }
+
+    try {
+        await db.run('BEGIN IMMEDIATE');
+        try {
+            const targetUser = await db.get('SELECT id, username, full_name, role FROM users WHERE id = ?', [userId]);
+            if (!targetUser) {
+                await db.run('ROLLBACK');
+                return res.status(404).json({ error: 'Không tìm thấy người dùng để xóa.' });
+            }
+
+            if (targetUser.role === 'admin') {
+                const adminCount = await db.get("SELECT COUNT(*) as cnt FROM users WHERE role = 'admin'");
+                if (adminCount.cnt <= 1) {
+                    await db.run('ROLLBACK');
+                    return res.status(409).json({ error: 'LAST_ADMIN_PROTECTED' });
+                }
+            }
+
+            // Gỡ bỏ liên kết quản lý Vùng / Cụm
+            await db.run('UPDATE regions SET manager_id = NULL WHERE manager_id = ?', [userId]);
+            await db.run('UPDATE clusters SET manager_id = NULL WHERE manager_id = ?', [userId]);
+            await db.run('UPDATE users SET approved_by = NULL WHERE approved_by = ?', [userId]);
+
+            // Xóa người dùng vĩnh viễn khỏi DB
+            await db.run('DELETE FROM users WHERE id = ?', [userId]);
+
+            await audit.logAction(req.session.user.id, 'USER_PERMANENT_DELETE', `user:${userId}`, {
+                result: 'SUCCESS',
+                target_user_id: userId,
+                details: { username: targetUser.username, full_name: targetUser.full_name, role: targetUser.role }
+            }, req);
+
+            await db.run('COMMIT');
+            res.json({ message: `Đã xóa vĩnh viễn tài khoản "${targetUser.username}" thành công.` });
+        } catch (dbErr) {
+            await db.run('ROLLBACK');
+            throw dbErr;
+        }
+    } catch (err) {
+        console.error('[PERMANENT_DELETE ERROR]', err);
+        res.status(500).json({ error: 'Lỗi khi xóa người dùng: ' + err.message });
+    }
+});
+
 router.delete('/:id', auth.requireAuth, auth.isClusterOrAdmin, async (req, res) => {
     await handleUserDisable(req, res, req.params.id);
 });

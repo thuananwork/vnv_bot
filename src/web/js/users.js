@@ -63,6 +63,7 @@ async function loadUsers() {
                     <div class="table-actions" style="gap:5px;">
                         <button class="btn btn-secondary-outline btn-sm" onclick="editUser(${JSON.stringify(u).replace(/"/g, '&quot;')})"><i class="fa-solid fa-pen-to-square"></i> Sửa</button>
                         ${toggleLockBtn}
+                        <button class="btn btn-danger-outline btn-sm" style="color:#ef4444; border-color:#fca5a5;" title="Xóa vĩnh viễn tài khoản này" onclick="permanentDeleteUser(${u.id}, '${escapeHtml(u.username)}')"><i class="fa-solid fa-trash-can"></i> Xóa</button>
                         ${extraActions}
                     </div>
                 </td>
@@ -175,6 +176,37 @@ async function revokeUserSessions(id) {
     }
 }
 
+async function permanentDeleteUser(id, username) {
+    const ok = await showConfirmModal(
+        `Bạn có chắc chắn muốn XÓA VĨNH VIỄN tài khoản "${username}" không?\n\n⚠️ Lưu ý: Thao tác này sẽ xóa hoàn toàn tài khoản khỏi cơ sở dữ liệu và không thể khôi phục!`,
+        { title: 'Xác Nhận Xóa Vĩnh Viễn', isDanger: true }
+    );
+    if (!ok) return;
+
+    try {
+        const res = await fetch(`/api/users/${id}/permanent`, { method: 'DELETE' });
+        const data = await res.json();
+        if (res.ok) {
+            if (typeof showToast === 'function') {
+                showToast(`✅ ${data.message || 'Đã xóa tài khoản vĩnh viễn!'}`);
+            } else if (typeof showAlertModal === 'function') {
+                showAlertModal(data.message || 'Đã xóa tài khoản vĩnh viễn.', 'success');
+            }
+            loadUsers();
+        } else {
+            if (data.error === 'SELF_DELETE_PROTECTED') {
+                showAlertModal('Bạn không thể tự xóa tài khoản của chính mình.', 'warning');
+            } else if (data.error === 'LAST_ADMIN_PROTECTED') {
+                showAlertModal('Không thể xóa tài khoản Admin cuối cùng trong hệ thống.', 'warning');
+            } else {
+                showAlertModal('Lỗi: ' + (data.error || 'Không thể xóa tài khoản.'), 'error');
+            }
+        }
+    } catch (err) {
+        showAlertModal('Lỗi kết nối máy chủ.', 'error');
+    }
+}
+
 function initUserForms() {
     const roleSelect = document.getElementById('select-role');
     if (roleSelect) {
@@ -249,5 +281,6 @@ window.editUser = editUser;
 window.deleteUser = deleteUser;
 window.enableUser = enableUser;
 window.revokeUserSessions = revokeUserSessions;
+window.permanentDeleteUser = permanentDeleteUser;
 window.toggleUserFields = toggleUserFields;
 window.initUserForms = initUserForms;
