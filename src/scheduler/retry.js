@@ -40,7 +40,14 @@ class RetryManager {
 
                 // Tính toán độ trễ (delay)
                 let delay = policy.baseDelayMs;
-                if (policy.backoff === 'exponential') {
+                const isQuotaError = err && (
+                    (err.message && /quota|rate\s*limit|resource_exhausted|429/i.test(err.message)) ||
+                    err.status === 429 ||
+                    (err.originalError && (err.originalError.status === 429 || err.originalError.code === 429))
+                );
+                if (isQuotaError && delay < 3500) {
+                    delay = 3500 * attempt;
+                } else if (policy.backoff === 'exponential') {
                     delay = policy.baseDelayMs * Math.pow(2, attempt - 1);
                 } else if (policy.backoff === 'linear') {
                     delay = policy.baseDelayMs * attempt;
@@ -51,7 +58,7 @@ class RetryManager {
                 const finalDelay = Math.max(0, Math.floor(delay + jitter));
 
                 console.warn(
-                    `[RETRY MANAGER] Job gặp lỗi "${err.message}". ` +
+                    `[RETRY MANAGER] ${isQuotaError ? '⚠️ Vượt hạn ngạch API (Quota): ' : ''}Gặp lỗi "${err.message}". ` +
                     `Đang tiến hành thử lại lần ${attempt + 1}/${policy.attempts} sau ${finalDelay}ms...`
                 );
 

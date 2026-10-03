@@ -1,5 +1,6 @@
 const db = require('../config/db');
 const GoogleSheetsClient = require('./google/sheets');
+const { executeGoogleApiWithRetry } = require('./google/retry');
 
 /**
  * Chuyển đổi số thứ tự cột (1-based) thành chữ cái cột A1 Notation
@@ -347,32 +348,29 @@ async function syncRegionMatrixSheet(regionId, workDate, options = {}) {
     let apiUpdateSuccess = true;
     let apiUpdateError = null;
     try {
-        await client.spreadsheets.values.batchUpdate({
+        await executeGoogleApiWithRetry(() => client.spreadsheets.values.batchUpdate({
             spreadsheetId: region.sheet_id,
             resource: {
                 valueInputOption: 'USER_ENTERED',
                 data: valueRanges
             }
-        });
+        }));
     } catch (apiErr) {
         apiUpdateSuccess = false;
         apiUpdateError = apiErr.message;
         console.warn(`[SHEET MATRIX SYNC] Cảnh báo Google Sheets API: ${apiErr.message}. Tiếp tục lưu trữ cục bộ.`);
     }
 
-    // Cross-day makeup sync is handled in batch per-date by caller (on_demand_actions.js)
-
-
     // Thực hiện format màu sắc hàng loạt nếu có requests
-    if (formatRequests.length > 0) {
+    if (formatRequests.length > 0 && apiUpdateSuccess) {
         try {
             console.log(`[SHEET MATRIX SYNC] Đang áp dụng định dạng màu sắc Google Sheets (${formatRequests.length} ô)...`);
-            await client.spreadsheets.batchUpdate({
+            await executeGoogleApiWithRetry(() => client.spreadsheets.batchUpdate({
                 spreadsheetId: region.sheet_id,
                 resource: {
                     requests: formatRequests
                 }
-            });
+            }));
             console.log(`[SHEET MATRIX SYNC] ✅ Đã tô màu và định dạng thành công ${formatRequests.length} ô trên Sheet.`);
         } catch (fmtErr) {
             console.warn(`[SHEET MATRIX SYNC] Cảnh báo khi format màu: ${fmtErr.message}`);

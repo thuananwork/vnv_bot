@@ -412,35 +412,37 @@ class OnDemandActionService {
             try {
                 sheetSyncResult = await syncRegionMatrixSheet(region.id, targetDate, { dryRun, skipSheet });
 
-                // Đồng bộ bổ sung cho các ngày cũ trên Google Sheet nếu có bài nộp bù
-                const suppDatesMap = new Map();
-                for (const sub of memberSubmissionMap.values()) {
-                    if (Array.isArray(sub.supplementDates)) {
-                        sub.supplementDates.forEach(d => {
-                            if (d && d < targetDate) {
-                                if (!suppDatesMap.has(d)) suppDatesMap.set(d, new Set());
-                                suppDatesMap.get(d).add(sub.memberId);
-                            }
-                        });
+                // Đồng bộ bổ sung cho các ngày cũ trên Google Sheet nếu có bài nộp bù (chỉ thực hiện khi ngày chính đã ghi thành công)
+                if (sheetSyncResult.success) {
+                    const suppDatesMap = new Map();
+                    for (const sub of memberSubmissionMap.values()) {
+                        if (Array.isArray(sub.supplementDates)) {
+                            sub.supplementDates.forEach(d => {
+                                if (d && d < targetDate) {
+                                    if (!suppDatesMap.has(d)) suppDatesMap.set(d, new Set());
+                                    suppDatesMap.get(d).add(sub.memberId);
+                                }
+                            });
+                        }
                     }
-                }
-                // Sắp xếp các ngày nộp bù giảm dần (ưu tiên các ngày gần nhất: hôm qua, hôm kia...)
-                const sortedSuppDates = Array.from(suppDatesMap.keys())
-                    .sort((a, b) => b.localeCompare(a))
-                    .slice(0, 4); // Đồng bộ tối đa 4 ngày nộp bù gần nhất lên Sheet để tránh nghẽn quota Google API
+                    // Sắp xếp các ngày nộp bù giảm dần (ưu tiên các ngày gần nhất: hôm qua, hôm kia...)
+                    const sortedSuppDates = Array.from(suppDatesMap.keys())
+                        .sort((a, b) => b.localeCompare(a))
+                        .slice(0, 3); // Đồng bộ tối đa 3 ngày nộp bù gần nhất lên Sheet để an toàn tuyệt đối hạn ngạch Google API
 
-                for (const sDate of sortedSuppDates) {
-                    const memberIdSet = suppDatesMap.get(sDate);
-                    try {
-                        console.log(`[ON-DEMAND] 🔄 Tự động đồng bộ bài nộp bù ngày ${sDate} cho ${memberIdSet.size} sứ giả lên Google Sheet...`);
-                        await new Promise(r => setTimeout(r, 400)); // Nghỉ 400ms chống vượt hạn ngạch Google Write Quota
-                        await syncRegionMatrixSheet(region.id, sDate, { 
-                            dryRun, 
-                            skipSheet,
-                            onlyMemberIds: Array.from(memberIdSet)
-                        });
-                    } catch (suppErr) {
-                        console.warn(`[ON-DEMAND] Không thể đồng bộ ngày bổ sung ${sDate}:`, suppErr.message);
+                    for (const sDate of sortedSuppDates) {
+                        const memberIdSet = suppDatesMap.get(sDate);
+                        try {
+                            console.log(`[ON-DEMAND] 🔄 Tự động đồng bộ bài nộp bù ngày ${sDate} cho ${memberIdSet.size} sứ giả lên Google Sheet...`);
+                            await new Promise(r => setTimeout(r, 800)); // Nghỉ 800ms chống vượt hạn ngạch Google Write Quota
+                            await syncRegionMatrixSheet(region.id, sDate, { 
+                                dryRun, 
+                                skipSheet,
+                                onlyMemberIds: Array.from(memberIdSet)
+                            });
+                        } catch (suppErr) {
+                            console.warn(`[ON-DEMAND] Không thể đồng bộ ngày bổ sung ${sDate}:`, suppErr.message);
+                        }
                     }
                 }
             } catch (sheetErr) {
