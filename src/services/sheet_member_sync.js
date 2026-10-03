@@ -83,11 +83,16 @@ function isValidMemberName(name) {
     return true;
 }
 
-let syncMutexQueue = Promise.resolve();
+/** Per-region mutex map to serialize sync calls per region */
+const syncMutexMap = new Map();
 
-function runWithSyncLock(fn) {
-    const next = syncMutexQueue.then(fn, fn);
-    syncMutexQueue = next.catch(() => {});
+function runWithSyncLock(regionId, fn) {
+    const key = String(regionId);
+    const prev = syncMutexMap.get(key) || Promise.resolve();
+    // Chain fn after prev completes (success or failure) — ensures serial execution
+    const next = prev.then(fn, () => fn());
+    // Store the tail of chain; swallow rejections so the chain stays alive for future calls
+    syncMutexMap.set(key, next.catch(() => {}));
     return next;
 }
 
@@ -100,7 +105,7 @@ function runWithSyncLock(fn) {
  * @returns {Promise<Object>}
  */
 async function syncMembersFromSheet(regionId, options = {}) {
-    return runWithSyncLock(() => _doSyncMembersFromSheet(regionId, options));
+    return runWithSyncLock(regionId, () => _doSyncMembersFromSheet(regionId, options));
 }
 
 async function _doSyncMembersFromSheet(regionId, options = {}) {
