@@ -1056,12 +1056,14 @@ async function executeRunRegionReport({ regionId, workDate, skipSheet = false, s
         // 2. Nếu quét thành công
         if (data.success && data.data && data.data.completed !== undefined) {
             const d = data.data;
-            let statusText = `🎉 ĐÃ HOÀN TẤT QUÉT BÀI & BÁO CÁO VÙNG ${regionId}!\n\n`;
+            const isSynced = d.sheetSynced === true;
+            let modalTitle = isSynced ? '✅ ĐÃ QUÉT BÀI & CẬP NHẬT SHEET THÀNH CÔNG' : '⚠️ ĐÃ QUÉT XONG — CHƯA GHI ĐƯỢC SHEET';
+            let statusText = isSynced ? `🎉 ĐÃ HOÀN TẤT QUÉT BÀI & CẬP NHẬT GOOGLE SHEET VÙNG ${regionId}!\n\n` : `⚠️ QUÉT BÀI THÀNH CÔNG NHƯNG CHƯA GHI ĐƯỢC SHEET VÙNG ${regionId}!\n\n`;
             statusText += `• Hoàn thành: ${d.completed}/${d.totalMembers} sứ giả\n`;
-            if (d.sheetSynced) {
+            if (isSynced) {
                 statusText += `• Google Sheet: Đã cập nhật thành công (${d.sheetRange || 'Đã ghi'})\n`;
             } else {
-                statusText += `• Google Sheet: ${d.sheetMessage || 'Chưa ghi (Đã lưu an toàn trong bot)'}\n`;
+                statusText += `• Google Sheet: ${d.sheetMessage || 'Chưa ghi được vào Sheet (Dữ liệu đã lưu an toàn trong bot)'}\n`;
             }
             if (d.zaloScrapedInfo && d.zaloScrapedInfo.connected) {
                 const grp = d.zaloScrapedInfo.groupName || ('Vùng ' + regionId);
@@ -1076,8 +1078,8 @@ async function executeRunRegionReport({ regionId, workDate, skipSheet = false, s
                 statusText += `• Khung chat Zalo: Đã điền sẵn báo cáo nháp vào ô tin nhắn (Chờ duyệt, chưa bấm gửi).\n`;
             }
 
-            showAlertModal(statusText, d.sheetSynced ? 'success' : 'warning', '✅ ĐÃ HOÀN TẤT QUÉT BÀI & BÁO CÁO');
-            showToast(d.sheetSynced ? '✅ Báo cáo & Ghi Sheet thành công!' : '⚠️ Đã tạo Báo cáo (Chưa ghi Sheet)');
+            showAlertModal(statusText, isSynced ? 'success' : 'warning', modalTitle);
+            showToast(isSynced ? '✅ Báo cáo & Ghi Sheet thành công!' : '⚠️ Quét xong nhưng chưa ghi được Sheet');
 
             await loadRegionMembers();
             if (d.reportContent) {

@@ -360,67 +360,8 @@ async function syncRegionMatrixSheet(regionId, workDate, options = {}) {
         console.warn(`[SHEET MATRIX SYNC] Cảnh báo Google Sheets API: ${apiErr.message}. Tiếp tục lưu trữ cục bộ.`);
     }
 
-    // Cập nhật các ô nộp bù ngày cũ trên Sheet (Ví dụ báo cáo 16/06 gửi trong ngày 17/06)
-    for (const sub of submissions) {
-        if (sub.supplement_dates_json) {
-            let suppDates = [];
-            try {
-                suppDates = JSON.parse(sub.supplement_dates_json);
-            } catch (e) {}
+    // Cross-day makeup sync is handled in batch per-date by caller (on_demand_actions.js)
 
-            for (const suppDate of suppDates) {
-                if (suppDate && suppDate !== workDate) {
-                    const parts = suppDate.split('-');
-                    const suppDay = parseInt(parts[2], 10);
-                    if (suppDay >= 1 && suppDay <= 31) {
-                        const suppCol = getColumnForDay(suppDay);
-                        const mem = members.find(m => m.id === sub.member_id);
-                        if (mem && mem.sheet_row_index) {
-                            const suppRange = `${tabName}!${suppCol}${mem.sheet_row_index}`;
-                            console.log(`[SHEET MATRIX SYNC] Tự động điền 'Oke' vào ô ngày cũ: ${suppRange} cho ${mem.real_name} (${suppDate})`);
-                            try {
-                                await client.spreadsheets.values.update({
-                                    spreadsheetId: region.sheet_id,
-                                    range: suppRange,
-                                    valueInputOption: 'USER_ENTERED',
-                                    resource: { values: [[completedText]] }
-                                });
-
-                                if (enableSheetColors) {
-                                    formatRequests.push({
-                                        repeatCell: {
-                                            range: {
-                                                sheetId: numericSheetId,
-                                                startRowIndex: mem.sheet_row_index - 1,
-                                                endRowIndex: mem.sheet_row_index,
-                                                startColumnIndex: 2 + suppDay,
-                                                endColumnIndex: 3 + suppDay
-                                            },
-                                            cell: {
-                                                userEnteredFormat: {
-                                                    backgroundColor: colorLateNoResponse, // Nền cam đánh dấu đã bù
-                                                    horizontalAlignment: 'CENTER',
-                                                    textFormat: {
-                                                        fontFamily: 'Times New Roman',
-                                                        fontSize: 12,
-                                                        bold: false,
-                                                        italic: false
-                                                    }
-                                                }
-                                            },
-                                            fields: 'userEnteredFormat(backgroundColor,horizontalAlignment,textFormat)'
-                                        }
-                                    });
-                                }
-                            } catch (e) {
-                                console.warn(`[SHEET MATRIX SYNC] Lỗi ghi bổ sung ô ${suppRange}: ${e.message}`);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
 
     // Thực hiện format màu sắc hàng loạt nếu có requests
     if (formatRequests.length > 0) {

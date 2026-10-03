@@ -424,9 +424,16 @@ class OnDemandActionService {
                         });
                     }
                 }
-                for (const [sDate, memberIdSet] of suppDatesMap.entries()) {
+                // Sắp xếp các ngày nộp bù giảm dần (ưu tiên các ngày gần nhất: hôm qua, hôm kia...)
+                const sortedSuppDates = Array.from(suppDatesMap.keys())
+                    .sort((a, b) => b.localeCompare(a))
+                    .slice(0, 4); // Đồng bộ tối đa 4 ngày nộp bù gần nhất lên Sheet để tránh nghẽn quota Google API
+
+                for (const sDate of sortedSuppDates) {
+                    const memberIdSet = suppDatesMap.get(sDate);
                     try {
                         console.log(`[ON-DEMAND] 🔄 Tự động đồng bộ bài nộp bù ngày ${sDate} cho ${memberIdSet.size} sứ giả lên Google Sheet...`);
+                        await new Promise(r => setTimeout(r, 400)); // Nghỉ 400ms chống vượt hạn ngạch Google Write Quota
                         await syncRegionMatrixSheet(region.id, sDate, { 
                             dryRun, 
                             skipSheet,
