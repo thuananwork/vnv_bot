@@ -184,20 +184,22 @@ async function start() {
     validateConfig();
 
     try {
-        // 2. Khởi chạy Web Server & Mở trình duyệt NGAY LẬP TỨC (< 50ms)
+        // 2. Khởi chạy Web Server & Mở trình duyệt khi máy chủ đã sẵn sàng lắng nghe
         const server = app.listen(PORT, () => {
             logger.info(`VNV-BOT V2 - LOCAL BACKEND SERVER STARTED tại http://localhost:${PORT}`);
             console.log(`✔ Máy chủ Web đã lắng nghe tại http://localhost:${PORT}`);
             
-            // Tự động mở trình duyệt vào đúng màn hình login khi máy chủ đã sẵn sàng lắng nghe kết nối
-            if (process.env.AUTO_OPEN_BROWSER !== 'false' && process.env.NODE_ENV !== 'test' && !process.env.CI) {
+            // Tự động mở trình duyệt DUY NHẤT 1 LẦN khi máy chủ đã hoàn toàn sẵn sàng lắng nghe kết nối
+            if (process.env.AUTO_OPEN_BROWSER !== 'false' && process.env.NODE_ENV !== 'test' && !process.env.CI && !process.env.HEADLESS_MODE) {
                 const isWin = process.platform === 'win32';
                 const isMac = process.platform === 'darwin';
                 const openCmd = isWin ? `start "" "http://localhost:${PORT}/#login"` : isMac ? `open "http://localhost:${PORT}/#login"` : `xdg-open "http://localhost:${PORT}/#login"`;
                 const { exec } = require('child_process');
-                exec(openCmd, (err) => {
-                    if (err) logger.warn(`Không thể tự động mở trình duyệt: ${err.message}`);
-                });
+                setTimeout(() => {
+                    exec(openCmd, (err) => {
+                        if (err) logger.warn(`Không thể tự động mở trình duyệt: ${err.message}`);
+                    });
+                }, 400);
             }
         });
 
@@ -262,21 +264,6 @@ async function start() {
         } else {
             console.log(`✔ Startup Checks: SQLite=${checkStatus.sqlite}, Queue=${checkStatus.queue}, ZaloWeb=${checkStatus.zalo}, Google=${checkStatus.google}, Worker=${checkStatus.worker}`);
             console.log(`✔ Safe Mode: ${process.env.SAFE_MODE === 'true' ? 'ON' : 'OFF'}`);
-        }
-
-        // 7. Tự động mở trình duyệt web giao diện đăng nhập
-        if (process.env.NODE_ENV !== 'test' && !process.env.HEADLESS_MODE) {
-            const loginUrl = `http://localhost:${PORT}/#login`;
-            setTimeout(() => {
-                const { exec } = require('child_process');
-                if (process.platform === 'win32') {
-                    exec(`start "" "${loginUrl}"`);
-                } else if (process.platform === 'darwin') {
-                    exec(`open "${loginUrl}"`);
-                } else {
-                    exec(`xdg-open "${loginUrl}"`);
-                }
-            }, 800);
         }
     } catch (err) {
         console.error('Không thể khởi động ứng dụng:', err);

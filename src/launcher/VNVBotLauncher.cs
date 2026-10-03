@@ -120,20 +120,28 @@ namespace VNVBotLauncher
                 return;
             }
 
-            Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine("\nỨng dụng đang chạy tại: http://localhost:3000/#login");
-            Console.WriteLine("Mẹo: Đóng tab trình duyệt web thì Bot sẽ tự động tắt hoàn toàn (không chạy ngầm).");
-            Console.ResetColor();
+            Console.WriteLine("  ⏳ Đang kết nối máy chủ, vui lòng đợi trong giây lát...");
 
-            // Tự động mở trình duyệt web mặc định
+            // Theo dõi và xác nhận cổng 3000 sẵn sàng trước khi thông báo
             ThreadPool.QueueUserWorkItem(_ => {
-                Thread.Sleep(2000);
-                try {
-                    Process.Start(new ProcessStartInfo {
-                        FileName = "http://localhost:3000/#login",
-                        UseShellExecute = true
-                    });
-                } catch { }
+                bool ready = WaitForPort(3000, 25000);
+                if (ready)
+                {
+                    Console.ForegroundColor = ConsoleColor.Green;
+                    Console.WriteLine("\n  ✓ Máy chủ VNV Bot đã khởi động thành công!");
+                    Console.ResetColor();
+                    Console.ForegroundColor = ConsoleColor.Yellow;
+                    Console.WriteLine("Ứng dụng đang chạy tại: http://localhost:3000/#login");
+                    Console.WriteLine("Mẹo: Giữ cửa sổ này mở trong khi dùng. Đóng cửa sổ để tắt Bot hoàn toàn.");
+                    Console.ResetColor();
+                }
+                else
+                {
+                    Console.ForegroundColor = ConsoleColor.Yellow;
+                    Console.WriteLine("\n  [!] Chưa nhận được phản hồi từ cổng 3000 sau 25s.");
+                    Console.WriteLine("      Nếu trình duyệt chưa mở, bạn có thể truy cập: http://localhost:3000/#login");
+                    Console.ResetColor();
+                }
             });
 
             if (nodeProcess != null)
@@ -369,6 +377,33 @@ namespace VNVBotLauncher
             {
                 // Nếu tạm thời mất mạng hoặc Gist timeout, bot tiếp tục và để tầng Node.js kiểm soát khi có mạng
             }
+        }
+
+        private static bool WaitForPort(int port, int timeoutMs)
+        {
+            int elapsed = 0;
+            int interval = 250;
+            while (elapsed < timeoutMs)
+            {
+                if (nodeProcess != null && nodeProcess.HasExited) return false;
+                try
+                {
+                    using (System.Net.Sockets.TcpClient client = new System.Net.Sockets.TcpClient())
+                    {
+                        IAsyncResult ar = client.BeginConnect("127.0.0.1", port, null, null);
+                        bool success = ar.AsyncWaitHandle.WaitOne(200);
+                        if (success && client.Connected)
+                        {
+                            client.EndConnect(ar);
+                            return true;
+                        }
+                    }
+                }
+                catch { }
+                Thread.Sleep(interval);
+                elapsed += interval;
+            }
+            return false;
         }
 
         private static void FreePort3000IfOccupied()
