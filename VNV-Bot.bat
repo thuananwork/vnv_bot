@@ -110,6 +110,7 @@ echo   Meo: De dung Bot, ban chi can dong cua so lenh nay (hoac bam Ctrl+C).
 echo ============================================================
 
 rem Khoi chay may chu VNV Bot (trinh duyet se tu dong mo ngay khi may chu san sang)
+set "NODE_OPTIONS=--dns-result-order=ipv4first"
 "%NODE_EXE%" src/index.js
 
 if %ERRORLEVEL% neq 0 (

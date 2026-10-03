@@ -1,3 +1,6 @@
+require('../../utils/env_loader');
+const dns = require('dns');
+try { dns.setDefaultResultOrder('ipv4first'); } catch (e) {}
 let _GoogleAuth = null;
 function getGoogleAuth() {
     if (!_GoogleAuth) {

@@ -65,7 +65,8 @@ class GoogleSheetsClient {
             console.log(`[GOOGLE SHEETS CLIENT] Cache Miss. Đang tải metadata từ Google API cho ID: "${spreadsheetId}"`);
             const response = await executeGoogleApiWithRetry(() =>
                 client.spreadsheets.get({
-                    spreadsheetId
+                    spreadsheetId,
+                    fields: 'sheets.properties'
                 })
             );
             sheetsMetadata = response.data.sheets.map(s => s.properties);
@@ -294,7 +295,8 @@ class GoogleSheetsClient {
             client.spreadsheets.get({
                 spreadsheetId,
                 ranges: [range],
-                includeGridData: true
+                includeGridData: true,
+                fields: 'sheets(data(rowData(values(formattedValue,effectiveFormat/textFormat/strikethrough)),startRow))'
             })
         );
 

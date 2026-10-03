@@ -1,3 +1,4 @@
+require('../utils/env_loader');
 const db = require('../config/db');
 const GoogleSheetsClient = require('./google/sheets');
 const audit = require('./audit');
@@ -121,27 +122,31 @@ async function _doSyncMembersFromSheet(regionId, options = {}) {
     const { getExpectedMonthTab } = require('../utils/sheet_time');
     const currentMonthTab = getExpectedMonthTab();
     const tabName = region.sheet_name || currentMonthTab;
-    const range = `${tabName}!C4:C80`;
+    const fullRange = `${tabName}!A4:AZ80`;
+    console.log(`[SHEET MEMBER SYNC] Bắt đầu đọc danh sách Sứ giả từ Google Sheet: ${region.sheet_id} (${fullRange})...`);
 
-    console.log(`[SHEET MEMBER SYNC] Bắt đầu đọc danh sách Sứ giả từ Google Sheet: ${region.sheet_id} (${range})...`);
-
-    // 1. Đọc dữ liệu cột C kèm định dạng gạch ngang (strikethrough)
-    let gridData = [];
+    // 1. Đọc một lần toàn bộ bảng (A: STT, B: Ngày vào, C: Họ tên, D..AZ: Trạng thái & Ghi chú)
+    let fullRows = [];
     try {
-        gridData = await GoogleSheetsClient.getGridData(region.sheet_id, range);
+        fullRows = await GoogleSheetsClient.getValues(region.sheet_id, fullRange);
     } catch (err) {
-        console.warn(`[SHEET MEMBER SYNC] Lỗi getGridData (${err.message}). Thử fallback getValues...`);
-        try {
-            const values = await GoogleSheetsClient.getValues(region.sheet_id, range);
-            gridData = values.map((row, idx) => ({
-                rowIndex: 4 + idx,
-                value: (row[0] || '').trim(),
-                strikethrough: false
-            })).filter(item => Boolean(item.value));
-        } catch (fallbackErr) {
-            throw new Error(`Không thể kết nối Google Sheet của ${region.region_name}: ${fallbackErr.message}`);
-        }
+        throw new Error(`Không thể kết nối Google Sheet của ${region.region_name}: ${err.message}`);
     }
+
+    const rowMap = new Map();
+    const gridData = [];
+    fullRows.forEach((row, idx) => {
+        const rowIndex = 4 + idx;
+        rowMap.set(rowIndex, row);
+        const rawName = (row[2] || '').trim(); // Cột C (index 2) là Họ và Tên
+        if (rawName) {
+            gridData.push({
+                rowIndex,
+                value: rawName,
+                strikethrough: false
+            });
+        }
+    });
 
     if (!gridData || gridData.length === 0) {
         return {
@@ -154,17 +159,6 @@ async function _doSyncMembersFromSheet(regionId, options = {}) {
             deactivated: [],
             totalOnSheet: 0
         };
-    }
-
-    // Đọc toàn bộ các ô từ cột A đến AZ để quét ghi chú hoãn/quân sự/nghỉ
-    const rowMap = new Map();
-    try {
-        const fullRows = await GoogleSheetsClient.getValues(region.sheet_id, `${tabName}!A4:AZ80`);
-        fullRows.forEach((r, idx) => {
-            rowMap.set(4 + idx, r);
-        });
-    } catch (fullErr) {
-        console.warn(`[SHEET MEMBER SYNC] Không thể đọc chi tiết các ô ma trận:`, fullErr.message);
     }
 
     // 2. Lấy danh sách thành viên hiện có trong SQLite của Vùng

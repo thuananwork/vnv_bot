@@ -102,7 +102,7 @@ namespace VNVBotLauncher
             ProcessStartInfo psi = new ProcessStartInfo
             {
                 FileName = nodeExecutable,
-                Arguments = "src/index.js",
+                Arguments = "--dns-result-order=ipv4first src/index.js",
                 WorkingDirectory = appDir,
                 UseShellExecute = false,
                 RedirectStandardOutput = false,

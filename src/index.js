@@ -1,3 +1,5 @@
+const dns = require('dns');
+try { dns.setDefaultResultOrder('ipv4first'); } catch (e) {}
 require('./utils/env_loader');
 const crypto = require('crypto');
 const app = require('./app');
