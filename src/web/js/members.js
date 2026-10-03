@@ -12,6 +12,17 @@ async function loadMembers() {
         const list = await res.json();
         tbody.innerHTML = '';
 
+        if (res.status === 401 || (list && list.error === 'SESSION_UNAUTHENTICATED')) {
+            tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding: 24px; color: #ef4444;">
+                <div style="font-weight: 600; margin-bottom: 6px;"><i class="fa-solid fa-triangle-exclamation"></i> Phiên đăng nhập đã hết hạn</div>
+                <div style="color: #6b7280; margin-bottom: 12px;">Máy chủ vừa được cập nhật mã nguồn mới. Vui lòng đăng nhập lại để tiếp tục.</div>
+                <button class="btn btn-sm btn-outline-primary" onclick="window.location.hash='#login'; window.location.reload();" style="cursor: pointer; padding: 4px 14px; border-radius: 6px;">
+                    <i class="fa-solid fa-right-to-bracket"></i> Đăng nhập lại
+                </button>
+            </td></tr>`;
+            return;
+        }
+
         if (!Array.isArray(list) || list.length === 0) {
             tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">Chưa có Sứ giả nào trong danh sách.</td></tr>';
             return;
@@ -275,6 +286,13 @@ async function handleSyncAllMembersFromSheet() {
             headers: { 'Content-Type': 'application/json' }
         });
         const data = await res.json();
+
+        if (res.status === 401 || (data && data.error === 'SESSION_UNAUTHENTICATED')) {
+            alert('⚠️ Phiên đăng nhập đã hết hạn (do máy chủ vừa khởi động lại để cập nhật tính năng mới).\n\nVui lòng đăng nhập lại để tiếp tục thao tác!');
+            window.location.hash = '#login';
+            window.location.reload();
+            return;
+        }
 
         if (data.success) {
             let msg = data.message;
