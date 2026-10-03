@@ -169,7 +169,19 @@ class ZaloAnchorScanner {
                 if (this.isCancelled) return { found: false, cancelled: true };
 
                 await page.evaluate((term) => {
-                    const input = document.querySelector('.search-message-input__editor, input[placeholder*="từ khóa"], input[data-translate-placeholder*="SEARCH"], .search-message-input input, input[placeholder*="Tìm kiếm"]');
+                    const searchPanel = document.querySelector('.search-message-inchat, .search-message-panel, .search-message-panel-compact, [class*="search-message"]');
+                    let input = null;
+                    if (searchPanel) {
+                        input = searchPanel.querySelector('input, [contenteditable="true"]');
+                    }
+                    if (!input) {
+                        const candidates = Array.from(document.querySelectorAll('.search-message-input__editor, .search-message-input input, input[placeholder*="từ khóa"], input[data-translate-placeholder*="SEARCH"]'));
+                        input = candidates.find(el => el.id !== 'contact-search-input');
+                    }
+                    if (!input) {
+                        const allInputs = Array.from(document.querySelectorAll('input'));
+                        input = allInputs.find(inp => inp.id !== 'contact-search-input' && !inp.closest('#contact-search-input') && !inp.closest('.left-sidebar') && !inp.closest('.nav-tabs'));
+                    }
                     if (input) {
                         input.focus();
                         input.select();
@@ -182,15 +194,24 @@ class ZaloAnchorScanner {
                 }, queryText);
 
                 await page.keyboard.press('Enter');
-                await new Promise(r => setTimeout(r, 1600));
+                const selectors = [
+                    '.search-message__item',
+                    '.search-message-item',
+                    '.item-search-mess',
+                    '[class*="search-message"] [class*="item"]',
+                    '.search-message-panel [class*="item"]',
+                    '.search-list-item',
+                    'div[class*="search-item"]'
+                ];
+                try {
+                    await page.waitForFunction((sel) => !!document.querySelector(sel), { timeout: 2500 }, selectors.join(', '));
+                } catch (e) {}
+                await new Promise(r => setTimeout(r, 600));
 
-                return await page.evaluate((pDate) => {
+                const result = await page.evaluate((pDate, itemSelectors) => {
                     function scoreReportMatch(txt) {
                         if (!txt) return -100;
                         const lower = txt.toLowerCase();
-                        const isReport = (lower.includes('báo cáo ngày') || lower.includes('bao cao ngay') || lower.includes('báo cáo tiến độ') || lower.includes('bao cao tien do')) &&
-                                         (lower.includes('vùng') || lower.includes('vung') || lower.includes('hàng ngày') || lower.includes('hang ngay'));
-                        if (!isReport) return -100;
 
                         const [y, m, d] = pDate.split('-');
                         const dStr = String(parseInt(d, 10));
@@ -213,38 +234,58 @@ class ZaloAnchorScanner {
                                         (new RegExp(`\\bngày\\s+0?${dStr}\\s*[/\\-]\\s*0?${mStr}\\b`, 'i').test(lower)) ||
                                         (new RegExp(`\\bngày\\s+0?${dStr}\\s+tháng\\s+0?${mStr}\\b`, 'i').test(lower));
                         if (!hasDate) return -100;
-                        return 100;
+
+                        const isReport = lower.includes('báo cáo') || lower.includes('bao cao') ||
+                                         lower.includes('bc ngày') || lower.includes('tổng hợp') || lower.includes('tong hop') ||
+                                         lower.includes('tiến độ') || lower.includes('tien do') || lower.includes('kết quả') || lower.includes('ket qua');
+                        if (!isReport) return -50;
+
+                        let score = 50;
+                        if (lower.includes('báo cáo ngày') || lower.includes('bao cao ngay')) score += 30;
+                        if (lower.includes('vùng') || lower.includes('vung') || lower.includes('sứ giả') || lower.includes('su gia')) score += 20;
+                        if (lower.includes('hoàn thành') || lower.includes('hoan thanh') || lower.includes('chưa hoàn thành')) score += 20;
+                        if (lower.includes('hàng ngày') || lower.includes('hang ngay')) score += 15;
+                        if (lower.length < 35 && (lower.includes('em gửi') || lower.includes('em nop') || lower.includes('e gui'))) score -= 30;
+                        return score;
                     }
 
-                    const selectors = [
-                        '.search-message__item',
-                        '.search-message-item',
-                        '.item-search-mess',
-                        '[class*="search-message"] [class*="item"]',
-                        '.search-message-panel [class*="item"]',
-                        '.search-list-item',
-                        'div[class*="search-item"]'
-                    ];
-                    const items = Array.from(document.querySelectorAll(selectors.join(', ')));
+                    const items = Array.from(document.querySelectorAll(itemSelectors.join(', ')));
                     let bestItem = null;
                     let maxScore = -1;
+                    const candidateLogs = [];
 
                     for (let i = 0; i < items.length; i++) {
                         const it = items[i];
-                        const text = it.textContent || '';
+                        const text = (it.textContent || '').trim().replace(/\s+/g, ' ');
                         const sc = scoreReportMatch(text);
                         if (sc > maxScore) {
                             maxScore = sc;
-                            bestItem = { node: it, text };
+                            bestItem = { node: it, text, score: sc, index: i + 1 };
+                        }
+                        if (i < 5) {
+                            candidateLogs.push({
+                                index: i + 1,
+                                score: sc,
+                                snippet: text.length > 80 ? text.substring(0, 80) + '...' : text
+                            });
                         }
                     }
 
                     if (bestItem && maxScore > 0) {
                         bestItem.node.click();
-                        return { found: true, text: bestItem.text.substring(0, 100), count: items.length, score: maxScore };
+                        return { found: true, text: bestItem.text.substring(0, 100), count: items.length, score: maxScore, candidates: candidateLogs };
                     }
-                    return { found: false, count: items.length };
-                }, prevDate);
+                    return { found: false, count: items.length, candidates: candidateLogs };
+                }, prevDate, selectors);
+
+                if (result.candidates && result.candidates.length > 0) {
+                    console.log(`[ANCHOR SCANNER] 📋 Chi tiết ${result.count} kết quả tìm kiếm Báo cáo với "${queryText}":`);
+                    result.candidates.forEach(c => {
+                        console.log(`   [#${c.index}] Điểm: ${c.score} | "${c.snippet}"`);
+                    });
+                }
+
+                return result;
             };
 
             // Lần 1: Tìm "Báo cáo ngày DD/MM" (d/m)
@@ -354,9 +395,6 @@ class ZaloAnchorScanner {
                 function scoreTaskMatch(txt) {
                     if (!txt) return -100;
                     const lower = txt.toLowerCase();
-                    const isTaskPlan = (lower.includes('kế hoạch làm việc') || lower.includes('ke hoach lam viec')) &&
-                                       (lower.includes('sứ giả') || lower.includes('su gia') || lower.includes('hàng ngày') || lower.includes('hang ngay') || lower.includes('nhiệm vụ'));
-                    if (!isTaskPlan) return -100;
 
                     const parts = tDate.split('-');
                     const y = parseInt(parts[0], 10);
@@ -364,22 +402,6 @@ class ZaloAnchorScanner {
                     const d = parseInt(parts[2], 10);
                     const dt = new Date(y, m - 1, d);
                     const dow = dt.getDay(); // 0: CN, 1: T2, 2: T3, 3: T4, 4: T5, 5: T6, 6: T7
-
-                    const dowKeywords = {
-                        0: ['chủ nhật', 'chu nhat', 'cn'],
-                        1: ['thứ 2', 'thu 2', 'thứ hai', 'thu hai', 't2'],
-                        2: ['thứ 3', 'thu 3', 'thứ ba', 'thu ba', 't3'],
-                        3: ['thứ 4', 'thu 4', 'thứ tư', 'thu tu', 't4'],
-                        4: ['thứ 5', 'thu 5', 'thứ năm', 'thu nam', 't5'],
-                        5: ['thứ 6', 'thu 6', 'thứ sáu', 'thu sau', 't6'],
-                        6: ['thứ 7', 'thu 7', 'thứ bảy', 'thu bay', 't7']
-                    };
-
-                    const validDow = dowKeywords[dow] || [];
-                    const otherDows = [];
-                    for (let i = 0; i < 7; i++) {
-                        if (i !== dow) otherDows.push(...(dowKeywords[i] || []));
-                    }
 
                     const dStr = String(d);
                     const dPad = String(d).padStart(2, '0');
@@ -402,26 +424,36 @@ class ZaloAnchorScanner {
                                          (new RegExp(`\\bngày\\s+0?${dStr}\\s+tháng\\s+0?${mStr}\\b`, 'i').test(lower));
                     if (!hasExactDate) return -100;
 
-                    let score = 40;
+                    // Kiểm tra từ khóa nhiệm vụ / kế hoạch
+                    const isTaskPlan = lower.includes('kế hoạch') || lower.includes('ke hoach') ||
+                                       lower.includes('nhiệm vụ') || lower.includes('nhiem vu') ||
+                                       lower.includes('làm việc') || lower.includes('lam viec') ||
+                                       lower.includes('khlv') || lower.includes('lịch') ||
+                                       lower.includes('công việc') || lower.includes('thông báo') ||
+                                       lower.includes('👉') || lower.includes('📌') || lower.includes('bài viết');
+                    if (!isTaskPlan) return -50;
 
+                    let score = 50;
+                    if (lower.includes('kế hoạch làm việc') || lower.includes('ke hoach lam viec')) score += 30;
+                    if (lower.includes('sứ giả') || lower.includes('su gia') || lower.includes('vùng') || lower.includes('vung')) score += 20;
+                    if (lower.includes('👉') || lower.includes('tương tác') || lower.includes('hoàn thành')) score += 15;
+
+                    const dowKeywords = {
+                        0: ['chủ nhật', 'chu nhat', 'cn'],
+                        1: ['thứ 2', 'thu 2', 'thứ hai', 'thu hai', 't2'],
+                        2: ['thứ 3', 'thu 3', 'thứ ba', 'thu ba', 't3'],
+                        3: ['thứ 4', 'thu 4', 'thứ tư', 'thu tu', 't4'],
+                        4: ['thứ 5', 'thu 5', 'thứ năm', 'thu nam', 't5'],
+                        5: ['thứ 6', 'thu 6', 'thứ sáu', 'thu sau', 't6'],
+                        6: ['thứ 7', 'thu 7', 'thứ bảy', 'thu bay', 't7']
+                    };
+                    const validDow = dowKeywords[dow] || [];
                     const hasTargetDow = validDow.some(w => {
                         const regex = new RegExp(`(^|[^a-z0-9à-ỹ])${w}([^a-z0-9à-ỹ]|$)`, 'i');
                         return regex.test(lower);
                     });
-                    const hasOtherDow = otherDows.some(w => {
-                        const regex = new RegExp(`(^|[^a-z0-9à-ỹ])${w}([^a-z0-9à-ỹ]|$)`, 'i');
-                        return regex.test(lower);
-                    });
+                    if (hasTargetDow) score += 25;
 
-                    if (hasTargetDow) {
-                        score += 50;
-                    } else if (hasOtherDow) {
-                        return -100; // Khác thứ => loại bỏ ngay (gõ nhầm ngày)
-                    }
-
-                    if (lower.includes('👉') || lower.includes('nhiệm vụ hôm nay') || lower.includes('nhan su') || lower.includes('sứ giả')) {
-                        score += 20;
-                    }
                     return score;
                 }
 
@@ -455,6 +487,15 @@ class ZaloAnchorScanner {
         if (this.isCancelled) return { found: false, cancelled: true };
 
         // 2. PHƯƠNG PHÁP CHÍNH: Tìm kiếm bằng ô Tìm kiếm trong cuộc trò chuyện (In-Chat Search)
+        const hasSyncBanner = await page.evaluate(() => {
+            const text = document.body.innerText || '';
+            return text.includes('Đồng bộ tin nhắn từ điện thoại') || text.includes('Đồng bộ ngay');
+        });
+        if (hasSyncBanner) {
+            console.warn(`[ANCHOR SCANNER] ⚠️ CẢNH BÁO: Phát hiện Zalo Web đang hiển thị yêu cầu "Đồng bộ tin nhắn từ điện thoại"!`);
+            console.warn(`[ANCHOR SCANNER] 👉 Nếu đây là máy tính mới đăng nhập Zalo lần đầu, hãy mở Zalo trên điện thoại và xác nhận "Đồng bộ ngay" để Zalo Web tải đầy đủ lịch sử tin nhắn của nhóm.`);
+        }
+
         console.log(`[ANCHOR SCANNER] 🔎 Đang dùng ô Tìm kiếm trong trò chuyện để tìm nhiệm vụ ngày ${workDate}...`);
         try {
             const searchOpened = await this.openConversationSearch(page);
@@ -470,7 +511,19 @@ class ZaloAnchorScanner {
                     if (this.isCancelled) return { found: false, cancelled: true };
 
                     await page.evaluate((term) => {
-                        const input = document.querySelector('.search-message-input__editor, input[placeholder*="từ khóa"], input[data-translate-placeholder*="SEARCH"], .search-message-input input, input[placeholder*="Tìm kiếm"]');
+                        const searchPanel = document.querySelector('.search-message-inchat, .search-message-panel, .search-message-panel-compact, [class*="search-message"]');
+                        let input = null;
+                        if (searchPanel) {
+                            input = searchPanel.querySelector('input, [contenteditable="true"]');
+                        }
+                        if (!input) {
+                            const candidates = Array.from(document.querySelectorAll('.search-message-input__editor, .search-message-input input, input[placeholder*="từ khóa"], input[data-translate-placeholder*="SEARCH"]'));
+                            input = candidates.find(el => el.id !== 'contact-search-input');
+                        }
+                        if (!input) {
+                            const allInputs = Array.from(document.querySelectorAll('input'));
+                            input = allInputs.find(inp => inp.id !== 'contact-search-input' && !inp.closest('#contact-search-input') && !inp.closest('.left-sidebar') && !inp.closest('.nav-tabs'));
+                        }
                         if (input) {
                             input.focus();
                             input.select();
@@ -483,15 +536,24 @@ class ZaloAnchorScanner {
                     }, queryText);
 
                     await page.keyboard.press('Enter');
-                    await new Promise(r => setTimeout(r, 1600));
+                    const selectors = [
+                        '.search-message__item',
+                        '.search-message-item',
+                        '.item-search-mess',
+                        '[class*="search-message"] [class*="item"]',
+                        '.search-message-panel [class*="item"]',
+                        '.search-list-item',
+                        'div[class*="search-item"]'
+                    ];
+                    try {
+                        await page.waitForFunction((sel) => !!document.querySelector(sel), { timeout: 2500 }, selectors.join(', '));
+                    } catch (e) {}
+                    await new Promise(r => setTimeout(r, 600));
 
-                    return await page.evaluate((tDate) => {
+                    const result = await page.evaluate((tDate, itemSelectors) => {
                         function scoreTaskMatch(txt) {
                             if (!txt) return -100;
                             const lower = txt.toLowerCase();
-                            const isTaskPlan = (lower.includes('kế hoạch làm việc') || lower.includes('ke hoach lam viec')) &&
-                                               (lower.includes('sứ giả') || lower.includes('su gia') || lower.includes('hàng ngày') || lower.includes('hang ngay') || lower.includes('nhiệm vụ'));
-                            if (!isTaskPlan) return -100;
 
                             const parts = tDate.split('-');
                             const y = parseInt(parts[0], 10);
@@ -499,22 +561,6 @@ class ZaloAnchorScanner {
                             const d = parseInt(parts[2], 10);
                             const dt = new Date(y, m - 1, d);
                             const dow = dt.getDay(); // 0: CN, 1: T2, 2: T3, 3: T4, 4: T5, 5: T6, 6: T7
-
-                            const dowKeywords = {
-                                0: ['chủ nhật', 'chu nhat', 'cn'],
-                                1: ['thứ 2', 'thu 2', 'thứ hai', 'thu hai', 't2'],
-                                2: ['thứ 3', 'thu 3', 'thứ ba', 'thu ba', 't3'],
-                                3: ['thứ 4', 'thu 4', 'thứ tư', 'thu tu', 't4'],
-                                4: ['thứ 5', 'thu 5', 'thứ năm', 'thu nam', 't5'],
-                                5: ['thứ 6', 'thu 6', 'thứ sáu', 'thu sau', 't6'],
-                                6: ['thứ 7', 'thu 7', 'thứ bảy', 'thu bay', 't7']
-                            };
-
-                            const validDow = dowKeywords[dow] || [];
-                            const otherDows = [];
-                            for (let i = 0; i < 7; i++) {
-                                if (i !== dow) otherDows.push(...(dowKeywords[i] || []));
-                            }
 
                             const dStr = String(d);
                             const dPad = String(d).padStart(2, '0');
@@ -537,58 +583,76 @@ class ZaloAnchorScanner {
                                                  (new RegExp(`\\bngày\\s+0?${dStr}\\s+tháng\\s+0?${mStr}\\b`, 'i').test(lower));
                             if (!hasExactDate) return -100;
 
-                            let score = 40;
+                            // Kiểm tra từ khóa nhiệm vụ / kế hoạch
+                            const isTaskPlan = lower.includes('kế hoạch') || lower.includes('ke hoach') ||
+                                               lower.includes('nhiệm vụ') || lower.includes('nhiem vu') ||
+                                               lower.includes('làm việc') || lower.includes('lam viec') ||
+                                               lower.includes('khlv') || lower.includes('lịch') ||
+                                               lower.includes('công việc') || lower.includes('thông báo') ||
+                                               lower.includes('👉') || lower.includes('📌') || lower.includes('bài viết');
+                            if (!isTaskPlan) return -50;
 
+                            let score = 50;
+                            if (lower.includes('kế hoạch làm việc') || lower.includes('ke hoach lam viec')) score += 30;
+                            if (lower.includes('sứ giả') || lower.includes('su gia') || lower.includes('vùng') || lower.includes('vung')) score += 20;
+                            if (lower.includes('👉') || lower.includes('tương tác') || lower.includes('hoàn thành')) score += 15;
+
+                            const dowKeywords = {
+                                0: ['chủ nhật', 'chu nhat', 'cn'],
+                                1: ['thứ 2', 'thu 2', 'thứ hai', 'thu hai', 't2'],
+                                2: ['thứ 3', 'thu 3', 'thứ ba', 'thu ba', 't3'],
+                                3: ['thứ 4', 'thu 4', 'thứ tư', 'thu tu', 't4'],
+                                4: ['thứ 5', 'thu 5', 'thứ năm', 'thu nam', 't5'],
+                                5: ['thứ 6', 'thu 6', 'thứ sáu', 'thu sau', 't6'],
+                                6: ['thứ 7', 'thu 7', 'thứ bảy', 'thu bay', 't7']
+                            };
+                            const validDow = dowKeywords[dow] || [];
                             const hasTargetDow = validDow.some(w => {
                                 const regex = new RegExp(`(^|[^a-z0-9à-ỹ])${w}([^a-z0-9à-ỹ]|$)`, 'i');
                                 return regex.test(lower);
                             });
-                            const hasOtherDow = otherDows.some(w => {
-                                const regex = new RegExp(`(^|[^a-z0-9à-ỹ])${w}([^a-z0-9à-ỹ]|$)`, 'i');
-                                return regex.test(lower);
-                            });
+                            if (hasTargetDow) score += 25;
 
-                            if (hasTargetDow) {
-                                score += 50;
-                            } else if (hasOtherDow) {
-                                return -100; // Khác thứ => loại bỏ ngay (gõ nhầm ngày)
-                            }
-
-                            if (lower.includes('👉') || lower.includes('nhiệm vụ hôm nay') || lower.includes('nhan su') || lower.includes('sứ giả')) {
-                                score += 20;
-                            }
                             return score;
                         }
 
-                        const selectors = [
-                            '.search-message__item',
-                            '.search-message-item',
-                            '.item-search-mess',
-                            '[class*="search-message"] [class*="item"]',
-                            '.search-message-panel [class*="item"]',
-                            '.search-list-item',
-                            'div[class*="search-item"]'
-                        ];
-                        const items = Array.from(document.querySelectorAll(selectors.join(', ')));
+                        const items = Array.from(document.querySelectorAll(itemSelectors.join(', ')));
                         let bestItem = null;
                         let maxScore = -1;
+                        const candidateLogs = [];
 
                         for (let i = 0; i < items.length; i++) {
                             const it = items[i];
-                            const text = it.textContent || '';
+                            const text = (it.textContent || '').trim().replace(/\s+/g, ' ');
                             const sc = scoreTaskMatch(text);
                             if (sc > maxScore) {
                                 maxScore = sc;
-                                bestItem = { node: it, text };
+                                bestItem = { node: it, text, score: sc, index: i + 1 };
+                            }
+                            if (i < 5) {
+                                candidateLogs.push({
+                                    index: i + 1,
+                                    score: sc,
+                                    snippet: text.length > 80 ? text.substring(0, 80) + '...' : text
+                                });
                             }
                         }
 
                         if (bestItem && maxScore > 0) {
                             bestItem.node.click();
-                            return { found: true, text: bestItem.text.substring(0, 100), count: items.length, score: maxScore };
+                            return { found: true, text: bestItem.text.substring(0, 100), count: items.length, score: maxScore, candidates: candidateLogs };
                         }
-                        return { found: false, count: items.length };
-                    }, workDate);
+                        return { found: false, count: items.length, candidates: candidateLogs };
+                    }, workDate, selectors);
+
+                    if (result.candidates && result.candidates.length > 0) {
+                        console.log(`[ANCHOR SCANNER] 📋 Chi tiết ${result.count} kết quả tìm kiếm với "${queryText}":`);
+                        result.candidates.forEach(c => {
+                            console.log(`   [#${c.index}] Điểm: ${c.score} | "${c.snippet}"`);
+                        });
+                    }
+
+                    return result;
                 };
 
                 // Lần tìm kiếm 1: "ngày DD/MM" (tìm đích danh ngày và tháng hiện tại)
@@ -611,6 +675,12 @@ class ZaloAnchorScanner {
                 if (!searchResult.found && !this.isCancelled) {
                     console.log(`[ANCHOR SCANNER] ℹ️ Thử tìm kiếm từ khóa: "KẾ HOẠCH LÀM VIỆC"...`);
                     searchResult = await performSearchQuery('KẾ HOẠCH LÀM VIỆC');
+                }
+
+                // Lần tìm kiếm 5: Tìm "NHIỆM VỤ NGÀY"
+                if (!searchResult.found && !this.isCancelled) {
+                    console.log(`[ANCHOR SCANNER] ℹ️ Thử tìm kiếm từ khóa: "NHIỆM VỤ NGÀY ${targetDay}/${targetMonth}"...`);
+                    searchResult = await performSearchQuery(`NHIỆM VỤ NGÀY ${targetDay}/${targetMonth}`);
                 }
 
                 if (searchResult.found) {
