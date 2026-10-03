@@ -198,10 +198,20 @@ class ZaloAnchorScanner {
                         const mStr = String(parseInt(m, 10));
                         const mPad = String(parseInt(m, 10)).padStart(2, '0');
 
+                        // CHỐNG NHẦM THÁNG: Nếu tin nhắn chỉ rõ ngày D với tháng KHÁC (vd 2/9 thay vì 2/10), loại bỏ ngay lập tức
+                        const otherMonthRegex = new RegExp(`\\b(?:ngày\\s+)?0?${dStr}\\s*[/\\-]\\s*(?!0?${mStr}\\b)(\\d{1,2})`, 'i');
+                        if (otherMonthRegex.test(lower)) return -100;
+                        const otherMonthTextRegex = new RegExp(`\\b0?${dStr}\\s+tháng\\s+(?!0?${mStr}\\b)(\\d{1,2})`, 'i');
+                        if (otherMonthTextRegex.test(lower)) return -100;
+
+                        // Bắt buộc phải khớp CẢ NGÀY VÀ THÁNG mục tiêu (TUYỆT ĐỐI không chỉ so sánh riêng "ngày D")
                         const hasDate = lower.includes(`${dPad}/${mPad}`) || lower.includes(`${dStr}/${mStr}`) ||
                                         lower.includes(`${dPad}/${mStr}`) || lower.includes(`${dStr}/${mPad}`) ||
                                         lower.includes(`${dPad}-${mPad}`) || lower.includes(`${dStr}-${mStr}`) ||
-                                        lower.includes(`ngày ${dStr}`) || lower.includes(`ngày ${dPad}`);
+                                        lower.includes(`${dStr} tháng ${mStr}`) || lower.includes(`${dPad} tháng ${mPad}`) ||
+                                        lower.includes(`${dStr} thg ${mStr}`) || lower.includes(`${dPad} thg ${mPad}`) ||
+                                        (new RegExp(`\\bngày\\s+0?${dStr}\\s*[/\\-]\\s*0?${mStr}\\b`, 'i').test(lower)) ||
+                                        (new RegExp(`\\bngày\\s+0?${dStr}\\s+tháng\\s+0?${mStr}\\b`, 'i').test(lower));
                         if (!hasDate) return -100;
                         return 100;
                     }
@@ -244,7 +254,11 @@ class ZaloAnchorScanner {
                 res = await performReportSearch(`Báo cáo ngày ${dayPadded}/${monthPadded}`);
             }
             if (!res.found && !this.isCancelled) {
-                // Lần 3: Tìm "BÁO CÁO TIẾN ĐỘ" hoặc "BÁO CÁO HÀNG NGÀY"
+                // Lần 3: Tìm ngắn "Báo cáo DD/MM"
+                res = await performReportSearch(`Báo cáo ${dayPadded}/${monthPadded}`);
+            }
+            if (!res.found && !this.isCancelled) {
+                // Lần 4: Tìm "BÁO CÁO HÀNG NGÀY" (kèm đối soát nghiêm ngặt ngày/tháng trong scoreReportMatch)
                 res = await performReportSearch(`Báo cáo hàng ngày`);
             }
 
@@ -372,11 +386,20 @@ class ZaloAnchorScanner {
                     const mStr = String(m);
                     const mPad = String(m).padStart(2, '0');
 
+                    // CHỐNG NHẦM THÁNG: Nếu bài nhiệm vụ chỉ rõ ngày D với tháng KHÁC (vd 2/9, 2 tháng 9 thay vì 2/10), loại bỏ ngay lập tức
+                    const otherMonthRegex = new RegExp(`\\b(?:ngày\\s+)?0?${dStr}\\s*[/\\-]\\s*(?!0?${mStr}\\b)(\\d{1,2})`, 'i');
+                    if (otherMonthRegex.test(lower)) return -100;
+                    const otherMonthTextRegex = new RegExp(`\\b0?${dStr}\\s+tháng\\s+(?!0?${mStr}\\b)(\\d{1,2})`, 'i');
+                    if (otherMonthTextRegex.test(lower)) return -100;
+
+                    // Bắt buộc phải khớp CẢ NGÀY VÀ THÁNG mục tiêu (TUYỆT ĐỐI không chỉ so sánh riêng "ngày D")
                     const hasExactDate = lower.includes(`${dPad}/${mPad}`) || lower.includes(`${dStr}/${mStr}`) ||
                                          lower.includes(`${dPad}/${mStr}`) || lower.includes(`${dStr}/${mPad}`) ||
                                          lower.includes(`${dPad}-${mPad}`) || lower.includes(`${dStr}-${mStr}`) ||
                                          lower.includes(`${dStr} tháng ${mStr}`) || lower.includes(`${dPad} tháng ${mPad}`) ||
-                                         lower.includes(`ngày ${dStr}`) || lower.includes(`ngày ${dPad}`);
+                                         lower.includes(`${dStr} thg ${mStr}`) || lower.includes(`${dPad} thg ${mPad}`) ||
+                                         (new RegExp(`\\bngày\\s+0?${dStr}\\s*[/\\-]\\s*0?${mStr}\\b`, 'i').test(lower)) ||
+                                         (new RegExp(`\\bngày\\s+0?${dStr}\\s+tháng\\s+0?${mStr}\\b`, 'i').test(lower));
                     if (!hasExactDate) return -100;
 
                     let score = 40;
@@ -498,11 +521,20 @@ class ZaloAnchorScanner {
                             const mStr = String(m);
                             const mPad = String(m).padStart(2, '0');
 
+                            // CHỐNG NHẦM THÁNG: Nếu bài nhiệm vụ chỉ rõ ngày D với tháng KHÁC (vd 2/9, 2 tháng 9 thay vì 2/10), loại bỏ ngay lập tức
+                            const otherMonthRegex = new RegExp(`\\b(?:ngày\\s+)?0?${dStr}\\s*[/\\-]\\s*(?!0?${mStr}\\b)(\\d{1,2})`, 'i');
+                            if (otherMonthRegex.test(lower)) return -100;
+                            const otherMonthTextRegex = new RegExp(`\\b0?${dStr}\\s+tháng\\s+(?!0?${mStr}\\b)(\\d{1,2})`, 'i');
+                            if (otherMonthTextRegex.test(lower)) return -100;
+
+                            // Bắt buộc phải khớp CẢ NGÀY VÀ THÁNG mục tiêu (TUYỆT ĐỐI không chỉ so sánh riêng "ngày D")
                             const hasExactDate = lower.includes(`${dPad}/${mPad}`) || lower.includes(`${dStr}/${mStr}`) ||
                                                  lower.includes(`${dPad}/${mStr}`) || lower.includes(`${dStr}/${mPad}`) ||
                                                  lower.includes(`${dPad}-${mPad}`) || lower.includes(`${dStr}-${mStr}`) ||
                                                  lower.includes(`${dStr} tháng ${mStr}`) || lower.includes(`${dPad} tháng ${mPad}`) ||
-                                                 lower.includes(`ngày ${dStr}`) || lower.includes(`ngày ${dPad}`);
+                                                 lower.includes(`${dStr} thg ${mStr}`) || lower.includes(`${dPad} thg ${mPad}`) ||
+                                                 (new RegExp(`\\bngày\\s+0?${dStr}\\s*[/\\-]\\s*0?${mStr}\\b`, 'i').test(lower)) ||
+                                                 (new RegExp(`\\bngày\\s+0?${dStr}\\s+tháng\\s+0?${mStr}\\b`, 'i').test(lower));
                             if (!hasExactDate) return -100;
 
                             let score = 40;
@@ -559,20 +591,26 @@ class ZaloAnchorScanner {
                     }, workDate);
                 };
 
-                // Lần tìm kiếm 1: "KẾ HOẠCH LÀM VIỆC SỨ GIẢ"
-                console.log(`[ANCHOR SCANNER] ⌨️ Tìm kiếm từ khóa: "KẾ HOẠCH LÀM VIỆC SỨ GIẢ"...`);
-                let searchResult = await performSearchQuery('KẾ HOẠCH LÀM VIỆC SỨ GIẢ');
+                // Lần tìm kiếm 1: "ngày DD/MM" (tìm đích danh ngày và tháng hiện tại)
+                console.log(`[ANCHOR SCANNER] ⌨️ Tìm kiếm từ khóa: "ngày ${targetDay}/${targetMonth}"...`);
+                let searchResult = await performSearchQuery(`ngày ${targetDay}/${targetMonth}`);
 
-                // Lần tìm kiếm 2: Nếu chưa ra, tìm "KẾ HOẠCH LÀM VIỆC"
+                // Lần tìm kiếm 2: Tìm "ngày DD/MM" với số 0 đệm
+                if (!searchResult.found && !this.isCancelled) {
+                    console.log(`[ANCHOR SCANNER] ℹ️ Thử tìm kiếm theo ngày: "ngày ${dayPadded}/${monthPadded}"...`);
+                    searchResult = await performSearchQuery(`ngày ${dayPadded}/${monthPadded}`);
+                }
+
+                // Lần tìm kiếm 3: Tìm "KẾ HOẠCH LÀM VIỆC"
+                if (!searchResult.found && !this.isCancelled) {
+                    console.log(`[ANCHOR SCANNER] ℹ️ Thử tìm kiếm từ khóa chung: "KẾ HOẠCH LÀM VIỆC SỨ GIẢ"...`);
+                    searchResult = await performSearchQuery('KẾ HOẠCH LÀM VIỆC SỨ GIẢ');
+                }
+
+                // Lần tìm kiếm 4: Tìm "KẾ HOẠCH LÀM VIỆC" ngắn
                 if (!searchResult.found && !this.isCancelled) {
                     console.log(`[ANCHOR SCANNER] ℹ️ Thử tìm kiếm từ khóa: "KẾ HOẠCH LÀM VIỆC"...`);
                     searchResult = await performSearchQuery('KẾ HOẠCH LÀM VIỆC');
-                }
-
-                // Lần tìm kiếm 3: Nếu chưa ra, tìm theo ngày `${dayPadded}/${monthPadded}`
-                if (!searchResult.found && !this.isCancelled) {
-                    console.log(`[ANCHOR SCANNER] ℹ️ Thử tìm kiếm theo ngày: "${dayPadded}/${monthPadded}"...`);
-                    searchResult = await performSearchQuery(`${dayPadded}/${monthPadded}`);
                 }
 
                 if (searchResult.found) {
