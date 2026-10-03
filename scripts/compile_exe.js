@@ -59,6 +59,16 @@ function compile() {
             console.log('  ✅ BIÊN DỊCH THÀNH CÔNG VNV-Bot.exe!');
             console.log(`  Kích thước: ${(stat.size / 1024).toFixed(1)} KB`);
             console.log(`  Đường dẫn : ${OUTPUT}`);
+
+            const distExe = path.join(ROOT, 'dist', 'VNV-Bot-v2.0.0', 'VNV-Bot.exe');
+            if (fs.existsSync(path.dirname(distExe))) {
+                try {
+                    fs.copyFileSync(OUTPUT, distExe);
+                    console.log(`  Đã đồng bộ sang : ${distExe}`);
+                } catch (cErr) {
+                    console.warn(`  Cảnh báo: Không thể ghi đè ${distExe} (tiến trình đang mở):`, cErr.message);
+                }
+            }
             console.log('============================================');
         }
     } catch (err) {
