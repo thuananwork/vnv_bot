@@ -182,8 +182,38 @@ class OnDemandActionService {
                 }
             } catch (zErr) {
                 console.warn('[ON-DEMAND] Lỗi Anchor Scanner:', zErr.message);
+                const isCancelled = zaloAnchorScanner.isCancelled || 
+                    (zErr.message && (
+                        zErr.message.includes('Target closed') || 
+                        zErr.message.includes('Session closed') ||
+                        zErr.message.includes('Protocol error')
+                    ));
+                if (isCancelled) {
+                    return {
+                        success: false,
+                        cancelled: true,
+                        error: 'Đã dừng quét bài theo yêu cầu của bạn.',
+                        zaloScrapedInfo: { connected: true, cancelled: true, count: 0 },
+                        regionId: region.id,
+                        regionName: region.region_name,
+                        workDate: targetDate
+                    };
+                }
                 zaloScrapedInfo = { connected: false, count: 0, reason: zErr.message };
             }
+        }
+
+        // Kiểm tra hủy một lần nữa trước khi bước vào xử lý DB và ghi Sheet
+        if (zaloAnchorScanner.isCancelled || (scrapeRes && scrapeRes.cancelled)) {
+            return {
+                success: false,
+                cancelled: true,
+                error: 'Đã dừng quét bài theo yêu cầu của bạn.',
+                zaloScrapedInfo: { connected: true, cancelled: true, count: 0 },
+                regionId: region.id,
+                regionName: region.region_name,
+                workDate: targetDate
+            };
         }
 
         // 2. Thu thập tin nhắn từ raw_events hoặc mảng tin nhắn truyền vào
@@ -266,8 +296,20 @@ class OnDemandActionService {
             } catch (e) {}
         }
 
-        // Nếu Zalo không thể kết nối và hoàn toàn không có dữ liệu tin nhắn nào
-        if (!zaloScrapedInfo.connected && events.length === 0) {
+        // Nếu quét bị hủy hoặc Zalo không thể kết nối
+        if (zaloAnchorScanner.isCancelled) {
+            return {
+                success: false,
+                cancelled: true,
+                error: 'Đã dừng quét bài theo yêu cầu của bạn.',
+                zaloScrapedInfo: { connected: true, cancelled: true, count: 0 },
+                regionId: region.id,
+                regionName: region.region_name,
+                workDate: targetDate
+            };
+        }
+
+        if (!zaloScrapedInfo.connected && (!simulatedMessages || simulatedMessages.length === 0)) {
             return {
                 success: false,
                 requiresZaloLogin: zaloScrapedInfo.needsLogin === true,
@@ -404,6 +446,19 @@ class OnDemandActionService {
                     VALUES (?, ?, ?, ?, 'NO_RESPONSE', '')
                 `, [taskId, mem.id, region.id, targetDate]);
             }
+        }
+
+        // Kiểm tra nếu người dùng đã bấm dừng trong lúc xử lý
+        if (zaloAnchorScanner.isCancelled) {
+            return {
+                success: false,
+                cancelled: true,
+                error: 'Đã dừng quét bài theo yêu cầu của bạn.',
+                zaloScrapedInfo: { connected: true, cancelled: true, count: 0 },
+                regionId: region.id,
+                regionName: region.region_name,
+                workDate: targetDate
+            };
         }
 
         // 4. Đồng bộ Google Sheet ma trận (Cột D..AH, Hàng 4-5, 8-24)

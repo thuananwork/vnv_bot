@@ -1007,8 +1007,9 @@ class ZaloAnchorScanner {
             }
         }
 
-        // Đặt chế độ hiển thị cửa sổ (maximize khi hiển thị)
-        await this.browserManager.setWindowDisplayMode(page, showBrowser);
+        try {
+            // Đặt chế độ hiển thị cửa sổ (maximize khi hiển thị)
+            await this.browserManager.setWindowDisplayMode(page, showBrowser);
         await page.bringToFront();
 
         // Đợi Zalo Web sẵn sàng và kiểm tra đăng nhập
@@ -1147,15 +1148,39 @@ class ZaloAnchorScanner {
             timestamp_ms: m.timestamp
         }));
 
-        return {
-            connected: true,
-            taskFound: true,
-            anchorType: anchorResult.anchorType,
-            messagesScraped: scrapedEvents.length,
-            scrapedEvents,
-            groupName,
-            workDate: targetDate
-        };
+            return {
+                connected: true,
+                taskFound: true,
+                anchorType: anchorResult.anchorType,
+                messagesScraped: scrapedEvents.length,
+                scrapedEvents,
+                groupName,
+                workDate: targetDate
+            };
+        } catch (err) {
+            const isTargetClosed = err.message && (
+                err.message.includes('Target closed') ||
+                err.message.includes('Session closed') ||
+                err.message.includes('Execution context was destroyed') ||
+                err.message.includes('Protocol error')
+            );
+            if (this.isCancelled || isTargetClosed) {
+                console.log('[ANCHOR SCANNER] 🛑 Quá trình quét đã được dừng theo yêu cầu của bạn.');
+                return {
+                    connected: true,
+                    cancelled: true,
+                    taskFound: false,
+                    reason: 'Quá trình quét đã được dừng theo yêu cầu của bạn.',
+                    messagesScraped: 0,
+                    scrapedEvents: [],
+                    groupName,
+                    workDate: targetDate
+                };
+            }
+            throw err;
+        } finally {
+            this.currentPage = null;
+        }
     }
 
     /**
