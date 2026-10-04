@@ -19,6 +19,9 @@ async function runTests() {
     assert.strictEqual(isValidMemberName('123'), false, 'Số phải bị loại');
     assert.strictEqual(isValidMemberName(''), false, 'Rỗng phải bị loại');
     assert.strictEqual(isValidMemberName('Đại'), false, '1 từ phải bị loại');
+    assert.strictEqual(isValidMemberName('Tô Kim Ngân'), true, 'Họ Tô (bỏ dấu = "to") KHÔNG được bị loại nhầm là tiêu đề Tổ');
+    assert.strictEqual(isValidMemberName('Tồ Văn Hùng'), true, 'Họ Tồ hợp lệ');
+    assert.strictEqual(isValidMemberName('Tổ 1'), false, 'Tiêu đề "Tổ 1" phải bị loại');
     console.log('  ✅ [PASS] Bộ lọc tên hoạt động chuẩn xác');
 
     // 2. Thiết lập dữ liệu giả lập cho Vùng 27

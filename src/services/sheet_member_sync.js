@@ -75,7 +75,11 @@ function isValidMemberName(name) {
     ];
 
     if (INVALID_HEADERS.includes(norm)) return false;
-    if (norm.startsWith('nhom ') || norm.startsWith('to ') || norm.startsWith('stt ')) return false;
+    if (norm.startsWith('nhom ') || norm.startsWith('stt ')) return false;
+    // Tiêu đề nhóm "Tổ 1", "Tổ A"...: chỉ loại khi đúng chữ "Tổ" (dấu hỏi) + số/chữ cái đơn,
+    // KHÔNG loại họ "Tô", "Tồ", "Tố"... (vd: Tô Kim Ngân) dù bỏ dấu đều thành "to"
+    const rawLower = clean.normalize('NFC').toLowerCase();
+    if (/^tổ\s+(\d+|[a-z])\s*$/i.test(rawLower)) return false;
 
     // Tên tiếng Việt thường có ít nhất 2 từ
     const words = clean.split(/\s+/).filter(Boolean);
@@ -121,16 +125,36 @@ async function _doSyncMembersFromSheet(regionId, options = {}) {
 
     const { getExpectedMonthTab } = require('../utils/sheet_time');
     const currentMonthTab = getExpectedMonthTab();
-    const tabName = region.sheet_name || currentMonthTab;
-    const fullRange = `${tabName}!A4:AZ80`;
-    console.log(`[SHEET MEMBER SYNC] Bắt đầu đọc danh sách Sứ giả từ Google Sheet: ${region.sheet_id} (${fullRange})...`);
+    // Cùng quy tắc với sheet_matrix_sync: tab tên tùy biến (không dạng Txx/yy) được ưu tiên;
+    // còn lại dùng tab của THÁNG HIỆN TẠI để sheet_row_index khớp với tab báo cáo sẽ ghi vào.
+    const storedTab = region.sheet_name || null;
+    const isCustomTab = storedTab && !/^T\d+\/\d+$/i.test(storedTab);
+    const candidateTabs = isCustomTab
+        ? [storedTab]
+        : [currentMonthTab, storedTab].filter((t, i, a) => t && a.indexOf(t) === i);
 
     // 1. Đọc một lần toàn bộ bảng (A: STT, B: Ngày vào, C: Họ tên, D..AZ: Trạng thái & Ghi chú)
     let fullRows = [];
-    try {
-        fullRows = await GoogleSheetsClient.getValues(region.sheet_id, fullRange);
-    } catch (err) {
-        throw new Error(`Không thể kết nối Google Sheet của ${region.region_name}: ${err.message}`);
+    let lastErr = null;
+    let tabName = candidateTabs[0];
+    for (const tab of candidateTabs) {
+        const fullRange = `${tab}!A4:AZ80`;
+        console.log(`[SHEET MEMBER SYNC] Bắt đầu đọc danh sách Sứ giả từ Google Sheet: ${region.sheet_id} (${fullRange})...`);
+        try {
+            fullRows = await GoogleSheetsClient.getValues(region.sheet_id, fullRange);
+            tabName = tab;
+            lastErr = null;
+            break;
+        } catch (err) {
+            lastErr = err;
+            console.warn(`[SHEET MEMBER SYNC] Không đọc được tab "${tab}" của ${region.region_name}: ${err.message}`);
+        }
+    }
+    if (lastErr) {
+        throw new Error(`Không thể kết nối Google Sheet của ${region.region_name}: ${lastErr.message}`);
+    }
+    if (tabName !== currentMonthTab && !isCustomTab) {
+        console.warn(`[SHEET MEMBER SYNC] ⚠️ ${region.region_name} chưa có tab tháng hiện tại "${currentMonthTab}", tạm dùng tab "${tabName}".`);
     }
 
     const rowMap = new Map();
