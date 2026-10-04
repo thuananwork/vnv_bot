@@ -38,6 +38,23 @@ async function runTests() {
     // - Dòng 5: Nguyễn Thị Thanh Trà (Phó Vùng, Active)
     // - Dòng 6: Thàn Thị Quỳnh Nhi (bị gạch ngang - strikethrough: true)
     // - Dòng 25: Lê Minh Tuấn (Sứ giả MỚI trên Sheet)
+    //
+    // setMockValues: mock cho getValues → trả về string[][] (array index 0 = hàng 4)
+    // Cột: [A=STT, B=NgàyVào, C=HọTên, D...=GhiChú]
+    const mockRows = [];
+    // Row 4 (idx 0): Phạm Quang Đại
+    mockRows[0] = ['1', '01/01/2026', 'Phạm Quang Đại'];
+    // Row 5 (idx 1): Nguyễn Thị Thanh Trà
+    mockRows[1] = ['2', '01/01/2026', 'Nguyễn Thị Thanh Trà'];
+    // Row 6 (idx 2): Thàn Thị Quỳnh Nhi (strikethrough - sẽ được setMockGridData xử lý)
+    mockRows[2] = ['3', '01/01/2026', 'Thàn Thị Quỳnh Nhi'];
+    // Rows 7-24 (idx 3-20): trống
+    for (let i = 3; i <= 20; i++) mockRows[i] = [];
+    // Row 25 (idx 21): Lê Minh Tuấn
+    mockRows[21] = ['22', '01/01/2026', 'Lê Minh Tuấn'];
+    GoogleSheetsClient.setMockValues(region.sheet_id, mockRows);
+
+    // setMockGridData: mock cho getGridData (cột C) → cung cấp strikethrough info
     const mockGrid = [
         { rowIndex: 4, value: 'Phạm Quang Đại', strikethrough: false },
         { rowIndex: 5, value: 'Nguyễn Thị Thanh Trà', strikethrough: false },
@@ -45,6 +62,7 @@ async function runTests() {
         { rowIndex: 25, value: 'Lê Minh Tuấn', strikethrough: false }
     ];
     GoogleSheetsClient.setMockGridData(region.sheet_id, mockGrid);
+
 
     // 3. Thực thi đồng bộ
     console.log('\n3. Thực thi đồng bộ Sứ giả từ Google Sheet...');

@@ -262,6 +262,9 @@ class GoogleSheetsClient {
      * @returns {Promise<Array<Array<string>>>}
      */
     async getValues(spreadsheetId, range) {
+        if (this.mockValuesData && this.mockValuesData[spreadsheetId] !== undefined) {
+            return this.mockValuesData[spreadsheetId];
+        }
         const client = this.getClient();
         if (!client) {
             return [];
@@ -273,6 +276,14 @@ class GoogleSheetsClient {
             })
         );
         return response.data.values || [];
+    }
+
+    /**
+     * Giả lập dữ liệu getValues (trả về string[][]) (Dành cho kiểm thử)
+     */
+    setMockValues(spreadsheetId, data) {
+        if (!this.mockValuesData) this.mockValuesData = {};
+        this.mockValuesData[spreadsheetId] = data;
     }
 
     /**
@@ -341,6 +352,7 @@ class GoogleSheetsClient {
     resetFakeSpreadsheets() {
         this.fakeSpreadsheets = {};
         this.mockGridData = {};
+        this.mockValuesData = {};
     }
 
     /**

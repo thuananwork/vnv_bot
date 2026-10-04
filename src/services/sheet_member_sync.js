@@ -157,6 +157,20 @@ async function _doSyncMembersFromSheet(regionId, options = {}) {
         console.warn(`[SHEET MEMBER SYNC] ⚠️ ${region.region_name} chưa có tab tháng hiện tại "${currentMonthTab}", tạm dùng tab "${tabName}".`);
     }
 
+    // 1b. Lấy thêm strikethrough từ cột C (Họ tên) để phát hiện Sứ giả đã gạch ngang
+    let strikethroughMap = new Map(); // rowIndex -> boolean
+    try {
+        const colCRange = `${tabName}!C4:C80`;
+        const colCGrid = await GoogleSheetsClient.getGridData(region.sheet_id, colCRange);
+        colCGrid.forEach(item => {
+            if (item && item.rowIndex != null) {
+                strikethroughMap.set(item.rowIndex, item.strikethrough === true);
+            }
+        });
+    } catch (stErr) {
+        console.warn(`[SHEET MEMBER SYNC] ⚠️ Không đọc được strikethrough cột C của ${region.region_name}: ${stErr.message}. Bỏ qua.`);
+    }
+
     const rowMap = new Map();
     const gridData = [];
     fullRows.forEach((row, idx) => {
@@ -167,7 +181,7 @@ async function _doSyncMembersFromSheet(regionId, options = {}) {
             gridData.push({
                 rowIndex,
                 value: rawName,
-                strikethrough: false
+                strikethrough: strikethroughMap.get(rowIndex) === true
             });
         }
     });
@@ -184,6 +198,7 @@ async function _doSyncMembersFromSheet(regionId, options = {}) {
             totalOnSheet: 0
         };
     }
+
 
     // 2. Lấy danh sách thành viên hiện có trong SQLite của Vùng
     const currentMembers = await db.all('SELECT * FROM members WHERE region_id = ?', [regionId]);
